@@ -1,0 +1,162 @@
+\documentclass[a4paper]{elsarticle}
+% vim: tw=0 wm=0
+
+\setcounter{tocdepth}{3}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{comment}
+\usepackage{placeins}
+\usepackage{mathtools}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+ \usepackage{booktabs}
+\usepackage{array}
+\usepackage[pdfencoding=auto,psdextra]{hyperref}
+\usepackage{booktabs}
+\usepackage{bookmark}% faster updated bookmarks
+\usepackage{hypcap} % fix the links
+\evensidemargin\oddsidemargin
+\usepackage{graphicx}
+\pagestyle{plain}
+\usepackage{xcolor}
+\newcommand\ToDo[1]{\textcolor{red}{#1}}
+ 
+\usepackage{xspace}
+\usepackage{color}
+\usepackage{epsfig}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{mathrsfs}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+%\usepackage{changes}
+  
+\usepackage{blindtext}
+
+\usepackage{numprint}
+\npdecimalsign{.}
+\npthousandsep{}
+
+\usepackage[draft,nomargin,inline]{fixme}
+\fxsetface{inline}{\itshape}
+\fxsetface{env}{\itshape}
+%\fxuselayouts{margin}
+%\fxuselayouts{inline}
+\fxusetheme{color}
+
+\usepackage{url}
+\newcommand{\keywords}[1]{\par\aDSvspace\baselineskip
+	\noindent\keywordname\enspace\ignorespaces#1}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\definecolor{canaryyellow}{rgb}{1.0, 0.94, 0.0}
+\definecolor{brightgreen}{rgb}{0.4, 1.0, 0.0}
+\definecolor{jazzberryjam}{rgb}{0.65, 0.04, 0.37}
+
+%defining of command
+
+\newcommand\floor[1]{\lfloor#1\rfloor}
+\newcommand\ceil[1]{\lceil#1\rceil}
+\newcommand\str[1]{\texttt{#1}}
+\newcommand\pL[1][]{\ensuremath{p^{\mathrm{L}#1}}}
+\newcommand\pR[1][]{\ensuremath{p^{\mathrm{R}#1}}}
+\newcommand\qL{\ensuremath{q^\mathrm{L}}}
+\newcommand\qR{\ensuremath{q^\mathrm{R}}}
+\newcommand\pLH{\ensuremath{\hat{p}^\mathrm{L}}}
+\newcommand\pRH{\ensuremath{\hat{p}^\mathrm{R}}}
+\newcommand{\Vext}{\ensuremath{V_\mathrm{{ext}}}}
+\newcommand\UB{\ensuremath{\mathrm{UB}}}
+\newcommand\Sigmand{\ensuremath{\Sigma^\mathrm{nd}}}
+\newcommand{\mdmwnpp}{MDMWNPP\xspace}
+
+\renewcommand{\labelenumii}{\theenumii}
+\renewcommand{\theenumii}{\theenumi.\arabic{enumii}.}
+\setlength{\leftmarginii}{1.8ex}
+\raggedbottom
+\algnewcommand\algorithmicforeach{\textbf{for each}}
+\algdef{S}[FOR]{ForEach}[1]{\algorithmicforeach\ #1\ \algorithmicdo}
+
+% scaling factor for tables
+\newcommand\tabscale{0.8}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Lemma}{Lemma}
+
+\begin{document}
+	
+	%\setlength{\parindent}{0pt}  % disallow indentations
+	%\numberwithin{table}{1}
+	%\mainmatter  % start of an individual contribution
+	
+	% first the title is needed
+	\title{RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares}
+	
+\author[1]{Aleksandar Kartelj}
+\author[2]{Marko Djukanovi\'c}
+	\address[1]{$kartelj@matf.bg.ac.rs$, \\  Faculty of Mathematics, University of Belgrade, Serbia}
+    \address[2]{$ marko.djukanovic@pmf.unibl.org$,\\   Faculty of Natural Sciences and Mathematics, University of Banja Luka, Bosnia and Herzegovina}
+	\begin{abstract}
+		
+	\end{abstract}
+	\maketitle
+	
+	
+\section{Introduction}\label{sec:introduction}
+	
+\subsection{Contributions of this work}
+
+The main contributions of this work can be summarized as follows:
+
+\begin{enumerate}
+	\item The proposed method outperforms all state-of-the-art methods for ground-truth problems from literature, considered in the SRBench benchmark. 
+	
+	\item It shows high robustness, which is proved by testing methods under different levels of Gaussian white noise. 
+	
+	\item The method is very efficient, taking in average around xyz seconds to reach exact solution -- when exact solution is found. 
+	
+	\item The new set of unbiased instances is introduced -- randomly generated formula of various sizes. All the other methods were tested against this new test-bed. The proposed RILS-ROLS method showed to be dominant here as well. 
+\end{enumerate}
+
+
+\section{Problem definition and search space}
+\label{sec:search-space}
+
+\section{Literature review}\label{sec:lit-rev}
+
+
+\section{Proposed iterated local search method}\label{sec:rils}
+   
+
+\section{Experimental evaluation}\label{sec:experiments}
+
+\subsection{Parameter tuning}
+SAMO JEDAN PARAMETAR!!!
+
+\subsection{Comparison with other methods}
+
+\subsection{Statistical evaluation}
+
+\section{Conclusions and future work}\label{sec:conclusions}
+  
+ \newpage
+ \appendix
+ 
+ \section{Complete results for a single random seed}\label{sec:appendix-1}
+ 
+ \section{Overview of RILS-ROLS python package}\label{sec:appendix-2}
+ 
+ \section{Analysis within SRBench}
+ 
+ 
+\newpage
+%\section*{References}
+\bibliographystyle{abbrv}	
+%\bibliography{bib}	
+
+	
+\end{document}
