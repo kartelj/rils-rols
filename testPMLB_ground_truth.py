@@ -27,11 +27,11 @@ noise_level = float(sys.argv[7])
 test_size = 0.25
 label="target"
 
-pmlb_cache = "../../pmlb/datasets"
+pmlb_cache = "../pmlb/datasets"
 excluded_feynman = ["feynman_I_26_2", "feynman_I_30_5", "feynman_test_10"] # this are using arcsin or arcos
 ground_truth_regr_datasets = list(filter(lambda x: (x.startswith("feynman") or x.startswith("strogatz")) and not x in excluded_feynman, listdir(pmlb_cache)))
 
-#ground_truth_regr_datasets = ["strogatz_shearflow2"]
+#ground_truth_regr_datasets = ["strogatz_glider2"]
 
 tmp_dict = {}
 for dataset in ground_truth_regr_datasets:
@@ -59,6 +59,7 @@ for i in range(len(ground_truth_regr_datasets)):
     y = input_data[label].values
 
     assert(X.shape[1] == feature_names.shape[0])
+
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
     y_train = noisefy(y_train, noise_level, seed)

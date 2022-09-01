@@ -1,7 +1,8 @@
+from cmath import inf
 import copy
 import time
 import math
-from random import Random
+from random import Random, shuffle
 from sklearn.base import BaseEstimator
 import copy
 from sympy import *
@@ -38,7 +39,7 @@ class RILSRegressor(BaseEstimator):
         self.allowed_nodes=[NodeConstant(-1), NodeConstant(0), NodeConstant(0.5), NodeConstant(1), NodeConstant(2), NodeConstant(math.pi)]
         for i in range(variableCount):
             self.allowed_nodes.append(NodeVariable(i))
-        self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos(), NodeArcSin(), NodeArcCos()]
+        self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
 
     def fit(self, X, y):
         x_all = copy.deepcopy(X)
@@ -63,7 +64,36 @@ class RILSRegressor(BaseEstimator):
         best_fitness = best_solution.fitness(X, y)
         self.main_it = 0
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
-            new_solution = self.preturb(best_solution, len(X[0]))
+            all_preturbations = self.all_preturbations(best_solution, len(X[0]))
+            #print("-------------------------")
+            #print(best_solution)
+            #print("-------------------------")
+            #for p in all_preturbations:
+            #    print(p)
+            #new_solution = self.preturb(best_solution, len(X[0]))
+            print("There are "+str(len(all_preturbations))+" possible preturbations.")
+
+            tournament_frac = 0.2
+            tournament_members = round(tournament_frac*len(all_preturbations))
+            if tournament_members<1:
+                tournament_members = 1
+            #tournament_members = 1
+            shuffle(all_preturbations)
+
+            best_pret = copy.deepcopy(all_preturbations[0])
+            best_pret_fit = best_pret.fitness(X, y)
+
+            for pret in all_preturbations[:tournament_members]:
+                pret_ols = copy.deepcopy(pret)
+                pret_ols = pret_ols.fit_constants_OLS(X, y)
+                pret_ols_fit = pret_ols.fitness(X, y)
+                #if self.compare_fitness(pret_ols_fit, best_pret_fit)<0:
+                if pret_ols_fit[0]<best_pret_fit[0]:
+                    best_pret_fit = pret_ols_fit
+                    best_pret = copy.deepcopy(pret)
+
+            print("Best preturbation is "+str(best_pret)+ " with R2 "+str(1-best_pret_fit[0]))
+            new_solution = best_pret # all_preturbations[self.rg.randrange(len(all_preturbations))]
             new_solution.simplify_whole(len(X[0]))
             new_fitness = new_solution.fitness(X, y)
             new_solution = self.LS_best(new_solution, X, y)
@@ -141,6 +171,44 @@ class RILSRegressor(BaseEstimator):
                 else:
                     print("WARNING: Preturbation is not performed!")   
         return shaked_solution
+
+    def all_preturbations(self, solution: Solution, varCnt):
+        all = []
+        shaked_solution = copy.deepcopy(solution)
+        shaked_solution.normalize_constants()
+        shaked_solution.simplify_whole(varCnt)
+        shaked_solution.join()
+        for j in range(len(shaked_solution.factors)):
+            all_subtrees = list(filter(lambda x: x.arity, shaked_solution.factors[j].all_nodes_exact()))
+            if len(all_subtrees)==0: # this is the case when we have constant or variable, so we just change the root
+                for cand in self.preturb_candidates(shaked_solution.factors[j]):
+                    preturbed = copy.deepcopy(shaked_solution)
+                    preturbed.factors[j] = cand
+                    all.append(preturbed)
+            else:
+                for i in range(len(all_subtrees)):
+                    refNode = all_subtrees[i]
+                    if refNode==shaked_solution.factors[j]:
+                         for cand in self.preturb_candidates(shaked_solution.factors[j]):
+                            preturbed = copy.deepcopy(shaked_solution)
+                            preturbed.factors[j] = cand
+                            all.append(preturbed)
+                    else:
+                        if refNode.arity >= 1:
+                            for cand in self.preturb_candidates(refNode.left, refNode, True):
+                                preturbed = copy.deepcopy(shaked_solution)
+                                preturbed_subtrees = list(filter(lambda x: x.arity, preturbed.factors[j].all_nodes_exact()))
+                                preturbed_subtrees[i].left = cand
+                                all.append(preturbed)
+                        if refNode.arity>=2:
+                            for cand in self.preturb_candidates(refNode.right, refNode, False):
+                                preturbed = copy.deepcopy(shaked_solution)
+                                preturbed_subtrees = list(filter(lambda x: x.arity, preturbed.factors[j].all_nodes_exact()))
+                                preturbed_subtrees[i].right = cand
+                                all.append(preturbed)
+                        else:
+                            print("WARNING: Preturbation is not performed!")   
+        return all
 
     
     def LS_best(self, solution: Solution, X, y):
@@ -253,6 +321,17 @@ class RILSRegressor(BaseEstimator):
 
     def preturb_candidates(self, old_node: Node, parent=None, is_left_from_parent=None):
         candidates = []
+        # change node to one of its subtrees -- reduces the size of expression
+        if old_node.arity>=1:
+            all_left_subtrees = old_node.left.all_nodes_exact()
+            for ls in all_left_subtrees:
+                candidates.append(copy.deepcopy(ls))
+            #candidates.append(copy.deepcopy(old_node.left))
+        if old_node.arity>=2:
+            all_right_subtrees = old_node.right.all_nodes_exact()
+            for rs in all_right_subtrees:
+                candidates.append(copy.deepcopy(rs))
+            #candidates.append(copy.deepcopy(old_node.right))
         # change variable or constant to another variable
         if old_node.arity==0 and type(old_node)==type(NodeConstant(0)):
             for node in filter(lambda x:type(x)==type(NodeVariable(0)) and x!=old_node, self.allowed_nodes):

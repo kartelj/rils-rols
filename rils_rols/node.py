@@ -123,14 +123,17 @@ class Node:
             return True
         return False
 
-    def normalize_constants(self):
+    def normalize_constants(self, parent=None):
         if type(self)==type(NodeConstant(0)):
-            self.value = 1
+            if parent==None or type(parent) == type(NodeMultiply()) or type(parent)==type(NodePlus()) or type(parent)==type(NodeMinus()) or type(parent)==type(NodeDivide()):
+                self.value = 1
+            elif type(parent)==type(NodePow()) and self.value!=0.5 and self.value!=-0.5:
+                    self.value = round(self.value)
             return
         if self.arity>=1:
-            self.left.normalize_constants()
+            self.left.normalize_constants(self)
         if self.arity>=2:
-            self.right.normalize_constants()
+            self.right.normalize_constants(self)
 
 class NodeConstant(Node):
     def __init__(self, value):
@@ -296,6 +299,8 @@ class NodePow(Node):
 
     def is_allowed_right_argument(self, node_arg):
         if type(node_arg)!=type(NodeConstant(0)):
+            return False
+        if node_arg.value!=0.5 and node_arg.value!=-0.5 and node_arg.value!=round(node_arg.value):
             return False
         return True
 
