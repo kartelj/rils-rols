@@ -418,7 +418,7 @@ class NodeExp(Node):
         return exp(a)
 
     def is_allowed_left_argument(self, node_arg): # avoid complicated expressions
-        if node_arg.contains_type(type(NodeCos())) or node_arg.contains_type(type(NodeSin())) or node_arg.contains_type(type(NodeArcSin())) or node_arg.contains_type(type(NodeArcCos())) or node_arg.contains_type(type(NodeExp())) or node_arg.contains_type(type(NodeLn())):
+        if node_arg.contains_type(type(NodeCos())) or node_arg.contains_type(type(NodeSin())) or node_arg.contains_type(type(NodeArcSin())) or node_arg.contains_type(type(NodeArcCos())) or node_arg.contains_type(type(NodeExp())) or node_arg.contains_type(type(NodeLn())) or node_arg.contains_type(type(NodePow())):
             return False
         return True
 

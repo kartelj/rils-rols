@@ -63,6 +63,7 @@ class RILSRegressor(BaseEstimator):
         best_solution =  Solution([NodeConstant(0)], self.complexity_penalty)
         best_fitness = best_solution.fitness(X, y)
         self.main_it = 0
+        checked_preturbations = set([])
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
             all_preturbations = self.all_preturbations(best_solution, len(X[0]))
             #print("-------------------------")
@@ -71,37 +72,55 @@ class RILSRegressor(BaseEstimator):
             #for p in all_preturbations:
             #    print(p)
             #new_solution = self.preturb(best_solution, len(X[0]))
-            print("There are "+str(len(all_preturbations))+" possible preturbations.")
+            print("There are "+str(len(all_preturbations))+" possible preturbations for "+str(best_solution))
 
-            tournament_frac = 0.2
+            '''tournament_frac = 0.5
             tournament_members = round(tournament_frac*len(all_preturbations))
             if tournament_members<1:
                 tournament_members = 1
             #tournament_members = 1
             shuffle(all_preturbations)
-
+            '''
             best_pret = copy.deepcopy(all_preturbations[0])
             best_pret_fit = best_pret.fitness(X, y)
 
-            for pret in all_preturbations[:tournament_members]:
+            pret_fits = {}
+            for pret in all_preturbations: #[:tournament_members]:
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
                 pret_ols_fit = pret_ols.fitness(X, y)
+                pret_fits[pret]=pret_ols_fit[0]
                 #if self.compare_fitness(pret_ols_fit, best_pret_fit)<0:
                 if pret_ols_fit[0]<best_pret_fit[0]:
                     best_pret_fit = pret_ols_fit
                     best_pret = copy.deepcopy(pret)
 
-            print("Best preturbation is "+str(best_pret)+ " with R2 "+str(1-best_pret_fit[0]))
-            new_solution = best_pret # all_preturbations[self.rg.randrange(len(all_preturbations))]
-            new_solution.simplify_whole(len(X[0]))
-            new_fitness = new_solution.fitness(X, y)
-            new_solution = self.LS_best(new_solution, X, y)
-            new_fitness = new_solution.fitness(X, y, False)
-            if self.compare_fitness(new_fitness, best_fitness)<0:
-                best_solution = copy.deepcopy(new_solution)
-                best_fitness = new_fitness
-            else:
+            sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
+
+            impr = False
+            p = 1
+            for pret, r2Inv in sorted_pret_fits:
+                self.time_elapsed = time.time()-self.start
+                if self.time_elapsed>self.max_seconds:
+                    break
+                if pret in checked_preturbations:
+                    continue
+                checked_preturbations.add(pret)
+                print("Preturbation  "+str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+ " with R2 "+str(1-r2Inv))
+                new_solution = pret # all_preturbations[self.rg.randrange(len(all_preturbations))]
+                new_solution.simplify_whole(len(X[0]))
+                new_fitness = new_solution.fitness(X, y)
+                new_solution = self.LS_best(new_solution, X, y)
+                new_fitness = new_solution.fitness(X, y, False)
+                if self.compare_fitness(new_fitness, best_fitness)<0:
+                    print("Preturbation "+str(pret)+" produced global improvement.")
+                    best_solution = copy.deepcopy(new_solution)
+                    best_fitness = new_fitness
+                    impr = True
+                    break
+                p+=1
+
+            if not impr:
                 if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
                     n*=2
                     if n>len(x_all):
@@ -227,9 +246,9 @@ class RILSRegressor(BaseEstimator):
             old_best_solution = copy.deepcopy(best_solution)
                 
             impr, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True)
-            if not impr:
-                best_solution = copy.deepcopy(old_best_solution)
-                impr2, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True, True)
+            #if not impr:
+            #    best_solution = copy.deepcopy(old_best_solution)
+            #    impr2, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True, True)
             if impr or impr2:
                 best_solution.simplify_whole(len(X[0]))
                 best_fitness = best_solution.fitness(X, y, False)
@@ -320,32 +339,32 @@ class RILSRegressor(BaseEstimator):
 
 
     def preturb_candidates(self, old_node: Node, parent=None, is_left_from_parent=None):
-        candidates = []
+        candidates = set([])
         # change node to one of its subtrees -- reduces the size of expression
         if old_node.arity>=1:
             all_left_subtrees = old_node.left.all_nodes_exact()
             for ls in all_left_subtrees:
-                candidates.append(copy.deepcopy(ls))
+                candidates.add(copy.deepcopy(ls))
             #candidates.append(copy.deepcopy(old_node.left))
         if old_node.arity>=2:
             all_right_subtrees = old_node.right.all_nodes_exact()
             for rs in all_right_subtrees:
-                candidates.append(copy.deepcopy(rs))
+                candidates.add(copy.deepcopy(rs))
             #candidates.append(copy.deepcopy(old_node.right))
         # change variable or constant to another variable
         if old_node.arity==0 and type(old_node)==type(NodeConstant(0)):
             for node in filter(lambda x:type(x)==type(NodeVariable(0)) and x!=old_node, self.allowed_nodes):
                 new_node = copy.deepcopy(node)
-                candidates.append(new_node)
+                candidates.add(new_node)
         # change anything (except constant) to unary operation applied to that -- increases the model size
-        if type(old_node)!=type(NodeConstant(0)):
-            for node in filter(lambda x:x.arity==1, self.allowed_nodes):
-                if not node.is_allowed_left_argument(old_node):
-                    continue
-                new_node = copy.deepcopy(node)
-                new_node.left =copy.deepcopy(old_node)
-                new_node.right = None
-                candidates.append(new_node)
+        #if type(old_node)!=type(NodeConstant(0)):
+        #    for node in filter(lambda x:x.arity==1, self.allowed_nodes):
+        #        if not node.is_allowed_left_argument(old_node):
+        #            continue
+        #        new_node = copy.deepcopy(node)
+        #        new_node.left =copy.deepcopy(old_node)
+        #        new_node.right = None
+        #        candidates.append(new_node)
         # change variable to unary operation applied to that variable
         if type(old_node)==type(NodeVariable(0)):
             for node in filter(lambda x:x.arity==1, self.allowed_nodes):
@@ -354,14 +373,14 @@ class RILSRegressor(BaseEstimator):
                 new_node = copy.deepcopy(node)
                 new_node.left =copy.deepcopy(old_node)
                 new_node.right = None
-                candidates.append(new_node)
+                candidates.add(new_node)
         # change unary operation to another unary operation
         if old_node.arity == 1:
             for node in filter(lambda x:x.arity==1 and type(x).__name__ !=type(old_node).__name__, self.allowed_nodes):
                 new_node = copy.deepcopy(node)
                 new_node.left = copy.deepcopy(old_node.left)
                 assert old_node.right==None
-                candidates.append(new_node)
+                candidates.add(new_node)
         # change one binary operation to another
         if old_node.arity==2:
             for nodeOp in filter(lambda x: x.arity==2 and type(x).__name__ !=type(old_node).__name__, self.allowed_nodes):
@@ -370,13 +389,13 @@ class RILSRegressor(BaseEstimator):
                 new_node = copy.deepcopy(nodeOp)
                 new_node.left = copy.deepcopy(old_node.left)
                 new_node.right = copy.deepcopy(old_node.right)
-                candidates.append(new_node) 
+                candidates.add(new_node) 
             # swap left and right side if not symmetric op
             if not old_node.symmetric:
                 new_node = copy.deepcopy(old_node)
                 new_node.left = copy.deepcopy(old_node.right)
                 new_node.right = copy.deepcopy(old_node.left)
-                candidates.append(new_node)
+                candidates.add(new_node)
         # filtering not allowed candidates (because of the parent)
         filtered_candidates = []
         if parent is not None:
@@ -390,27 +409,27 @@ class RILSRegressor(BaseEstimator):
         return candidates
 
     def change_candidates(self, old_node:Node, parent=None, is_left_from_parent=None):
-        candidates = []
+        candidates = set([])
 
         if type(old_node)==type(NodeConstant(0)):
             # change constant to something multiplied with it
             for mult in [0.01, 0.1, 0.2, 0.5, 0.8, 0.9,1.1,1.2, 2, 5, 10, 20, 50, 100]:
-                candidates.append(NodeConstant(old_node.value*mult))
+                candidates.add(NodeConstant(old_node.value*mult))
 
         if old_node.arity>=1:
             all_left_subtrees = old_node.left.all_nodes_exact()
             for ls in all_left_subtrees:
-                candidates.append(copy.deepcopy(ls))
+                candidates.add(copy.deepcopy(ls))
             #candidates.append(copy.deepcopy(old_node.left))
         if old_node.arity>=2:
             all_right_subtrees = old_node.right.all_nodes_exact()
             for rs in all_right_subtrees:
-                candidates.append(copy.deepcopy(rs))
+                candidates.add(copy.deepcopy(rs))
             #candidates.append(copy.deepcopy(old_node.right))
         
 
         for node in filter(lambda x:x.arity==0 and x!=old_node, self.allowed_nodes):
-            candidates.append(copy.deepcopy(node))
+            candidates.add(copy.deepcopy(node))
 
         # change anything to unary operation applied to that -- increases the model size
         for node in filter(lambda x:x.arity==1, self.allowed_nodes):
@@ -419,14 +438,14 @@ class RILSRegressor(BaseEstimator):
             new_node = copy.deepcopy(node)
             new_node.left =copy.deepcopy(old_node)
             new_node.right = None
-            candidates.append(new_node)
+            candidates.add(new_node)
         # change unary operation to another unary operation
         if old_node.arity == 1:
             for node in filter(lambda x:x.arity==1 and type(x).__name__ !=type(old_node).__name__, self.allowed_nodes):
                 new_node = copy.deepcopy(node)
                 new_node.left = copy.deepcopy(old_node.left)
                 assert old_node.right==None
-                candidates.append(new_node)
+                candidates.add(new_node)
         # change anything to binary operation with some variable or constant -- increases the model size
         # or with some part of itself
         node_args = list(filter(lambda x: x.arity==0, self.allowed_nodes))+[copy.deepcopy(x) for x in old_node.all_nodes_exact()]
@@ -437,12 +456,12 @@ class RILSRegressor(BaseEstimator):
                 new_node = copy.deepcopy(node_op)
                 new_node.left = copy.deepcopy(old_node)
                 new_node.right = copy.deepcopy(node_arg)
-                candidates.append(new_node)
+                candidates.add(new_node)
                 if not node_op.symmetric and node_op.is_allowed_right_argument(old_node) and node_op.is_allowed_left_argument(node_arg):
                     new_node = copy.deepcopy(node_op)
                     new_node.right = copy.deepcopy(old_node)
                     new_node.left = copy.deepcopy(node_arg)
-                    candidates.append(new_node)
+                    candidates.add(new_node)
         # change one binary operation to another
         if old_node.arity==2:
             for node_op in filter(lambda x: x.arity==2 and type(x).__name__ !=type(old_node).__name__, self.allowed_nodes):
@@ -451,13 +470,13 @@ class RILSRegressor(BaseEstimator):
                 new_node = copy.deepcopy(node_op)
                 new_node.left = copy.deepcopy(old_node.left)
                 new_node.right = copy.deepcopy(old_node.right)
-                candidates.append(new_node) 
+                candidates.add(new_node) 
             # swap left and right side if not symmetric op
             if not old_node.symmetric:
                 new_node = copy.deepcopy(old_node)
                 new_node.left = copy.deepcopy(old_node.right)
                 new_node.right = copy.deepcopy(old_node.left)
-                candidates.append(new_node)
+                candidates.add(new_node)
 
         # filtering not allowed candidates (because of the parent)
         filtered_candidates = []
