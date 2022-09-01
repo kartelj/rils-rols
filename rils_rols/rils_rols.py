@@ -15,6 +15,11 @@ warnings.filterwarnings("ignore")
 
 class RILSRegressor(BaseEstimator):
 
+    improvements_by_type = {}
+    tries_by_type = {}
+    improvements_cnt = 0
+    tries_cnt = 0
+
     def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=0.000001,random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
@@ -31,7 +36,7 @@ class RILSRegressor(BaseEstimator):
         self.last_improved_it = 0
         self.time_start = 0
         self.time_elapsed = 0
-        self.rg = Random(self.random_state)
+        #self.rg = Random(self.random_state)
         Solution.clearStats()
         Node.reset_node_value_cache()
 
@@ -51,7 +56,7 @@ class RILSRegressor(BaseEstimator):
         print("Taking "+str(n)+" points initially.")
         X = x_all[:n]
         y = y_all[:n]
-        size_increased_main_it = 0
+        #size_increased_main_it = 0
 
         self.__reset()
         self.start = time.time()
@@ -72,28 +77,14 @@ class RILSRegressor(BaseEstimator):
             #for p in all_preturbations:
             #    print(p)
             #new_solution = self.preturb(best_solution, len(X[0]))
-            print("There are "+str(len(all_preturbations))+" possible preturbations for "+str(best_solution))
 
-            '''tournament_frac = 0.5
-            tournament_members = round(tournament_frac*len(all_preturbations))
-            if tournament_members<1:
-                tournament_members = 1
-            #tournament_members = 1
-            shuffle(all_preturbations)
-            '''
-            best_pret = copy.deepcopy(all_preturbations[0])
-            best_pret_fit = best_pret.fitness(X, y)
-
+            # TODO: statistically check if this is good criterion for ordering preturbations
             pret_fits = {}
             for pret in all_preturbations: #[:tournament_members]:
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
                 pret_ols_fit = pret_ols.fitness(X, y)
                 pret_fits[pret]=pret_ols_fit[0]
-                #if self.compare_fitness(pret_ols_fit, best_pret_fit)<0:
-                if pret_ols_fit[0]<best_pret_fit[0]:
-                    best_pret_fit = pret_ols_fit
-                    best_pret = copy.deepcopy(pret)
 
             sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
 
@@ -121,15 +112,17 @@ class RILSRegressor(BaseEstimator):
                 p+=1
 
             if not impr:
-                if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
+                if n<len(x_all):# and (self.main_it-size_increased_main_it)>=10:
                     n*=2
                     if n>len(x_all):
                         n = len(x_all)
                     print("Increasing data count to "+str(n))
                     X = x_all[:n]
                     y = y_all[:n]
-                    size_increased_main_it = self.main_it
+                    #size_increased_main_it = self.main_it
                     Node.reset_node_value_cache()
+                else:
+                    break # nothing more to do because this is deterministic algorithm
 
             self.time_elapsed = time.time()-self.start
             print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
@@ -263,7 +256,41 @@ class RILSRegressor(BaseEstimator):
                 continue  
         return best_solution
 
-   
+    def log_try(self, location, ref_node, cand):
+        RILSRegressor.tries_cnt+=1
+        if ref_node.size()==cand.size():
+            subtype = "same"
+        elif ref_node.size()<cand.size():
+            subtype = "inc"
+        else:
+            subtype = "dec"
+        change_type = location+"_from_"+subtype+"_"+str(type(ref_node))+"_to_"+str(type(cand))
+        if change_type in RILSRegressor.tries_by_type:
+            RILSRegressor.tries_by_type[change_type]+=1
+        else:
+            RILSRegressor.tries_by_type[change_type]=1
+            RILSRegressor.improvements_by_type[change_type]=0
+        if RILSRegressor.tries_cnt%10000==0:
+            print("Improvements so far "+str(RILSRegressor.improvements_cnt)+" out of "+str(RILSRegressor.tries_cnt)+" tries")
+            print("----------------------------------------------------------------------------")
+            sorted_impr = sorted(RILSRegressor.tries_by_type.items(), key = lambda x: x[1], reverse=True)
+            for item in sorted_impr:
+                print(str(item[1])+ "\t"+str(RILSRegressor.improvements_by_type[item[0]])+"\t"+item[0])
+
+    def log_improvement(self, location, ref_node, cand):
+        RILSRegressor.improvements_cnt+=1
+        if ref_node.size()==cand.size():
+            subtype = "same"
+        elif ref_node.size()<cand.size():
+            subtype = "inc"
+        else:
+            subtype = "dec"
+        change_type = location+"_from_"+subtype+"_"+str(type(ref_node))+"_to_"+str(type(cand))
+        if change_type in RILSRegressor.improvements_by_type:
+            RILSRegressor.improvements_by_type[change_type]+=1
+        else:
+            RILSRegressor.improvements_by_type[change_type]=1
+
     def LS_best_change_iteration(self, solution: Solution, X, y, cache, joined=False):
         best_fitness = solution.fitness(X, y, False)
         best_solution = copy.deepcopy(solution)
@@ -291,10 +318,12 @@ class RILSRegressor(BaseEstimator):
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
                         new_fitness = new_solution.fitness(X, y, cache)
+                        #self.log_try("root", ref_node, cand)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
                             best_solution = copy.deepcopy(new_solution)
+                        #    self.log_improvement("root", ref_node, cand)
                 else:
                     if ref_node.arity >= 1:
                         candidates = self.change_candidates(ref_node.left, ref_node, True)
@@ -306,10 +335,12 @@ class RILSRegressor(BaseEstimator):
                                 new_solution.expand_fast()
                             new_solution = new_solution.fit_constants_OLS(X, y)
                             new_fitness = new_solution.fitness(X, y, cache)
+                            #self.log_try("left", ref_node, cand)
                             if self.compare_fitness(new_fitness, best_fitness)<0:
                                 impr = True
                                 best_fitness = new_fitness
                                 best_solution = copy.deepcopy(new_solution)
+                            #    self.log_improvement("left", ref_node, cand)
 
                     if ref_node.arity>=2:
                         candidates = self.change_candidates(ref_node.right, ref_node, False)
@@ -321,10 +352,12 @@ class RILSRegressor(BaseEstimator):
                                 new_solution.expand_fast()
                             new_solution = new_solution.fit_constants_OLS(X, y)
                             new_fitness = new_solution.fitness(X, y, cache)
+                            #self.log_try("right", ref_node, cand)
                             if self.compare_fitness(new_fitness, best_fitness)<0:
                                 impr = True
                                 best_fitness = new_fitness
                                 best_solution = copy.deepcopy(new_solution)
+                            #    self.log_improvement("right", ref_node, cand)
 
         return (impr, best_solution, best_fitness)
 
