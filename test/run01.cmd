@@ -1,1 +1,1 @@
-python ../rils/testPMLB_ground_truth.py 1 10 %1 %2 %3 %4 %5
+python ../testPMLB_ground_truth.py 1 10 %1 %2 %3 %4 %5
