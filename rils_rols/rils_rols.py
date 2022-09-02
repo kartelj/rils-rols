@@ -102,7 +102,7 @@ class RILSRegressor(BaseEstimator):
                 new_solution.simplify_whole(len(X[0]))
                 new_fitness = new_solution.fitness(X, y)
                 new_solution = self.LS_best(new_solution, X, y)
-                new_fitness = new_solution.fitness(X, y, False)
+                new_fitness = new_solution.fitness(X, y)
                 if self.compare_fitness(new_fitness, best_fitness)<0:
                     print("Preturbation "+str(pret)+" produced global improvement.")
                     best_solution = copy.deepcopy(new_solution)
@@ -134,7 +134,7 @@ class RILSRegressor(BaseEstimator):
     
     def predict(self, X):
         Node.reset_node_value_cache()
-        return self.model.evaluate_all(X, False)
+        return self.model.evaluate_all(X)
 
     def size(self):
         if self.model is not None:
@@ -294,6 +294,7 @@ class RILSRegressor(BaseEstimator):
     def LS_best_change_iteration(self, solution: Solution, X, y, cache, joined=False):
         best_fitness = solution.fitness(X, y, False)
         best_solution = copy.deepcopy(solution)
+        best_sse = pow(best_fitness[1],2)*len(X)
         if joined:
             print("JOINING SOLUTION IN LS")
             solution.join()
@@ -317,11 +318,12 @@ class RILSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = new_solution.fitness(X, y, cache, best_sse)
                         #self.log_try("root", ref_node, cand)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
+                            best_sse =  pow(best_fitness[1],2)*len(X)
                             best_solution = copy.deepcopy(new_solution)
                         #    self.log_improvement("root", ref_node, cand)
                 else:
@@ -334,11 +336,12 @@ class RILSRegressor(BaseEstimator):
                             if joined:
                                 new_solution.expand_fast()
                             new_solution = new_solution.fit_constants_OLS(X, y)
-                            new_fitness = new_solution.fitness(X, y, cache)
+                            new_fitness = new_solution.fitness(X, y, cache, best_sse)
                             #self.log_try("left", ref_node, cand)
                             if self.compare_fitness(new_fitness, best_fitness)<0:
                                 impr = True
                                 best_fitness = new_fitness
+                                best_sse =  pow(best_fitness[1],2)*len(X)
                                 best_solution = copy.deepcopy(new_solution)
                             #    self.log_improvement("left", ref_node, cand)
 
@@ -351,11 +354,12 @@ class RILSRegressor(BaseEstimator):
                             if joined:
                                 new_solution.expand_fast()
                             new_solution = new_solution.fit_constants_OLS(X, y)
-                            new_fitness = new_solution.fitness(X, y, cache)
+                            new_fitness = new_solution.fitness(X, y, cache, best_sse)
                             #self.log_try("right", ref_node, cand)
                             if self.compare_fitness(new_fitness, best_fitness)<0:
                                 impr = True
                                 best_fitness = new_fitness
+                                best_sse =  pow(best_fitness[1],2)*len(X)
                                 best_solution = copy.deepcopy(new_solution)
                             #    self.log_improvement("right", ref_node, cand)
 

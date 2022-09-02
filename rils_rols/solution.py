@@ -30,7 +30,7 @@ class Solution:
     def __str__(self) -> str:
         return "+".join([str(x) for x in self.factors])
 
-    def evaluate_all(self,X, cache):
+    def evaluate_all_old(self,X, cache=False):
         yp = np.zeros(len(X))
         for fact in self.factors:
             fyp = fact.evaluate_all(X, cache)
@@ -38,10 +38,36 @@ class Solution:
                 yp[i]+=fyp[i]
         return yp
 
-    def fitness(self, X, y, cache=True):
+    totCalls = 0
+    totExitIt = 0
+    def evaluate_all(self,X, y=None, currSSE=None):
+        Solution.totCalls+=1
+        if Solution.totCalls%1000==0:
+            # less is better
+            print("Average fitness exploitation "+str(Solution.totExitIt/Solution.totCalls/len(y)))
+        #print("enter")
+        yp = np.zeros(len(X))
+        sse = 0
+        for i in range(len(yp)):
+            for fact in self.factors:
+                yp[i]+= fact.evaluate(X[i])
+            if y is not None and currSSE is not None:
+                diff = (y[i]-yp[i])
+                diff2=diff*diff
+                sse+=diff2
+                if sse>currSSE*1.2: # this is to allow solution change in case size or R2 compensate worse RMSE
+                    #print("Exit on "+str(i))
+                    Solution.totExitIt+=i
+                    return None
+        Solution.totExitIt+=len(yp)
+        return yp
+
+    def fitness(self, X, y, cache=False, currSSE=None):
         try:
             Solution.fit_calls+=1
-            yp = self.evaluate_all(X, cache) 
+            yp = self.evaluate_all(X, y, currSSE) #cache) 
+            if yp is None:
+                return (inf, inf, inf)
             return (1-R2(y, yp), RMSE(y, yp), self.size())
         except Exception as e:
             #print(e)
@@ -64,7 +90,7 @@ class Solution:
         Xnew = np.zeros((len(X), len(new_factors)))
         try:
             for i in range(len(new_factors)):
-                fiX = new_factors[i].evaluate_all(X, True)
+                fiX = new_factors[i].evaluate_all(X, y) #True)
                 for j in range(len(fiX)):
                     if math.isnan(fiX[j]):
                         raise Exception("nan happened")

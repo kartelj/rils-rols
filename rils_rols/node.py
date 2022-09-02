@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import copy
 from math import acos, asin, atan, ceil, cos, exp, floor, log, sin, sqrt, tan
+import time
 
 class Node:
     tmp = -1
@@ -39,8 +40,12 @@ class Node:
         else:
             raise Exception("Arity > 2 is not allowed.")
 
+    total_t = 0
+
     def evaluate_all(self, X, cache):
+        start = time.time()
         key = str(self)
+        cache = False
         Node.cache_tries+=1
         yp = []
         if cache and key in Node.node_value_cache:
@@ -66,6 +71,7 @@ class Node:
                 Node.node_value_cache[key]=yp
                 if len(Node.node_value_cache)==5000:
                     Node.node_value_cache.clear()
+        Node.total_t+=(time.time()-start)
         return yp
 
     def expand_fast(self):
