@@ -99,6 +99,7 @@ class RILSRegressor(BaseEstimator):
                 if self.time_elapsed>self.max_seconds:
                     break
                 if str(pret) in checked_preturbations:
+                    print("SKIPPING PRETURBATION "+str(pret))
                     continue
                 checked_preturbations.add(str(pret))
                 #print("Preturbation  "+str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+ " with R2 "+str(1-r2Inv))
