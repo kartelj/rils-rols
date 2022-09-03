@@ -43,7 +43,8 @@ class Node:
         key = str(self)
         Node.cache_tries+=1
         yp = []
-        if cache and key in Node.node_value_cache:
+        # do not waste time and memory to cache constants
+        if cache and not isinstance(self, NodeConstant) and key in Node.node_value_cache:
             Node.cache_hits+=1
             yp = Node.node_value_cache[key]
         else:
@@ -62,7 +63,7 @@ class Node:
                 for i in range(len(X)):
                     ypi = self.evaluate_inner(X[i],None, None)
                     yp.append(ypi)
-            if cache:
+            if cache and not isinstance(self, NodeConstant):
                 Node.node_value_cache[key]=yp
                 if len(Node.node_value_cache)==5000:
                     Node.node_value_cache.clear()
@@ -123,6 +124,15 @@ class Node:
             return True
         return False
 
+    def contains(self, node):
+        if self==node:
+            return True
+        if self.left!=None and self.left.contains(node):
+            return True
+        if self.right!=None and self.right.contains(node):
+            return True
+        return False
+
     def normalize_constants(self, parent=None):
         if type(self)==type(NodeConstant(0)):
             if parent==None or type(parent) == type(NodeMultiply()) or type(parent)==type(NodePlus()) or type(parent)==type(NodeMinus()) or type(parent)==type(NodeDivide()):
@@ -159,7 +169,7 @@ class NodeVariable(Node):
         return X[self.index]
 
     def __str__(self):
-        return "v"+str(self.index)
+        return "x"+str(self.index)
 
 class NodePlus(Node):
     def __init__(self):

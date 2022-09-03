@@ -223,7 +223,7 @@ class Solution:
                 if str(sympy_node)=="e":
                     return NodeConstant(e)
                 try:
-                    index = int(str(sympy_node).replace("v",""))
+                    index = int(str(sympy_node).replace("x",""))
                     return NodeVariable(index)
                 except Exception as ex:
                     print(sympy_node)

@@ -71,11 +71,11 @@ class RILSRegressor(BaseEstimator):
         checked_preturbations = set([])
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
             all_preturbations = self.all_preturbations(best_solution, len(X[0]))
-            #print("-------------------------")
-            #print(best_solution)
-            #print("-------------------------")
-            #for p in all_preturbations:
-            #    print(p)
+            print("-------------------------")
+            print(best_solution)
+            print("-------------------------")
+            for p in all_preturbations:
+                print(p)
             #new_solution = self.preturb(best_solution, len(X[0]))
 
             # TODO: statistically check if this is good criterion for ordering preturbations
@@ -131,6 +131,8 @@ class RILSRegressor(BaseEstimator):
             if best_fitness[0]<self.error_tolerance and best_fitness[1] < self.error_tolerance:
                 break
         self.model = best_solution
+        self.modelSimp = simplify(str(self.model), ratio=1)
+        self.modelSimp = str(self.modelSimp)
     
     def predict(self, X):
         Node.reset_node_value_cache()
@@ -142,17 +144,16 @@ class RILSRegressor(BaseEstimator):
         return math.inf
 
     def modelString(self):
-        if self.model is not None:
-            # replacing v0, v1, ... with real variable names
-            return str(self.model)
+        if self.modelSimp is not None:
+            return str(self.modelSimp)
         return ""
 
     def fit_report_string(self, X, y):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
-        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], fitness[2], self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model)
+        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}".format(
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], fitness[2], self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.modelSimp)
 
     def preturb(self, solution:Solution,varCnt):
         shaked_solution = copy.deepcopy(solution)
@@ -190,36 +191,38 @@ class RILSRegressor(BaseEstimator):
         shaked_solution.normalize_constants()
         shaked_solution.simplify_whole(varCnt)
         shaked_solution.join()
-        for j in range(len(shaked_solution.factors)):
-            all_subtrees = list(filter(lambda x: x.arity, shaked_solution.factors[j].all_nodes_exact()))
-            if len(all_subtrees)==0: # this is the case when we have constant or variable, so we just change the root
-                for cand in self.preturb_candidates(shaked_solution.factors[j]):
-                    preturbed = copy.deepcopy(shaked_solution)
-                    preturbed.factors[j] = cand
-                    all.append(preturbed)
-            else:
-                for i in range(len(all_subtrees)):
-                    refNode = all_subtrees[i]
-                    if refNode==shaked_solution.factors[j]:
-                         for cand in self.preturb_candidates(shaked_solution.factors[j]):
+        assert len(shaked_solution.factors)==1
+        #for j in range(len(shaked_solution.factors)):
+        j = 0
+        all_subtrees = shaked_solution.factors[0].all_nodes_exact()
+        if len(all_subtrees)==0: # this is the case when we have constant or variable, so we just change the root
+            for cand in self.preturb_candidates(shaked_solution.factors[j]):
+                preturbed = copy.deepcopy(shaked_solution)
+                preturbed.factors[j] = cand
+                all.append(preturbed)
+        else:
+            for i in range(len(all_subtrees)):
+                refNode = all_subtrees[i]
+                if refNode==shaked_solution.factors[j]:
+                    for cand in self.preturb_candidates(shaked_solution.factors[j]):
+                        preturbed = copy.deepcopy(shaked_solution)
+                        preturbed.factors[j] = cand
+                        all.append(preturbed)
+                else:
+                    if refNode.arity >= 1:
+                        for cand in self.preturb_candidates(refNode.left, refNode, True):
                             preturbed = copy.deepcopy(shaked_solution)
-                            preturbed.factors[j] = cand
+                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                            preturbed_subtrees[i].left = cand
+                            all.append(preturbed)
+                    if refNode.arity>=2:
+                        for cand in self.preturb_candidates(refNode.right, refNode, False):
+                            preturbed = copy.deepcopy(shaked_solution)
+                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                            preturbed_subtrees[i].right = cand
                             all.append(preturbed)
                     else:
-                        if refNode.arity >= 1:
-                            for cand in self.preturb_candidates(refNode.left, refNode, True):
-                                preturbed = copy.deepcopy(shaked_solution)
-                                preturbed_subtrees = list(filter(lambda x: x.arity, preturbed.factors[j].all_nodes_exact()))
-                                preturbed_subtrees[i].left = cand
-                                all.append(preturbed)
-                        if refNode.arity>=2:
-                            for cand in self.preturb_candidates(refNode.right, refNode, False):
-                                preturbed = copy.deepcopy(shaked_solution)
-                                preturbed_subtrees = list(filter(lambda x: x.arity, preturbed.factors[j].all_nodes_exact()))
-                                preturbed_subtrees[i].right = cand
-                                all.append(preturbed)
-                        else:
-                            print("WARNING: Preturbation is not performed!")   
+                        print("WARNING: Preturbation is not performed!")   
         return all
 
     
@@ -389,7 +392,7 @@ class RILSRegressor(BaseEstimator):
             for node in filter(lambda x:type(x)==type(NodeVariable(0)) and x!=old_node, self.allowed_nodes):
                 new_node = copy.deepcopy(node)
                 candidates.add(new_node)
-        # change anything (except constant) to unary operation applied to that -- increases the model size
+        # change anything except constant to unary operation applied to that -- increases the model size
         #if type(old_node)!=type(NodeConstant(0)):
         #    for node in filter(lambda x:x.arity==1, self.allowed_nodes):
         #        if not node.is_allowed_left_argument(old_node):
@@ -397,7 +400,7 @@ class RILSRegressor(BaseEstimator):
         #        new_node = copy.deepcopy(node)
         #        new_node.left =copy.deepcopy(old_node)
         #        new_node.right = None
-        #        candidates.append(new_node)
+        #        candidates.add(new_node)
         # change variable to unary operation applied to that variable
         if type(old_node)==type(NodeVariable(0)):
             for node in filter(lambda x:x.arity==1, self.allowed_nodes):
@@ -414,6 +417,15 @@ class RILSRegressor(BaseEstimator):
                 new_node.left = copy.deepcopy(old_node.left)
                 assert old_node.right==None
                 candidates.add(new_node)
+        # change binary operation unary operation applied to first and second argument
+        #if old_node.arity == 2:
+        #    for node in filter(lambda x:x.arity==1, self.allowed_nodes):
+        #        new_node = copy.deepcopy(node)
+        #        new_node.left = copy.deepcopy(old_node.left)
+        #        candidates.add(new_node)
+        #        new_node = copy.deepcopy(node)
+        #        new_node.left = copy.deepcopy(old_node.right)
+        #        candidates.add(new_node)
         # change one binary operation to another
         if old_node.arity==2:
             for nodeOp in filter(lambda x: x.arity==2 and type(x).__name__ !=type(old_node).__name__, self.allowed_nodes):
@@ -429,6 +441,23 @@ class RILSRegressor(BaseEstimator):
                 new_node.left = copy.deepcopy(old_node.right)
                 new_node.right = copy.deepcopy(old_node.left)
                 candidates.add(new_node)
+
+        # change variable or constant to binary operation with some variable  -- increases the model size
+        if old_node.arity==0:
+            node_args = list(filter(lambda x: type(x)==type(NodeVariable(0)), self.allowed_nodes))
+            for node_arg in node_args:
+                for node_op in filter(lambda x: x.arity==2, self.allowed_nodes):
+                    if not node_op.is_allowed_right_argument(node_arg) or not node_op.is_allowed_left_argument(old_node):
+                        continue
+                    new_node = copy.deepcopy(node_op)
+                    new_node.left = copy.deepcopy(old_node)
+                    new_node.right = copy.deepcopy(node_arg)
+                    candidates.add(new_node)
+                    if not node_op.symmetric and node_op.is_allowed_right_argument(old_node) and node_op.is_allowed_left_argument(node_arg):
+                        new_node = copy.deepcopy(node_op)
+                        new_node.right = copy.deepcopy(old_node)
+                        new_node.left = copy.deepcopy(node_arg)
+                        candidates.add(new_node)
         # filtering not allowed candidates (because of the parent)
         filtered_candidates = []
         if parent is not None:

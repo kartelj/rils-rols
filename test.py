@@ -1,14 +1,15 @@
 from datetime import datetime
 from random import Random
-import rils
-import utils
+from rils_rols.rils_rols import RILSRegressor
+from rils_rols import utils
 from os import listdir
 from os.path import isfile, join
 
 
-instances_dir = "toyInstances" 
+instances_dir = "random_12345_data" 
 random_state = 12345
 train_perc = 0.75
+time = 100
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 
@@ -17,6 +18,8 @@ with open(out_path, "w") as f:
     f.write("Tests started\n")
 
 for fpath in instance_files:
+    #if not "random_10_05_01_0010000_05" in fpath:
+    #    continue
     print("Running instance "+fpath)
     with open(instances_dir+"/"+ fpath) as f:
         lines = f.readlines()
@@ -39,10 +42,10 @@ for fpath in instance_files:
                 X_test.append(newX)
                 y_test.append(newY)
 
-    vnl = rils.RILS(random_state = random_state)
+    vnl = RILSRegressor(max_seconds=time, random_state = random_state)
     vnl.fit(X_train, y_train)
     reportString = vnl.fit_report_string(X_train, y_train)
     yp = vnl.predict(X_test)
     print("%s\tRMSE=%.3f\tR2=%.3f"%(vnl, utils.RMSE(y_test, yp), utils.R2(y_test, yp)))
     with open(out_path, "a") as f:
-        f.write(fpath+"\tTestRMSE="+str(round(utils.RMSE(y_test, yp),3))+"\tTestR2="+str(round(utils.R2(y_test, yp),3))+"\t"+reportString+"\n")
+        f.write(fpath+"\tTestRMSE="+str(round(utils.RMSE(y_test, yp),7))+"\tTestR2="+str(round(utils.R2(y_test, yp),7))+"\t"+reportString+"\n")
