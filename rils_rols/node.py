@@ -1,8 +1,6 @@
 from abc import abstractmethod
 import copy
 from math import acos, asin, atan, ceil, cos, exp, floor, log, sin, sqrt, tan
-import time
-from numpy import zeros, full
 
 class Node:
     tmp = -1
@@ -28,24 +26,21 @@ class Node:
     def evaluate_inner(self,X, a=None, b=None):
         pass
 
-
     def evaluate(self, X):
-        if self.arity==0: 
+        if self.arity==0:
             return self.evaluate_inner(X, None, None)
-        if self.arity == 1:
+        elif self.arity == 1:
             leftVal = self.left.evaluate(X)
-            value = self.evaluate_inner(X,leftVal, None)
-            return value
-        if self.arity==2:
+            return self.evaluate_inner(X,leftVal, None)
+        elif self.arity==2:
             leftVal = self.left.evaluate(X)
             rightVal = self.right.evaluate(X)
-            value = self.evaluate_inner(X,leftVal,rightVal)
-            return value
-        raise Exception("Arity > 2 is not allowed.")
+            return self.evaluate_inner(X,leftVal,rightVal)
+        else:
+            raise Exception("Arity > 2 is not allowed.")
 
     def evaluate_all(self, X, cache):
         key = str(self)
-        cache = False
         Node.cache_tries+=1
         yp = []
         if cache and key in Node.node_value_cache:
