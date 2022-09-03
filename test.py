@@ -9,7 +9,7 @@ from os.path import isfile, join
 instances_dir = "random_12345_data" 
 random_state = 12345
 train_perc = 0.75
-time = 100
+time = 200
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 

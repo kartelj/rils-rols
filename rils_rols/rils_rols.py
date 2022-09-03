@@ -36,7 +36,7 @@ class RILSRegressor(BaseEstimator):
         self.last_improved_it = 0
         self.time_start = 0
         self.time_elapsed = 0
-        #self.rg = Random(self.random_state)
+        self.rg = Random(self.random_state)
         Solution.clearStats()
         Node.reset_node_value_cache()
 
@@ -70,13 +70,16 @@ class RILSRegressor(BaseEstimator):
         self.main_it = 0
         checked_preturbations = set([])
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
-            all_preturbations = self.all_preturbations(best_solution, len(X[0]))
+            pret1_solution = self.preturb(best_solution, len(X[0]))
+            print("Preturbed best to "+str(pret1_solution))
+            all_preturbations = self.all_preturbations(pret1_solution, len(X[0]))
+            self.rg.shuffle(all_preturbations) 
             print("-------------------------")
-            print(best_solution)
+            print(pret1_solution)
             print("-------------------------")
             for p in all_preturbations:
                 print(p)
-            #new_solution = self.preturb(best_solution, len(X[0]))
+            new_solution = self.preturb(best_solution, len(X[0]))
 
             # TODO: statistically check if this is good criterion for ordering preturbations
             pret_fits = {}
@@ -86,18 +89,20 @@ class RILSRegressor(BaseEstimator):
                 pret_ols_fit = pret_ols.fitness(X, y)
                 pret_fits[pret]=pret_ols_fit[0]
 
-            sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
+            #sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
 
             impr = False
             p = 1
-            for pret, r2Inv in sorted_pret_fits:
+            #for pret, r2Inv in sorted_pret_fits:
+            for pret in all_preturbations:
                 self.time_elapsed = time.time()-self.start
                 if self.time_elapsed>self.max_seconds:
                     break
-                if pret in checked_preturbations:
+                if str(pret) in checked_preturbations:
                     continue
-                checked_preturbations.add(pret)
-                print("Preturbation  "+str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+ " with R2 "+str(1-r2Inv))
+                checked_preturbations.add(str(pret))
+                #print("Preturbation  "+str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+ " with R2 "+str(1-r2Inv))
+                print(str(p)+"/"+str(len(all_preturbations))+".\t"+str(pret))
                 new_solution = pret # all_preturbations[self.rg.randrange(len(all_preturbations))]
                 new_solution.simplify_whole(len(X[0]))
                 new_fitness = new_solution.fitness(X, y)
@@ -156,34 +161,11 @@ class RILSRegressor(BaseEstimator):
             self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], fitness[2], self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.modelSimp)
 
     def preturb(self, solution:Solution,varCnt):
-        shaked_solution = copy.deepcopy(solution)
-        shaked_solution.normalize_constants()
-        shaked_solution.simplify_whole(varCnt)
-        shaked_solution.join()
-        j = self.rg.randrange(len(shaked_solution.factors))
-        all_subtrees = list(filter(lambda x: x.arity, shaked_solution.factors[j].all_nodes_exact()))
-        if len(all_subtrees)==0: # this is the case when we have constant or variable, so we just change the root
-            shaked_solution.factors[j] = self.random_change(shaked_solution.factors[j])
-        else:
-            i = self.rg.randrange(len(all_subtrees))
-            refNode = all_subtrees[i]
-            # give chance to root of the tree to get selected as well sometimes -- and not only when it is constant or single variable
-            if refNode==shaked_solution.factors[j] and self.rg.random()<=1.0/(1+refNode.arity):
-                shaked_solution.factors[j] = self.random_change(shaked_solution.factors[j])
-            else:
-                if refNode.arity == 1:
-                    newNode = self.random_change(refNode.left, refNode, True)
-                    refNode.left = newNode
-                elif refNode.arity==2:
-                    if self.rg.random()<0.5:
-                        newNode = self.random_change(refNode.left, refNode, True)
-                        refNode.left = newNode
-                    else:
-                        newNode = self.random_change(refNode.right, refNode, False)
-                        refNode.right = newNode
-                else:
-                    print("WARNING: Preturbation is not performed!")   
-        return shaked_solution
+        all_preturbations = self.all_preturbations(solution, varCnt)
+        ri = self.rg.randrange(len(all_preturbations))
+        print(ri)
+        print(len(all_preturbations))
+        return all_preturbations[ri]
 
     def all_preturbations(self, solution: Solution, varCnt):
         all = []
@@ -208,21 +190,18 @@ class RILSRegressor(BaseEstimator):
                         preturbed = copy.deepcopy(shaked_solution)
                         preturbed.factors[j] = cand
                         all.append(preturbed)
-                else:
-                    if refNode.arity >= 1:
-                        for cand in self.preturb_candidates(refNode.left, refNode, True):
-                            preturbed = copy.deepcopy(shaked_solution)
-                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                            preturbed_subtrees[i].left = cand
-                            all.append(preturbed)
-                    if refNode.arity>=2:
-                        for cand in self.preturb_candidates(refNode.right, refNode, False):
-                            preturbed = copy.deepcopy(shaked_solution)
-                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                            preturbed_subtrees[i].right = cand
-                            all.append(preturbed)
-                    else:
-                        print("WARNING: Preturbation is not performed!")   
+                if refNode.arity >= 1:
+                    for cand in self.preturb_candidates(refNode.left, refNode, True):
+                        preturbed = copy.deepcopy(shaked_solution)
+                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                        preturbed_subtrees[i].left = cand
+                        all.append(preturbed)
+                if refNode.arity>=2:
+                    for cand in self.preturb_candidates(refNode.right, refNode, False):
+                        preturbed = copy.deepcopy(shaked_solution)
+                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                        preturbed_subtrees[i].right = cand
+                        all.append(preturbed)
         return all
 
     
@@ -364,15 +343,6 @@ class RILSRegressor(BaseEstimator):
 
         return (impr, best_solution, best_fitness)
 
-    def random_change(self, old_node: Node, parent=None, is_left_from_parent=None):
-        candidates = self.preturb_candidates(old_node, parent, is_left_from_parent)
-        if candidates==[]:
-            print("Random preturbation failed.")
-            return old_node # Preturbation failed
-        i = self.rg.randrange(len(candidates))
-        candidate = candidates[i]
-        return candidate
-
 
     def preturb_candidates(self, old_node: Node, parent=None, is_left_from_parent=None):
         candidates = set([])
@@ -468,6 +438,7 @@ class RILSRegressor(BaseEstimator):
                     continue
                 filtered_candidates.append(c)
             candidates = filtered_candidates
+        candidates = sorted(list(candidates), key = lambda x: str(x))
         return candidates
 
     def change_candidates(self, old_node:Node, parent=None, is_left_from_parent=None):
@@ -549,7 +520,7 @@ class RILSRegressor(BaseEstimator):
                 if not is_left_from_parent and not parent.is_allowed_right_argument(c):
                     continue
                 filtered_candidates.append(c)
-            candidates = filtered_candidates
+        candidates = sorted(list(candidates), key = lambda x: str(x))
         return candidates
 
     def compare_fitness(self, new_fit, old_fit):
