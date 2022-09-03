@@ -2,7 +2,7 @@ import copy
 from math import e, inf
 import math
 
-from .node import NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
+from .node import Node, NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
 from .utils import R2, RMSE
 from sympy import *
 from sympy.core.numbers import ImaginaryUnit
@@ -45,21 +45,20 @@ class Solution:
         if Solution.totCalls%1000==0:
             # less is better
             print("Average fitness exploitation "+str(Solution.totExitIt/Solution.totCalls/len(y)))
-        #print("enter")
         yp = np.zeros(len(X))
         sse = 0
         for i in range(len(yp)):
-            for fact in self.factors:
+            for fi in range(len(self.factors)):
+                fact = self.factors[fi]
                 yp[i]+= fact.evaluate(X[i])
             if y is not None and currSSE is not None:
                 diff = (y[i]-yp[i])
                 diff2=diff*diff
                 sse+=diff2
-                if sse>currSSE*1.2: # this is to allow solution change in case size or R2 compensate worse RMSE
-                    #print("Exit on "+str(i))
-                    Solution.totExitIt+=i
-                    return None
-        Solution.totExitIt+=len(yp)
+                if sse>currSSE*1.1: # this is to allow solution change in case size or R2 compensate worse RMSE
+                    yp = None
+                    break
+        Solution.totExitIt+=i
         return yp
 
     def fitness(self, X, y, cache=False, currSSE=None):

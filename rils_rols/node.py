@@ -2,6 +2,7 @@ from abc import abstractmethod
 import copy
 from math import acos, asin, atan, ceil, cos, exp, floor, log, sin, sqrt, tan
 import time
+from numpy import zeros, full
 
 class Node:
     tmp = -1
@@ -27,23 +28,22 @@ class Node:
     def evaluate_inner(self,X, a=None, b=None):
         pass
 
+
     def evaluate(self, X):
-        if self.arity==0:
+        if self.arity==0: 
             return self.evaluate_inner(X, None, None)
-        elif self.arity == 1:
+        if self.arity == 1:
             leftVal = self.left.evaluate(X)
-            return self.evaluate_inner(X,leftVal, None)
-        elif self.arity==2:
+            value = self.evaluate_inner(X,leftVal, None)
+            return value
+        if self.arity==2:
             leftVal = self.left.evaluate(X)
             rightVal = self.right.evaluate(X)
-            return self.evaluate_inner(X,leftVal,rightVal)
-        else:
-            raise Exception("Arity > 2 is not allowed.")
-
-    total_t = 0
+            value = self.evaluate_inner(X,leftVal,rightVal)
+            return value
+        raise Exception("Arity > 2 is not allowed.")
 
     def evaluate_all(self, X, cache):
-        start = time.time()
         key = str(self)
         cache = False
         Node.cache_tries+=1
@@ -71,7 +71,6 @@ class Node:
                 Node.node_value_cache[key]=yp
                 if len(Node.node_value_cache)==5000:
                     Node.node_value_cache.clear()
-        Node.total_t+=(time.time()-start)
         return yp
 
     def expand_fast(self):
