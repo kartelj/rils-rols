@@ -198,7 +198,7 @@ class RILSRegressor(BaseEstimator):
                         preturbed.factors[j] = cand
                         #preturbed.simplify_whole(varCnt)
                         all.append(preturbed)
-                else: # TODO: when these ifs bellow are not inside this else, preturbations are more complete, but this reduces efficiency a lot, maybe this can be parameter -- deep or not preturbations
+                elif False: # TODO: when these ifs bellow are not inside this else, preturbations are more complete, but this reduces efficiency a lot, maybe this can be parameter -- deep or not preturbations
                     if refNode.arity >= 1:
                         for cand in self.preturb_candidates(refNode.left, refNode, True):
                             preturbed = copy.deepcopy(shaked_solution)
