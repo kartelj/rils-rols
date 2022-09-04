@@ -75,7 +75,7 @@ class RILSRegressor(BaseEstimator):
             #pret1_solution = self.preturb(best_solution, len(X[0]))
             #print("Preturbed best to "+str(pret1_solution))
             all_preturbations = self.all_preturbations(start_solution, len(X[0]))
-            #self.rg.shuffle(all_preturbations) 
+            self.rg.shuffle(all_preturbations) 
             #print("-------------------------")
             #print(best_solution)
             #print("-------------------------")
@@ -95,8 +95,8 @@ class RILSRegressor(BaseEstimator):
 
             impr = False
             p = 1
-            for pret, r2Inv in sorted_pret_fits:
-            #for pret in all_preturbations:
+            #for pret, r2Inv in sorted_pret_fits:
+            for pret in all_preturbations:
                 self.time_elapsed = time.time()-self.start
                 if self.time_elapsed>self.max_seconds:
                     break
@@ -198,7 +198,7 @@ class RILSRegressor(BaseEstimator):
                         preturbed.factors[j] = cand
                         #preturbed.simplify_whole(varCnt)
                         all.append(preturbed)
-                else:
+                else: # TODO: when these ifs bellow are not inside this else, preturbations are more complete, but this reduces efficiency a lot, maybe this can be parameter -- deep or not preturbations
                     if refNode.arity >= 1:
                         for cand in self.preturb_candidates(refNode.left, refNode, True):
                             preturbed = copy.deepcopy(shaked_solution)
