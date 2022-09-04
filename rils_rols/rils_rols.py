@@ -68,18 +68,20 @@ class RILSRegressor(BaseEstimator):
         best_solution =  Solution([NodeConstant(0)], self.complexity_penalty)
         best_fitness = best_solution.fitness(X, y)
         self.main_it = 0
+        size_increased_main_it = 0
         checked_preturbations = set([])
+        start_solution = copy.deepcopy(best_solution)
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
-            pret1_solution = self.preturb(best_solution, len(X[0]))
-            print("Preturbed best to "+str(pret1_solution))
-            all_preturbations = self.all_preturbations(pret1_solution, len(X[0]))
+            #pret1_solution = self.preturb(best_solution, len(X[0]))
+            #print("Preturbed best to "+str(pret1_solution))
+            all_preturbations = self.all_preturbations(start_solution, len(X[0]))
             self.rg.shuffle(all_preturbations) 
-            print("-------------------------")
-            print(pret1_solution)
-            print("-------------------------")
-            for p in all_preturbations:
-                print(p)
-            new_solution = self.preturb(best_solution, len(X[0]))
+            #print("-------------------------")
+            #print(best_solution)
+            #print("-------------------------")
+            #for p in all_preturbations:
+            #    print(p)
+            #new_solution = self.preturb(best_solution, len(X[0]))
 
             # TODO: statistically check if this is good criterion for ordering preturbations
             pret_fits = {}
@@ -110,25 +112,30 @@ class RILSRegressor(BaseEstimator):
                 new_solution = self.LS_best(new_solution, X, y)
                 new_fitness = new_solution.fitness(X, y, False)
                 if self.compare_fitness(new_fitness, best_fitness)<0:
-                    print("Preturbation "+str(pret)+" produced global improvement.")
+                    print("GLOBAL IMPROVEMENT: preturbation "+str(pret))
                     best_solution = copy.deepcopy(new_solution)
                     best_fitness = new_fitness
                     impr = True
                     break
                 p+=1
 
-            if not impr:
-                if n<len(x_all):# and (self.main_it-size_increased_main_it)>=10:
+            if impr:
+                start_solution = copy.deepcopy(best_solution)
+            else:
+                start_solution = self.preturb(best_solution, len(X[0]))
+                if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
                     n*=2
                     if n>len(x_all):
                         n = len(x_all)
                     print("Increasing data count to "+str(n))
+                    checked_preturbations.clear()
+                    size_increased_main_it = self.main_it
                     X = x_all[:n]
                     y = y_all[:n]
                     #size_increased_main_it = self.main_it
                     Node.reset_node_value_cache()
-                else:
-                    break # nothing more to do because this is deterministic algorithm
+                #else:
+                #    break # nothing more to do because this is deterministic algorithm
 
             self.time_elapsed = time.time()-self.start
             print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
@@ -164,8 +171,7 @@ class RILSRegressor(BaseEstimator):
     def preturb(self, solution:Solution,varCnt):
         all_preturbations = self.all_preturbations(solution, varCnt)
         ri = self.rg.randrange(len(all_preturbations))
-        print(ri)
-        print(len(all_preturbations))
+        print("DOING RANDOM PRETURBATION "+str(all_preturbations[ri]))
         return all_preturbations[ri]
 
     def all_preturbations(self, solution: Solution, varCnt):
@@ -238,8 +244,8 @@ class RILSRegressor(BaseEstimator):
                     best_solution = old_best_solution
                     best_fitness = old_best_fitness
                     print("REVERTING back to old best "+str(best_solution))
-                else:
-                    print("IMPROVED with LS-change impr="+str(impr)+" impr2="+str(impr2)+" "+str(1-best_fitness[0])+"  "+str(best_solution))
+                #else:
+                    #print("IMPROVED with LS-change impr="+str(impr)+" impr2="+str(impr2)+" "+str(1-best_fitness[0])+"  "+str(best_solution))
                 continue  
         return best_solution
 
