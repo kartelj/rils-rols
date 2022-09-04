@@ -10,6 +10,7 @@ instances_dir = "random_12345_data"
 random_state = 12345
 train_perc = 0.75
 time = 200
+max_fit = 1000000
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 
@@ -42,7 +43,7 @@ for fpath in instance_files:
                 X_test.append(newX)
                 y_test.append(newY)
 
-    vnl = RILSRegressor(max_seconds=time, random_state = random_state)
+    vnl = RILSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state)
     vnl.fit(X_train, y_train)
     reportString = vnl.fit_report_string(X_train, y_train)
     yp = vnl.predict(X_test)
