@@ -56,7 +56,7 @@ class RILSRegressor(BaseEstimator):
         print("Taking "+str(n)+" points initially.")
         X = x_all[:n]
         y = y_all[:n]
-        #size_increased_main_it = 0
+        size_increased_main_it = 0
 
         self.__reset()
         self.start = time.time()
@@ -69,8 +69,9 @@ class RILSRegressor(BaseEstimator):
         best_fitness = best_solution.fitness(X, y)
         self.main_it = 0
         checked_preturbations = set([])
+        start_solution = copy.deepcopy(best_solution)
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
-            all_preturbations = self.all_preturbations(best_solution, len(X[0]))
+            all_preturbations = self.all_preturbations(start_solution, len(X[0]))
             #self.rg.shuffle(all_preturbations)
             print("-------------------------")
             print(best_solution)
@@ -114,15 +115,19 @@ class RILSRegressor(BaseEstimator):
                     break
                 p+=1
 
+            start_solution = copy.deepcopy(best_solution)
             if not impr:
-                if n<len(x_all):# and (self.main_it-size_increased_main_it)>=10:
+                # introduce randomness now
+                all_preturbations = self.all_preturbations(best_solution, len(X[0]))
+                start_solution = all_preturbations[self.rg.randrange(len(all_preturbations))]
+                if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
                     n*=2
                     if n>len(x_all):
                         n = len(x_all)
                     print("Increasing data count to "+str(n))
                     X = x_all[:n]
                     y = y_all[:n]
-                    #size_increased_main_it = self.main_it
+                    size_increased_main_it = self.main_it
                     Node.reset_node_value_cache()
                 else:
                     break # nothing more to do because this is deterministic algorithm
@@ -202,6 +207,7 @@ class RILSRegressor(BaseEstimator):
             for cand in self.preturb_candidates(shaked_solution.factors[j]):
                 preturbed = copy.deepcopy(shaked_solution)
                 preturbed.factors[j] = cand
+                #preturbed.simplify_whole(varCnt)
                 all.append(preturbed)
         else:
             for i in range(len(all_subtrees)):
@@ -210,6 +216,7 @@ class RILSRegressor(BaseEstimator):
                     for cand in self.preturb_candidates(shaked_solution.factors[j]):
                         preturbed = copy.deepcopy(shaked_solution)
                         preturbed.factors[j] = cand
+                        #preturbed.simplify_whole(varCnt)
                         all.append(preturbed)
                 else:
                     if refNode.arity >= 1:
@@ -217,12 +224,14 @@ class RILSRegressor(BaseEstimator):
                             preturbed = copy.deepcopy(shaked_solution)
                             preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
                             preturbed_subtrees[i].left = cand
+                            #preturbed.simplify_whole(varCnt)
                             all.append(preturbed)
                     if refNode.arity>=2:
                         for cand in self.preturb_candidates(refNode.right, refNode, False):
                             preturbed = copy.deepcopy(shaked_solution)
                             preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
                             preturbed_subtrees[i].right = cand
+                            #preturbed.simplify_whole(varCnt)
                             all.append(preturbed)
                     else:
                         print("WARNING: Preturbation is not performed!")   
