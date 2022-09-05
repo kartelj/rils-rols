@@ -6,7 +6,7 @@ from random import Random, shuffle
 from sklearn.base import BaseEstimator
 import copy
 from sympy import *
-from .node import Node, NodeConstant, NodeVariable, NodePlus, NodeMinus, NodeMultiply, NodeDivide, NodeSqr, NodeSqrt, NodeLn, NodeExp, NodeSin, NodeCos, NodeArcCos, NodeArcSin
+from .node import Node, NodeConstant, NodeVariable, NodePlus, NodeMinus, NodeMultiply, NodeDivide, NodeSqr, NodeSqrt, NodeLn, NodeExp, NodeSin, NodeCos
 
 import warnings
 
@@ -41,7 +41,7 @@ class RILSRegressor(BaseEstimator):
         Node.reset_node_value_cache()
 
     def __setup_nodes(self, variableCount):
-        self.allowed_nodes=[NodeConstant(-1), NodeConstant(0), NodeConstant(0.5), NodeConstant(1), NodeConstant(2), NodeConstant(math.pi)]
+        self.allowed_nodes=[NodeConstant(-1), NodeConstant(0), NodeConstant(0.5), NodeConstant(1), NodeConstant(2), NodeConstant(math.pi), NodeConstant(10)]
         for i in range(variableCount):
             self.allowed_nodes.append(NodeVariable(i))
         self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
@@ -219,23 +219,23 @@ class RILSRegressor(BaseEstimator):
                         preturbed.factors[j] = cand
                         #preturbed.simplify_whole(varCnt)
                         all.append(preturbed)
+                #else:
+                if refNode.arity >= 1:
+                    for cand in self.preturb_candidates(refNode.left, refNode, True):
+                        preturbed = copy.deepcopy(shaked_solution)
+                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                        preturbed_subtrees[i].left = cand
+                        #preturbed.simplify_whole(varCnt)
+                        all.append(preturbed)
+                if refNode.arity>=2:
+                    for cand in self.preturb_candidates(refNode.right, refNode, False):
+                        preturbed = copy.deepcopy(shaked_solution)
+                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                        preturbed_subtrees[i].right = cand
+                        #preturbed.simplify_whole(varCnt)
+                        all.append(preturbed)
                 else:
-                    if refNode.arity >= 1:
-                        for cand in self.preturb_candidates(refNode.left, refNode, True):
-                            preturbed = copy.deepcopy(shaked_solution)
-                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                            preturbed_subtrees[i].left = cand
-                            #preturbed.simplify_whole(varCnt)
-                            all.append(preturbed)
-                    if refNode.arity>=2:
-                        for cand in self.preturb_candidates(refNode.right, refNode, False):
-                            preturbed = copy.deepcopy(shaked_solution)
-                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                            preturbed_subtrees[i].right = cand
-                            #preturbed.simplify_whole(varCnt)
-                            all.append(preturbed)
-                    else:
-                        print("WARNING: Preturbation is not performed!")   
+                    print("WARNING: Preturbation is not performed!")   
         return all
 
     
@@ -340,40 +340,40 @@ class RILSRegressor(BaseEstimator):
                             best_fitness = new_fitness
                             best_solution = copy.deepcopy(new_solution)
                         #    self.log_improvement("root", ref_node, cand)
-                else:
-                    if ref_node.arity >= 1:
-                        candidates = self.change_candidates(ref_node.left, ref_node, True)
-                        for cand in candidates:
-                            new_solution = copy.deepcopy(solution)               
-                            new_factor_subtrees = new_solution.factors[i].all_nodes_exact()
-                            new_factor_subtrees[j].left=cand
-                            if joined:
-                                new_solution.expand_fast()
-                            new_solution = new_solution.fit_constants_OLS(X, y)
-                            new_fitness = new_solution.fitness(X, y, cache)
-                            #self.log_try("left", ref_node, cand)
-                            if self.compare_fitness(new_fitness, best_fitness)<0:
-                                impr = True
-                                best_fitness = new_fitness
-                                best_solution = copy.deepcopy(new_solution)
-                            #    self.log_improvement("left", ref_node, cand)
+                #else:
+                if ref_node.arity >= 1:
+                    candidates = self.change_candidates(ref_node.left, ref_node, True)
+                    for cand in candidates:
+                        new_solution = copy.deepcopy(solution)               
+                        new_factor_subtrees = new_solution.factors[i].all_nodes_exact()
+                        new_factor_subtrees[j].left=cand
+                        if joined:
+                            new_solution.expand_fast()
+                        new_solution = new_solution.fit_constants_OLS(X, y)
+                        new_fitness = new_solution.fitness(X, y, cache)
+                        #self.log_try("left", ref_node, cand)
+                        if self.compare_fitness(new_fitness, best_fitness)<0:
+                            impr = True
+                            best_fitness = new_fitness
+                            best_solution = copy.deepcopy(new_solution)
+                        #    self.log_improvement("left", ref_node, cand)
 
-                    if ref_node.arity>=2:
-                        candidates = self.change_candidates(ref_node.right, ref_node, False)
-                        for cand in candidates:
-                            new_solution = copy.deepcopy(solution)               
-                            new_factor_subtrees = new_solution.factors[i].all_nodes_exact()
-                            new_factor_subtrees[j].right=cand
-                            if joined:
-                                new_solution.expand_fast()
-                            new_solution = new_solution.fit_constants_OLS(X, y)
-                            new_fitness = new_solution.fitness(X, y, cache)
-                            #self.log_try("right", ref_node, cand)
-                            if self.compare_fitness(new_fitness, best_fitness)<0:
-                                impr = True
-                                best_fitness = new_fitness
-                                best_solution = copy.deepcopy(new_solution)
-                            #    self.log_improvement("right", ref_node, cand)
+                if ref_node.arity>=2:
+                    candidates = self.change_candidates(ref_node.right, ref_node, False)
+                    for cand in candidates:
+                        new_solution = copy.deepcopy(solution)               
+                        new_factor_subtrees = new_solution.factors[i].all_nodes_exact()
+                        new_factor_subtrees[j].right=cand
+                        if joined:
+                            new_solution.expand_fast()
+                        new_solution = new_solution.fit_constants_OLS(X, y)
+                        new_fitness = new_solution.fitness(X, y, cache)
+                        #self.log_try("right", ref_node, cand)
+                        if self.compare_fitness(new_fitness, best_fitness)<0:
+                            impr = True
+                            best_fitness = new_fitness
+                            best_solution = copy.deepcopy(new_solution)
+                        #    self.log_improvement("right", ref_node, cand)
 
         return (impr, best_solution, best_fitness)
 
@@ -571,8 +571,16 @@ class RILSRegressor(BaseEstimator):
         if math.isnan(new_fit[0]):
             return 1
         if self.complexity_penalty is not None:
-            new_tot = (1+new_fit[0])*(1+new_fit[2]*self.complexity_penalty) *(1+new_fit[1]) 
-            old_tot = (1+old_fit[0])*(1+old_fit[2]*self.complexity_penalty) *(1+old_fit[1]) 
+            new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1]) 
+            old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[1]) 
+            if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
+                if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it
+                    return -1
+                if old_fit_wo_size_pen==1: # otherwise, old is better
+                    return 1
+
+            new_tot = new_fit_wo_size_pen*(1+new_fit[2]*self.complexity_penalty)
+            old_tot = old_fit_wo_size_pen*(1+old_fit[2]*self.complexity_penalty)
             if new_tot<old_tot-self.error_tolerance:
                 return -1
             if new_tot>old_tot+self.error_tolerance:

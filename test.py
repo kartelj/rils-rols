@@ -9,17 +9,18 @@ from os.path import isfile, join
 instances_dir = "random_12345_data" 
 random_state = 12345
 train_perc = 0.75
-time = 600
+time = 200
 max_fit = 1000000
 
-instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
+#instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
+instance_files = ["random_04_01_0010000_04.data"]
 
 out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 with open(out_path, "w") as f:
     f.write("Tests started\n")
 
 for fpath in instance_files:
-    #if not "random_10_05_01_0010000_05" in fpath:
+    #if not "random_04_01_0010000_04" in fpath:
     #    continue
     print("Running instance "+fpath)
     with open(instances_dir+"/"+ fpath) as f:
@@ -46,7 +47,14 @@ for fpath in instance_files:
     vnl = RILSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state)
     vnl.fit(X_train, y_train)
     reportString = vnl.fit_report_string(X_train, y_train)
-    yp = vnl.predict(X_test)
-    print("%s\tRMSE=%.3f\tR2=%.3f"%(vnl, utils.RMSE(y_test, yp), utils.R2(y_test, yp)))
+    rils_R2 = ""
+    rils_RMSE = ""
+    try:
+        yp = vnl.predict(X_test)
+        rils_R2 = round(utils.R2(y_test, yp),7)
+        rils_RMSE = round(utils.RMSE(y_test, yp),7)
+        print("R2=%.7f\tRMSE=%.7f\texpr=%s"%(rils_R2, rils_RMSE, vnl.model))
+    except:
+        print("ERROR during test.")
     with open(out_path, "a") as f:
-        f.write(fpath+"\tTestRMSE="+str(round(utils.RMSE(y_test, yp),7))+"\tTestR2="+str(round(utils.R2(y_test, yp),7))+"\t"+reportString+"\n")
+        f.write(fpath+"\tTestRMSE="+str(rils_RMSE)+"\tTestR2="+str(rils_R2)+"\t"+reportString+"\n")
