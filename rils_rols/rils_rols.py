@@ -69,8 +69,10 @@ class RILSRegressor(BaseEstimator):
         best_fitness = best_solution.fitness(X, y)
         self.main_it = 0
         checked_preturbations = set([])
+        start_solutions = set([])
         start_solution = copy.deepcopy(best_solution)
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
+            start_solutions.add(str(start_solution))
             all_preturbations = self.all_preturbations(start_solution, len(X[0]))
             #self.rg.shuffle(all_preturbations)
             #print("-------------------------")
@@ -117,9 +119,21 @@ class RILSRegressor(BaseEstimator):
 
             start_solution = copy.deepcopy(best_solution)
             if not impr:
-                # introduce randomness now
+                # introduce randomness now and generate new starting solution that wasn't used before and is relatively close to best_solution
                 all_preturbations = self.all_preturbations(best_solution, len(X[0]))
-                start_solution = all_preturbations[self.rg.randrange(len(all_preturbations))]
+                self.rg.shuffle(all_preturbations)
+                k=0
+                while all_preturbations[k] in start_solutions:
+                    k+=1
+                if k<len(all_preturbations):
+                    start_solution = all_preturbations[k]
+                    assert start_solution not in start_solutions
+                else:
+                    # perform 2-consecutive preturbations -- do not check if this did happen before, it is very small chance for that
+                    preturbation1 = all_preturbations[0]
+                    all2_preturbations = self.all_preturbations(preturbation1, len(X[0]))
+                    start_solution = all2_preturbations[self.rg.randrange(len(all2_preturbations))]
+
                 print("RANDOMIZING "+str(best_solution)+" TO "+str(start_solution))
                 if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
                     n*=2
