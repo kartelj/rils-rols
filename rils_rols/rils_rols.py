@@ -123,11 +123,11 @@ class RILSRegressor(BaseEstimator):
                 all_preturbations = self.all_preturbations(best_solution, len(X[0]))
                 self.rg.shuffle(all_preturbations)
                 k=0
-                while all_preturbations[k] in start_solutions:
+                while str(all_preturbations[k]) in start_solutions:
                     k+=1
                 if k<len(all_preturbations):
                     start_solution = all_preturbations[k]
-                    assert start_solution not in start_solutions
+                    assert str(start_solution) not in start_solutions
                 else:
                     # perform 2-consecutive preturbations -- do not check if this did happen before, it is very small chance for that
                     preturbation1 = all_preturbations[0]
