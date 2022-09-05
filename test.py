@@ -9,11 +9,11 @@ from os.path import isfile, join
 instances_dir = "random_12345_data" 
 random_state = 12345
 train_perc = 0.75
-time = 200
+time = 1200
 max_fit = 1000000
 
-#instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
-instance_files = ["random_04_01_0010000_04.data"]
+instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
+#instance_files = ["random_04_01_0010000_04.data"]
 
 out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 with open(out_path, "w") as f:

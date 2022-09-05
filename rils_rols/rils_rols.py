@@ -219,23 +219,21 @@ class RILSRegressor(BaseEstimator):
                         preturbed.factors[j] = cand
                         #preturbed.simplify_whole(varCnt)
                         all.append(preturbed)
-                #else:
-                if refNode.arity >= 1:
-                    for cand in self.preturb_candidates(refNode.left, refNode, True):
-                        preturbed = copy.deepcopy(shaked_solution)
-                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                        preturbed_subtrees[i].left = cand
-                        #preturbed.simplify_whole(varCnt)
-                        all.append(preturbed)
-                if refNode.arity>=2:
-                    for cand in self.preturb_candidates(refNode.right, refNode, False):
-                        preturbed = copy.deepcopy(shaked_solution)
-                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                        preturbed_subtrees[i].right = cand
-                        #preturbed.simplify_whole(varCnt)
-                        all.append(preturbed)
                 else:
-                    print("WARNING: Preturbation is not performed!")   
+                    if refNode.arity >= 1:
+                        for cand in self.preturb_candidates(refNode.left, refNode, True):
+                            preturbed = copy.deepcopy(shaked_solution)
+                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                            preturbed_subtrees[i].left = cand
+                            #preturbed.simplify_whole(varCnt)
+                            all.append(preturbed)
+                    if refNode.arity>=2:
+                        for cand in self.preturb_candidates(refNode.right, refNode, False):
+                            preturbed = copy.deepcopy(shaked_solution)
+                            preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
+                            preturbed_subtrees[i].right = cand
+                            #preturbed.simplify_whole(varCnt)
+                            all.append(preturbed)
         return all
 
     
