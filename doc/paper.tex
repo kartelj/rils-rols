@@ -119,17 +119,36 @@
 	 There are many different ways to tackle the SR by achieving the right analytic expressions, most of them are related to machine learning techniques or to the technique of genetic programming (GP) and various approximate methods, such as meta-heuristics. Among the first GP methods to tackle SR is the one of Raidl~\cite{raidl1998hybrid} based on a hybrid variant of genetic programming. A differential evolution algorithm was proposed by Cerny et al.~\cite{cerny2008using}. Age-fitness Pareto Optimization approach is proposed by Smidt and Lipson~\cite{schmidt2010age}.  
 	 Application of local--based heuristics on solving SR is discusses by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (ITEA) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. Kommenda et al.~\cite{kommenda2020parameter} proposed a method called OPERON algorithm, which uses nonlinear least squares for parameter
 	 identification of SR models further integrated into a local search mechanism in
-	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The metod that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called called Taylor genetic programming, is proposed in~\cite{he2022taylor}.  Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eureqa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays known as the gold standard for symbolic regression.   
+	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The metod that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (SBP-GP) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eureqa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
 	 
 	 
-	 Machine learning--based methods to solve SR are based on Bayesian symbolic regression (BSR)~\cite{jin2019bayesian} which belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (DSR), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further considered in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.   
+	 Machine learning--based methods to solve SR are based on Bayesian symbolic regression (BSR)~\cite{jin2019bayesian} which belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (DSR), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further considered in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
 	
-	There are also powerful hybrid techniques to solve SR; among them, we emphasize the EPLEX solver from~\cite{la2019probabilistic,mundhenk2021symbolic}... 
+	Powerful hybrid techniques to solve SR are also well studied; among them, we emphasize the EPLEX solver from~\cite{la2019probabilistic,la2016epsilon} and AI Feynman algorithm from~\cite{udrescu2020ai}, a physics-inspired divide-and-conquer method that  combines neural network
+	fitting. The later one is one of the most efficient method for physically inspired models. We also mention the Fast Function Extraction (FFX) algorithm developed by McConaghy~\cite{mcconaghy2011ffx}, which is a non-evolutionary technique in combination with a machine learning technique --- pathwise regularized learning -- which is in charge to quickly prune a huge set of candidate basis functions down to compact models.
 	
-	Short overview of the GP--based methods to solve SR are given in Table~\ref{} \fxnote{TODO}
+	Short overview of the GP--based methods to solve SR are given in Table~\ref{tab:gp-based} \fxnote{TODO}
+	
+	 \begin{table}[!ht]
+		\centering
+		\begin{tabular}{l l l} \\ \hline
+			Algorithm          &   paper/year &   Short details   \\ \hline
+			Eurequa                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
+			APF            &      \cite{schmidt2010age} (2010)        &  Age-fitness pareto optimization approach                        \\
+			EPLEX          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection                \\ 
+		     \fxnote{TODO}  &      & 
+		\end{tabular}
+		\caption{Overview of SR methods.}
+		\label{tab:gp-based}
+	\end{table}
+	
+	
 	
 	
 		Short overview of the machine--learning based method to solve SR are given in Table~\ref{} \fxnote{TODO}
+		
+		
+		\fxnote{TODO: about benchmarking in the literature...}
 \subsection{Contributions of this work}
 
 The main contributions of this work can be summarized as follows:
