@@ -117,9 +117,9 @@
 	 
 	 
 	 There are many different ways to tackle the SR by achieving the right analytic expressions, most of them are related to machine learning techniques or to the technique of genetic programming (GP) and various approximate methods, such as meta-heuristics. Among the first GP methods to tackle SR is the one of Raidl~\cite{raidl1998hybrid} based on a hybrid variant of genetic programming. A differential evolution algorithm was proposed by Cerny et al.~\cite{cerny2008using}. Age-fitness Pareto Optimization approach is proposed by Smidt and Lipson~\cite{schmidt2010age}.  
-	 Application of local--based heuristics on solving SR is discusses by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (ITEA) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. Kommenda et al.~\cite{kommenda2020parameter} proposed a method called OPERON algorithm, which uses nonlinear least squares for parameter
-	 identification of SR models further integrated into a local search mechanism in
-	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The metod that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (SBP-GP) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eureqa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
+	 Application of local--based heuristics on solving SR is discusses by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (ITEA) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. A Variable neighborhood search GP--based approach to solve SR  is proposed by Elleurich et al.~\cite{elleuch2020variable}.  
+	 Kommenda et al.~\cite{kommenda2020parameter} proposed a method called OPERON algorithm, which uses nonlinear least squares for parameter identification of SR models further integrated into a local search mechanism in
+	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The method that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (SBP-GP) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eurequa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
 	 
 	 
 	 Machine learning--based method   based on Bayesian symbolic regression (BSR) is proposed in~\cite{jin2019bayesian},  belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (DSR), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further investigated in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
@@ -129,9 +129,10 @@
 	
 	Short overview of the GP--based methods to solve SR are given in Table~\ref{tab:gp-based} \fxnote{TODO}
 	
-	 \begin{table}[htb]
+	 \begin{table}[!ht]
 		\centering
-		\begin{tabularx}{350pt}{l  l  X}  
+		\scalebox{0.7}{
+		\begin{tabularx}{450pt}{l  l  X}  
 			Algorithm          &   paper/year &   Short details   \\ \hline
 	        Hybrid GP  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
 	        DFE        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
@@ -139,17 +140,25 @@
 			APF            &      \cite{schmidt2010age} (2010)        &  Age-fitness pareto optimization approach                        \\
 			EPLEX          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection                \\ 
 	       Local optimization     & \cite{kommenda2018local}   & Constants Optimization in GP by Nonlinear Least Square \\
-	       \fxnote{TODO}             &      & 
-		\end{tabularx}
+	       GOMEA  & \cite{virgolin2021improving} (2021)    & A model-based
+	       EA framework called Gene-pool optimal mixing evolutionary algorithm \\
+	       ITEA & \cite{de2021interaction} (2021)   & EA based approach called the interaction-transformation EA   \\
+	       SA & \cite{kantor2021simulated} (2021) &  Simulated annealing approach \\
+	       
+	       OPERON & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
+	       Taylor GP &  \cite{he2022taylor} (2022)  &  Taylor polynomials approximations \\
+	       SBP-GP &  \cite{virgolin2019linear} (2019)  & the idea of semantic back-propagation \\
+	       BSR & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
+	       DSR  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
+	       VNP    & \cite{elleuch2020variable} (2020) & VNS based GP approach \\ 
+	       OccamNet & \cite{costa2020fast} (2020) &   A fast neural network approach; the model defines a probability distribution over a non-differentiable function space; it samples functions and updates the weights with back-propagation  based on cross-entropy matching in an EA strategy	 \\
+         DRLA & \cite{mundhenk2021symbolic} (2021)  &    A deep reinforcement learning approach enhanced with genetic programming 
+
+	\end{tabularx} }
 		\caption{Overview of methods to solve SR.}
 		\label{tab:gp-based}
 	\end{table}
-	
-	
-	
-	
-		Short overview of the machine--learning based method to solve SR are given in Table~\ref{} \fxnote{TODO}
-		
+ 
 		
 		\fxnote{TODO: about benchmarking in the literature...}
 \subsection{Contributions of this work}
