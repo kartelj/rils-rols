@@ -1,4 +1,4 @@
-\documentclass[a4paper]{elsarticle}
+\documentclass[a4paper,12pt]{elsarticle}
 % vim: tw=0 wm=0
 
 \setcounter{tocdepth}{3}
@@ -35,7 +35,10 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 %\usepackage{changes}
-  
+\usepackage{tikz}
+\usepackage{fullpage}
+\usepackage{calc}
+\usetikzlibrary{positioning,shadows,arrows,trees,shapes,fit}
 \usepackage{blindtext}
 
 \usepackage{numprint}
@@ -133,7 +136,7 @@
 	 \begin{table}[!ht]
 		\centering
 		\scalebox{0.7}{
-		\begin{tabularx}{450pt}{l  l  X}  
+		\begin{tabularx}{550pt}{l  l  X}  
 			Algorithm          &   Paper/year &   Short details   \\ \hline
 			GP         &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
 	        Hybrid GP  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
@@ -199,7 +202,48 @@ In this section we formally define the SR problem, followed by defining the sear
   
 \end{definition}
 
-Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants. \fxnote{TODO: dati primjer sintaksnog drveta} In essence, syntax trees are part of search space of SR. That is, each sample $\tilde{f}$ is a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). 
+Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants; as an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example} In essence, syntax trees are elements of the search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). \fxnote{TODO: proceed...}
+
+\begin{figure}[!ht]
+	\centering
+\begin{tikzpicture}
+	[font=\small, edge from parent, 
+	every node/.style={top color=white, bottom color=blue!25, 
+		rectangle,rounded corners, minimum size=6mm, draw=blue!75,
+		very thick, drop shadow, align=center},
+	edge from parent/.style={draw=blue!50,thick},
+	level 1/.style={sibling distance=3cm},
+	level 2/.style={sibling distance=1.2cm}, 
+	level 3/.style={sibling distance=1cm}, 
+	level distance=2cm,
+	]
+	\node (A) {$\times$} 
+	child { node (B) {$\sin$}
+		%child { node {x} 
+			%edge from parent node[left=.5em,draw=none] {} }
+		child { node {$x$}}
+	}
+	child {node (C) {$\times$}
+		%child { node {x}
+		%	child { node {C1a}}
+		%}
+		child { node {$x$}}
+		child { node {$/$}
+			child { node {$x$}}
+			child { node {$y$} %edge from parent node[right=.5em,draw=none] {$\frac{a}{b}$}
+			}
+		}
+	};
+%	child { node {+} 
+	%	child { node {2}}
+	%	child { node {$x$}}
+	%};
+	
+\end{tikzpicture}
+
+\caption{Syntax tree representation for the expression $\sin x \times   ( x \times  x / y  )  = \frac{x^2 \sin x }{y}$}
+\label{fig:syntax-tree-example}
+\end{figure}
 
 %\section{Literature review}\label{sec:lit-rev}
 
