@@ -84,7 +84,7 @@
 
 % scaling factor for tables
 \newcommand\tabscale{0.8}
-\newtheorem{Theorem}{Theorem}
+\newtheorem{definition}{Definition}
 \newtheorem{Lemma}{Lemma}
 
 \begin{document}
@@ -101,7 +101,7 @@
 	\address[1]{$kartelj@matf.bg.ac.rs$, \\  Faculty of Mathematics, University of Belgrade, Serbia}
     \address[2]{$ marko.djukanovic@pmf.unibl.org$,\\   Faculty of Natural Sciences and Mathematics, University of Banja Luka, Bosnia and Herzegovina}
 	\begin{abstract}
-		
+		  \fxnote{TODO}
 	\end{abstract}
 	\maketitle
 	
@@ -112,7 +112,7 @@
 	%Application: https://towardsdatascience.com/real-world-applications-of-symbolic-regression-2025d17b88ef
 	
 	
-	 Concrete examples of application of SR include having a less black--box tool, as it may say much more how SR model achieve predictions, that is the coefficients and functions that build the model may indicate on larger importance of some variables over the others. Moreover, in that way we may grasp why the variables are related in the obtained way. As an example, appearance of an exponential function may associate  to  some physical phenomenon such as intensity of radiation or acceleration over time, see~\cite{udrescu2020ai}. Additionally, the SR models, if they are correct, may have    posses  larger extrapolation power than other mathematical models, and especially than neural network--based methods. SR models may maximize obtaining physically more reasonable equations that could serve as insight towards  establishing  physical theory behind as the final goal.  Practical applications of SR in chemical and biological sciences are listed in~\cite{weng2020simple}. In particular,  the discovery of a series of new oxide perovskite catalysts with improved activities is presented there. Applications of SR to discovering physical laws from distorted video is studied in~\cite{udrescu2021symbolic} by means of a unsupervised learning method. Revealing complex ecological dynamics by SR is presented in~\cite{chen2019revealing}, tackled by  a machine learning method. Application of SR to model the mutations effects on protein  stability, in the domain of fundamental and applied biology,  is shown in~\cite{louis2021reviewing}. One of the recent work studies of  auto-discovering conserved quantities using trajectory data from unknown dynamical systems, where SR is solved by a machine learning algorithm, see~\cite{liu2021machine}. Last but not least, we mention the paper~\cite{liang2019phillips} discovers  the application of  SR to model analytic representations of the exciton binding energy. The use of solving the SR in material science is described in~\cite{wang2019symbolic,wang2022symbolic,burlacu2022symbolic,kabliman2021application}. 
+	 Concrete examples of application of SR include having a less black--box tool, as it may say much more how SR model achieve predictions, that is the coefficients and functions that build the model may indicate on larger importance of some variables over the others. Moreover, in that way we may grasp why the variables are related in the obtained way. As an example, appearance of an exponential function may associate  to  some physical phenomenon such as intensity of radiation or acceleration over time, see~\cite{udrescu2020ai}. Additionally, the SR models, if they are correct, may have    posses  larger extrapolation power than other mathematical models, and especially than neural network--based methods. SR models may maximize obtaining physically more reasonable equations that could serve as insight towards  establishing  physical theory behind as the final goal.  Practical applications of SR in chemical and biological sciences are listed in~\cite{weng2020simple}. In particular,  the discovery of a series of new oxide perovskite catalysts with improved activities is presented there. Applications of SR to discovering physical laws from distorted video is studied in~\cite{udrescu2021symbolic} by means of a unsupervised learning method. Revealing complex ecological dynamics by SR is presented in~\cite{chen2019revealing}, tackled by  a machine learning method. Application of SR to model the mutations effects on protein  stability, in the domain of fundamental and applied biology,  is shown in~\cite{louis2021reviewing}. One of the recent work studies of  auto-discovering conserved quantities using trajectory data from unknown dynamical systems, where SR is solved by a machine learning algorithm, see~\cite{liu2021machine}. Last but not least, we mention the paper~\cite{liang2019phillips} discovers  the application of  SR to model analytic representations of the exciton binding energy. The use of solving the SR in material science is described in~\cite{wang2019symbolic,wang2022symbolic,burlacu2022symbolic,kabliman2021application}. Yet another application to wind speed forecasting is given in~\cite{abdellaoui2021symbolic}. 
 	 
 	 
 	 
@@ -190,8 +190,17 @@ The main contributions of this work may be summarized as follows:
 
 \section{Problem definition and search space}
 \label{sec:search-space}
+In this section we formally define the SR problem, followed by defining the search space framework of the problem. 
 
-\section{Literature review}\label{sec:lit-rev}
+\begin{definition}
+  Given is a dataset $D = \{(x_i, y_i)\}_{i=1}^n$, where $\textbf{x} \in \mathbb{R}^d$ represents input variables (features), and $y$ target variable. Suppose that there exists an analytical model of the form $f(\textbf{x})= g^*(\textbf{x}, \theta^*) + \epsilon $ that is a generator of all observations in $D$.  
+   The goal of SR is to learn a mapping $\tilde{f}(\textbf{x})=  \tilde{g}(\textbf{x}, \tilde{\theta})  \colon \mathbb{R}^d \mapsto \mathbb{R}$  estimated by searching through the space of (mathematical) expressions  $\tilde{g}$ and parameters $\tilde{\theta}$ where  $\epsilon$ is the presented  white noise using given input data. 
+  
+\end{definition}
+
+Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants. \fxnote{TODO: dati primjer sintaksnog drveta} In essence, syntax trees are part of search space of SR. That is, each sample $\tilde{f}$ is a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error-based measure (such as $MSE$, or $R^2$). 
+
+%\section{Literature review}\label{sec:lit-rev}
 
 
 \section{Proposed iterated local search method}\label{sec:rils}
