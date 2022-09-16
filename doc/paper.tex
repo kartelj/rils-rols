@@ -143,7 +143,7 @@
              ABCP &  \cite{karaboga2012artificial} (2012)  & Artificial bee colony programming  approach \\
 			EPLEX          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection  \\ 
 	       Local optimization     & \cite{kommenda2018local} (2018)   & Constants Optimization in GP by Nonlinear Least Square \\
-	       SBP-GP &  \cite{virgolin2019linear} (2019)  & the idea of semantic back-propagation \\
+	       SBP-GP &  \cite{virgolin2019linear} (2019)  & The idea of semantic back-propagation utilized in GP \\
 	       BSR & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
 	       DSR  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
 	       OPERON & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
@@ -168,10 +168,14 @@
   
 	The progress in the SR field suffered from a lack of uniform, robust, and transparent
 	benchmarking standards over the last two decade. Recently, La Cava et al.~\cite{la2021contemporary} proposed an
-	open-source, reproducible benchmarking platform for SR, called SRBench. The authors extended  PMLB~\cite{olson2017pmlb},  a repository of standardized regression by 130 SR datasets for which model forms are known, see more in the aforementioned paper.\fxnote{TODO: Describe results of experimental evaluation}
-\subsection{Contributions of this work}
+	open-source, reproducible benchmarking platform for SR, called SRBench. The authors extended  PMLB~\cite{olson2017pmlb},  a repository of standardized regression, by 130 SR datasets for which model forms are known; see more in the aforementioned paper. In the extensive experimental evaluation  where 14
+	symbolic regression methods and 7 machine learning methods are compared on the  set of 252 diverse
+    regression problems. The general conclusions derived from there are: ($i$) when comes to real-world problem, the best performing algorithms are those which combine genetic algorithm with parameter estimation; ($ii$) when come to the instances with the presence of noise, the GP--based and deep learning techniques are performing similarly. 
+    
+    In this work we present yet another GP--based approach to solve SR, which utilizes the popular iterated local search meta-heuristic~\cite{lourencco2003iterated,lourencco2019iterated}; in the remaining text, we label the metod by \textsc{Rils-Rols}.  The main code of the efficient local search is utilization of the ordinary least square method~\cite{leng2007ordinary} that is in charge for an efficient finding suitable coefficients of linearised formulas.  \fxnote{TODO: maybe expand the core of the algorithm... }
+ 
 
-The main contributions of this work can be summarized as follows:
+The main contributions of this work may be summarized as follows:
 
 \begin{enumerate}
 	\item The proposed method outperforms all state-of-the-art methods for ground-truth problems from literature, considered in the SRBench benchmark. 
@@ -180,7 +184,7 @@ The main contributions of this work can be summarized as follows:
 	
 	\item The method is very efficient, taking in average around xyz seconds to reach exact solution -- when exact solution is found. 
 	
-	\item The new set of unbiased instances is introduced -- randomly generated formula of various sizes. All the other methods were tested against this new test-bed. The proposed RILS-ROLS method showed to be dominant here as well. 
+	\item The new set of unbiased instances is introduced -- randomly generated formula of various sizes. All the other methods were tested against this new test-bed. The proposed \textsc{Rils-Rols} method showed to be dominant here as well. 
 \end{enumerate}
 
 
