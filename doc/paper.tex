@@ -135,6 +135,7 @@
 		\scalebox{0.7}{
 		\begin{tabularx}{450pt}{l  l  X}  
 			Algorithm          &   Paper/year &   Short details   \\ \hline
+			GP         &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
 	        Hybrid GP  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
 	        DFE        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
 	        Eurequa                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
@@ -198,13 +199,18 @@ In this section we formally define the SR problem, followed by defining the sear
   
 \end{definition}
 
-Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants. \fxnote{TODO: dati primjer sintaksnog drveta} In essence, syntax trees are part of search space of SR. That is, each sample $\tilde{f}$ is a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error-based measure (such as $MSE$, or $R^2$). 
+Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants. \fxnote{TODO: dati primjer sintaksnog drveta} In essence, syntax trees are part of search space of SR. That is, each sample $\tilde{f}$ is a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). 
 
 %\section{Literature review}\label{sec:lit-rev}
 
 
 \section{Proposed iterated local search method}\label{sec:rils}
    
+   \subsection{Iterated local search framework}
+   
+   \subsection{Ordinary least square method}
+   
+   \subsection{The proposed Rils-Rols}
 
 \section{Experimental evaluation}\label{sec:experiments}
 
