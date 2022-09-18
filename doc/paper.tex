@@ -1,4 +1,4 @@
-\documentclass[a4paper]{elsarticle}
+\documentclass[a4paper,12pt]{elsarticle}
 % vim: tw=0 wm=0
 
 \setcounter{tocdepth}{3}
@@ -24,7 +24,7 @@
 \pagestyle{plain}
 \usepackage{xcolor}
 \newcommand\ToDo[1]{\textcolor{red}{#1}}
- 
+ \usepackage{tabularx}
 \usepackage{xspace}
 \usepackage{color}
 \usepackage{epsfig}
@@ -35,7 +35,10 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 %\usepackage{changes}
-  
+\usepackage{tikz}
+\usepackage{fullpage}
+\usepackage{calc}
+\usetikzlibrary{positioning,shadows,arrows,trees,shapes,fit}
 \usepackage{blindtext}
 
 \usepackage{numprint}
@@ -84,7 +87,7 @@
 
 % scaling factor for tables
 \newcommand\tabscale{0.8}
-\newtheorem{Theorem}{Theorem}
+\newtheorem{definition}{Definition}
 \newtheorem{Lemma}{Lemma}
 
 \begin{document}
@@ -101,16 +104,82 @@
 	\address[1]{$kartelj@matf.bg.ac.rs$, \\  Faculty of Mathematics, University of Belgrade, Serbia}
     \address[2]{$ marko.djukanovic@pmf.unibl.org$,\\   Faculty of Natural Sciences and Mathematics, University of Banja Luka, Bosnia and Herzegovina}
 	\begin{abstract}
-		
+		  \fxnote{TODO}
 	\end{abstract}
 	\maketitle
 	
 	
 \section{Introduction}\label{sec:introduction}
 	
-\subsection{Contributions of this work}
+	The problem of symbolic regression (SR)~\cite{billard2002symbolic} has attracted many researchers over the last decade to study it intensively. SR can be seen as a generalization of the well known  concept of linear regression, i.e., polynomial regression~\cite{stimson1978interpreting}. All regression models in principle have the same task: given a set of a $n$-dimensional input data and the output data, the aim is to find a  mathematical expression (function) consisting of $n$ (input) variables that fits to the output data w.r.t. some in advance known measure.  This computationally intensive task is in general NP--hard~\cite{virgolin2022symbolic}. When aiming a model to be a linear combination of input variables, it represents the problem of linear regression. However, when there are some nonlinear relations between variables, which are relevant, linear regression models are not enough. This is the point where symbolic regression comes into the play. Unlike linear regression, it allows the search over the space of all possible mathematical formulas in order to find the best fitting ones able to  predict the output variable from the input variables. The base of constructing the explicit formula are the basis operations like addition and multiplication, as well as polynomial, trigonometric, exponential, and other elementary functions.  
+	%Application: https://towardsdatascience.com/real-world-applications-of-symbolic-regression-2025d17b88ef
+	
+	
+	 Concrete examples of application of SR include having a less black--box tool, as it may say much more how SR model achieve predictions, that is the coefficients and functions that build the model may indicate on larger importance of some variables over the others. Moreover, in that way we may grasp why the variables are related in the obtained way. As an example, appearance of an exponential function may associate  to  some physical phenomenon such as intensity of radiation or acceleration over time, see~\cite{udrescu2020ai}. Additionally, the SR models, if they are correct, may have    posses  larger extrapolation power than other mathematical models, and especially than neural network--based methods. SR models may maximize obtaining physically more reasonable equations that could serve as insight towards  establishing  physical theory behind as the final goal.  Practical applications of SR in chemical and biological sciences are listed in~\cite{weng2020simple}. In particular,  the discovery of a series of new oxide perovskite catalysts with improved activities is presented there. Applications of SR to discovering physical laws from distorted video is studied in~\cite{udrescu2021symbolic} by means of a unsupervised learning method. Revealing complex ecological dynamics by SR is presented in~\cite{chen2019revealing}, tackled by  a machine learning method. Application of SR to model the mutations effects on protein  stability, in the domain of fundamental and applied biology,  is shown in~\cite{louis2021reviewing}. One of the recent work studies of  auto-discovering conserved quantities using trajectory data from unknown dynamical systems, where SR is solved by a machine learning algorithm, see~\cite{liu2021machine}. Last but not least, we mention the paper~\cite{liang2019phillips} discovers  the application of  SR to model analytic representations of the exciton binding energy. The use of solving the SR in material science is described in~\cite{wang2019symbolic,wang2022symbolic,burlacu2022symbolic,kabliman2021application}. Yet another application to wind speed forecasting is given in~\cite{abdellaoui2021symbolic}. 
+	 
+	 
+	 
+	 There are many different ways to tackle the SR by achieving the right analytic expressions, most of them are related to machine learning techniques or to the technique of genetic programming (GP) and various approximate methods, such as meta-heuristics. Among the first GP methods to tackle SR is the one of Raidl~\cite{raidl1998hybrid} based on a hybrid variant of genetic programming. A differential evolution algorithm was proposed by Cerny et al.~\cite{cerny2008using}. Age-fitness Pareto Optimization approach is proposed by Smidt and Lipson~\cite{schmidt2010age}.  Application of artificial bee colony programming to solve SR is proposed by Karaboga et al.~\cite{karaboga2012artificial}. 
+	 Influence of local--based heuristics on solving SR is reported by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (ITEA) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. A Variable neighborhood programming approach to solve SR  is proposed by Elleurich et al.~\cite{elleuch2020variable}; this technique is initially proposed in~\cite{elleuch2016variable}. 
+	 Kommenda et al.~\cite{kommenda2020parameter} proposed a method called OPERON algorithm, which uses nonlinear least squares for parameter identification of SR models further integrated into a local search mechanism in
+	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The method that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (SBP-GP) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eurequa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
+	 
+	 
+	 Machine learning--based method   based on Bayesian symbolic regression (BSR) is proposed in~\cite{jin2019bayesian},  belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (DSR), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further investigated in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
+	
+	Powerful hybrid techniques to solve SR are also well studied; among them, we emphasize the EPLEX solver from~\cite{la2019probabilistic,la2016epsilon} and AI Feynman algorithm from~\cite{udrescu2020ai}, a physics-inspired divide-and-conquer method that  combines neural network
+	fitting. The later one is one of the most efficient method for physically inspired models. We also mention the Fast Function Extraction (FFX) algorithm developed by McConaghy~\cite{mcconaghy2011ffx},  a non-evolutionary method in combination with a machine learning technique---path-wise regularized learning--- which   quickly prune a huge set of candidate basis functions down to compact models.
+	
+	A short chronological overview of the most important  literature methods to solve SR are given in Table~\ref{tab:gp-based}. 
+	
+	
+	 \begin{table}[!ht]
+		\centering
+		\scalebox{0.7}{
+		\begin{tabularx}{550pt}{l  l  X}  
+			Algorithm          &   Paper/year &   Short details   \\ \hline
+			GP         &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
+	        Hybrid GP  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
+	        DFE        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
+	        Eurequa                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
+        	APF            &      \cite{schmidt2010age} (2010)        &  Age-fitness pareto optimization approach                        \\
+        	FFX  & \cite{mcconaghy2011ffx} (2011)  & The Fast Function Extraction algorithm --  non-evolutionary technique based on a machine learning technique called path-wise regularized learning \\
+             ABCP &  \cite{karaboga2012artificial} (2012)  & Artificial bee colony programming  approach \\
+			EPLEX          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection  \\ 
+	       Local optimization     & \cite{kommenda2018local} (2018)   & Constants Optimization in GP by Nonlinear Least Square \\
+	       SBP-GP &  \cite{virgolin2019linear} (2019)  & The idea of semantic back-propagation utilized in GP \\
+	       BSR & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
+	       DSR  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
+	       OPERON & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
+	       VNP    & \cite{elleuch2020variable} (2020) & VNS based GP approach \\
+	       OccamNet & \cite{costa2020fast} (2020) &   A fast neural network approach; the model defines a probability distribution over a non-differentiable function space; it samples functions and updates the weights with back-propagation  based on cross-entropy matching in an EA strategy	 \\
+	       
+	       AI Feynman  & \cite{udrescu2020ai} (2020) & A physics-inspired divide-and-conquer method; it  combines neural network fitting \\
+	             GOMEA  & \cite{virgolin2021improving} (2021)    & A model-based
+	       EA framework called Gene-pool optimal mixing evolutionary algorithm \\
+	       ITEA & \cite{de2021interaction} (2021)   & EA based approach called the interaction-transformation EA   \\
+	       SA & \cite{kantor2021simulated} (2021) &  Simulated annealing approach \\
+	       
+         DRLA & \cite{mundhenk2021symbolic} (2021)  &    A deep reinforcement learning approach enhanced with genetic programming \\
+            Taylor GP &  \cite{he2022taylor} (2022)  &  Taylor polynomials approximations  \\ \hline
+         
 
-The main contributions of this work can be summarized as follows:
+	\end{tabularx} }
+		\caption{Overview of methods to solve SR.}
+		\label{tab:gp-based}
+	\end{table}
+ 
+  
+	The progress in the SR field suffered from a lack of uniform, robust, and transparent
+	benchmarking standards over the last two decade. Recently, La Cava et al.~\cite{la2021contemporary} proposed an
+	open-source, reproducible benchmarking platform for SR, called SRBench. The authors extended  PMLB~\cite{olson2017pmlb},  a repository of standardized regression, by 130 SR datasets for which model forms are known; see more in the aforementioned paper. In the extensive experimental evaluation  where 14
+	symbolic regression methods and 7 machine learning methods are compared on the  set of 252 diverse
+    regression problems. The general conclusions derived from there are: ($i$) when comes to real-world problem, the best performing algorithms are those which combine genetic algorithm with parameter estimation; ($ii$) when come to the instances with the presence of noise, the GP--based and deep learning techniques are performing similarly. 
+    
+    In this work we present yet another GP--based approach to solve SR, which utilizes the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2019iterated}; in the remaining text, we label the metod by \textsc{Rils-Rols}.  The main code of the efficient local search is utilization of the ordinary least square method (OLS)~\cite{leng2007ordinary} that is in charge for an efficient finding suitable coefficients of linearised formulas.  \fxnote{TODO: maybe expand the core of the algorithm... }
+ 
+
+The main contributions of this work may be summarized as follows:
 
 \begin{enumerate}
 	\item The proposed method outperforms all state-of-the-art methods for ground-truth problems from literature, considered in the SRBench benchmark. 
@@ -119,19 +188,118 @@ The main contributions of this work can be summarized as follows:
 	
 	\item The method is very efficient, taking in average around xyz seconds to reach exact solution -- when exact solution is found. 
 	
-	\item The new set of unbiased instances is introduced -- randomly generated formula of various sizes. All the other methods were tested against this new test-bed. The proposed RILS-ROLS method showed to be dominant here as well. 
+	\item The new set of unbiased instances is introduced -- randomly generated formula of various sizes. All the other methods were tested against this new test-bed. The proposed \textsc{Rils-Rols} method showed to be dominant here as well. 
 \end{enumerate}
 
 
 \section{Problem definition and search space}
 \label{sec:search-space}
+In this section we formally define the SR problem, followed by defining the search space framework of the problem. 
 
-\section{Literature review}\label{sec:lit-rev}
+\begin{definition}
+  Given is a dataset $D = \{(x_i, y_i)\}_{i=1}^n$, where $\textbf{x} \in \mathbb{R}^d$ represents input variables (features), and $y$ target variable. Suppose that there exists an analytical model of the form $f(\textbf{x})= g^*(\textbf{x}, \theta^*) + \epsilon $ that is a generator of all observations from $D$.  
+   The goal of SR is to learn a mapping $\tilde{f}(\textbf{x})=  \tilde{g}(\textbf{x}, \tilde{\theta})  \colon \mathbb{R}^d \mapsto \mathbb{R}$  estimated by searching through the space of (mathematical) expressions  $\tilde{g}$ and parameters $\tilde{\theta}$ where  $\epsilon$ is the presented  white noise using given input data. 
+  
+\end{definition}
+
+Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants; as an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example} In essence, syntax trees are elements of the search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). Interestingly, the search space of SR consists of its discrete and continuous part. More precisely, the model we are seeking for might be obtained as a composition of some functions from a (finite) set of mathematical functions. It is common to use the set of the following elementary mathematical functions in the experiments: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, and $a^x$. It is allowed to link functions will all four operators: $+$, $-$, $\times$, and $/$. After fixing functions that build models, the set of optimal coefficients that  fits to this model must be provided. For the most physical models, these coefficients may receive any real value, that is they are continuous in its nature. 
+
+
+\fxnote{TODO: needs for extension...}
+
+\begin{figure}[!ht]
+	\centering
+\begin{tikzpicture}
+	[font=\small, edge from parent, 
+	every node/.style={top color=white, bottom color=blue!25, 
+		rectangle,rounded corners, minimum size=6mm, draw=blue!75,
+		very thick, drop shadow, align=center},
+	edge from parent/.style={draw=blue!50,thick},
+	level 1/.style={sibling distance=3cm},
+	level 2/.style={sibling distance=1.2cm}, 
+	level 3/.style={sibling distance=1cm}, 
+	level distance=2cm,
+	]
+	\node (A) {$\times$} 
+	child { node (B) {$\sin$}
+		%child { node {x} 
+			%edge from parent node[left=.5em,draw=none] {} }
+		child { node {$x$}}
+	}
+	child {node (C) {$\times$}
+		%child { node {x}
+		%	child { node {C1a}}
+		%}
+		child { node {$x$}}
+		child { node {$/$}
+			child { node {$x$}}
+			child { node {$y$} %edge from parent node[right=.5em,draw=none] {$\frac{a}{b}$}
+			}
+		}
+	};
+%	child { node {+} 
+	%	child { node {2}}
+	%	child { node {$x$}}
+	%};
+	
+\end{tikzpicture}
+
+\caption{Syntax tree representation for the expression $\sin x \times   ( x \times  x / y  )  = \frac{x^2 \sin x }{y}$}
+\label{fig:syntax-tree-example}
+\end{figure}
+
+%\section{Literature review}\label{sec:lit-rev}
 
 
 \section{Proposed iterated local search method}\label{sec:rils}
+   Before we give details on our \textsc{Rils-Rols} method fro solving SR, we explain the basics of the two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods, respectively. 
    
-
+   \subsection{Iterated local search}
+    Iterated local search (ILS)~\cite{lourencco2003iterated} is an efficient meta-heuristics, whose essential idea is given as follow. Iteratively generate a sequence of solutions generated by the (embedded) heuristic, such as local search or  randomized greedy heuristics,  leading
+    towards better solutions than if one uses repeated random trials of that heuristic. This simple idea appeared in the literature by Baxter~\cite{baxter1981local} in early 1980s, and, since then, had been many time re-invented by many researches under different names; some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
+    Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases,  combinations of these~\cite{applegate2003chained}. 
+  
+   In the literate, one of the mostly applied ILS versions in the literature is pseudo-coded in Algorithm~\ref{alg:ils}. Note that we also used the core of this version in our \textsc{Risl-Rols} algorithm. \fxnote{Provjeriti da li je ovo tačno -- popraviti algoritam ako nije sa onim što je korišten...}
+   
+   \begin{algorithm}
+  		\begin{algorithmic}[1] 
+  			 \State \textbf{Input}: a COP problem; a LS procedure  of the problem 
+  	 		\State \textbf{Output}: an approximate (feasible) solution 
+  	 		\State $s \gets$ Generate an initial solution
+  	 		\State  $s \gets LS(s)$
+   	 		\While{\emph{Stopping criteria is not met}}
+   	    		 \State  $s' \gets$ \texttt{Perturbation}($s$)
+   	    		 \State  $s' \gets$ \texttt{LS}($s'$)
+   	    		 \State  $ s \gets$ \texttt{AcceptanceCriterion}($s, s'$)
+   	 		\EndWhile
+   		\end{algorithmic}
+    	\caption{An ILS framework from   literature.}
+    	   	     \label{alg:ils}
+    \end{algorithm}  
+   
+An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by LS procedure. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed, that is mutated in a way the knowledge of the current best solution is (partially) used at the next iterations.  Secondly, the perturbed solution is then improved by LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and possibly replaced as the new one, with accordance to the chosen acceptance criterion. 
+   
+ \subsection{Ordinary least square method}
+   Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_n)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know by the term the sum of squared error (SSE). There are many methods to minimize SSE; one of the analytical methods is the calculus method that takes into account   partial derivation w.r.t.  $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
+   
+   $$  \frac{\partial}{\partial k} \sum_{i} |\tilde{y}_i - y_i|^2 = \frac{\partial}{\partial k} \sum ( kx_i+b  - y_i)^2 =  \sum -2x_i(kx_i + b - y_i)  =  \sum -2x_i (\tilde{y}_i - y_i ) . $$
+   
+   Taking into account   partial derivation w.r.t.  $b$, we have 
+    $$  \frac{\partial}{\partial b} \sum_{i} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum ( kx_i+b  - y_i)^2 = \sum -2  (\tilde{y}_i - y_i). $$
+    
+    Thus, we get the system of equation: 
+    \begin{align*}
+    	  &\sum -2x_i (\tilde{y}_i - y_i )  = 0 \\
+    	  &\sum -2  (\tilde{y}_i - y_i ) = 0.
+    \end{align*}
+     The above system can be transformed to 
+     \begin{align*}
+     	 & \sum y_i \cdot x_i   = b\sum x_i \cdot x_i  +  k \cdot \sum x_i \\
+     	 & \sum y_i  = k \sum x_i + b \cdot n 
+     \end{align*}
+     which is a system of two equations with two variables ($k$ and $b$) that is  solved efficiently.
+   \subsection{The proposed Rils-Rols}
+    \fxnote{TODO}
 \section{Experimental evaluation}\label{sec:experiments}
 
 \subsection{Parameter tuning}
@@ -156,7 +324,7 @@ SAMO JEDAN PARAMETAR!!!
 \newpage
 %\section*{References}
 \bibliographystyle{abbrv}	
-%\bibliography{bib}	
+\bibliography{bib}	
 
 	
 \end{document}
