@@ -1,4 +1,3 @@
-from tabnanny import check
 from pmlb import fetch_data
 from sklearn.model_selection import train_test_split
 from rils_rols.rils_rols import RILSROLSRegressor
@@ -28,7 +27,7 @@ noise_level = float(sys.argv[7])
 test_size = 0.25
 label="target"
 
-pmlb_cache = "../../pmlb/datasets"
+pmlb_cache = "../pmlb/datasets"
 excluded_feynman = ["feynman_I_26_2", "feynman_I_30_5", "feynman_test_10"] # this are using arcsin or arcos
 ground_truth_regr_datasets = list(filter(lambda x: (x.startswith("feynman") or x.startswith("strogatz")) and not x in excluded_feynman, listdir(pmlb_cache)))
 
@@ -67,7 +66,7 @@ for i in range(len(ground_truth_regr_datasets)):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
     y_train = noisefy(y_train, noise_level, seed)
     
-    rils = RILSRegressor(max_fit_calls,max_seconds, random_state = seed, complexity_penalty=complexity_penalty)
+    rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, complexity_penalty=complexity_penalty)
     rils.fit(X_train, y_train)
     report_string = rils.fit_report_string(X_train, y_train)
     rils_R2 = ""

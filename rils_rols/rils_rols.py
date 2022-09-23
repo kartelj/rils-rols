@@ -155,8 +155,22 @@ class RILSROLSRegressor(BaseEstimator):
                 break
         self.model = best_solution
         self.modelSimp = simplify(str(self.model), ratio=1)
+        self.modelSimp = self.round_floats(self.modelSimp)
         self.modelSimp = str(self.modelSimp)
     
+    def round_floats(self, ex1):
+        ex2 = ex1
+        for a in preorder_traversal(ex1):
+            if isinstance(a, Float):
+                if abs(a) < 0.0001:
+                    ex2 = ex2.subs(a,Integer(0))
+                else:
+                    if round(a, 8)==round(a, 0):
+                        ex2 = ex2.subs(a, Integer(round(a)))
+                    else:
+                        ex2 = ex2.subs(a, Float(round(a, 8),8))
+        return ex2
+
     def predict(self, X):
         Node.reset_node_value_cache()
         return self.model.evaluate_all(X, False)
