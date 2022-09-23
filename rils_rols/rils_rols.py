@@ -13,7 +13,7 @@ import warnings
 from .solution import Solution
 warnings.filterwarnings("ignore")
 
-class RILSRegressor(BaseEstimator):
+class RILSROLSRegressor(BaseEstimator):
 
     improvements_by_type = {}
     tries_by_type = {}

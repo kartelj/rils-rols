@@ -1,7 +1,7 @@
 from tabnanny import check
 from pmlb import fetch_data
 from sklearn.model_selection import train_test_split
-from rils_rols.rils_rols import RILSRegressor
+from rils_rols.rils_rols import RILSROLSRegressor
 from rils_rols.node import Node
 from rils_rols.utils import noisefy, R2, RMSE
 from os import listdir, stat
@@ -9,7 +9,7 @@ import sys
 from sklearn.utils.estimator_checks import check_estimator
 import numpy as np
 
-#check_estimator(RILSRegressor())
+#check_estimator(RILSROLSRegressor())
 
 if len(sys.argv)!=8:
     print("Usage: <working part or -1> <parts >=1> <random seed> <max time (s)> <max fit calls> <size penalty> <noise level>")
