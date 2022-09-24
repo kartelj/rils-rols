@@ -123,16 +123,18 @@ class RILSROLSRegressor(BaseEstimator):
                 all_preturbations = self.all_preturbations(best_solution, len(X[0]))
                 self.rg.shuffle(all_preturbations)
                 k=0
-                while str(all_preturbations[k]) in start_solutions:
+                while len(all_preturbations)>0 and str(all_preturbations[k]) in start_solutions:
                     k+=1
                 if k<len(all_preturbations):
                     start_solution = all_preturbations[k]
                     assert str(start_solution) not in start_solutions
                 else:
                     # perform 2-consecutive preturbations -- do not check if this did happen before, it is very small chance for that
-                    preturbation1 = all_preturbations[0]
-                    all2_preturbations = self.all_preturbations(preturbation1, len(X[0]))
-                    start_solution = all2_preturbations[self.rg.randrange(len(all2_preturbations))]
+                    if len(all_preturbations)>0:
+                        preturbation1 = all_preturbations[0]
+                        all2_preturbations = self.all_preturbations(preturbation1, len(X[0]))
+                        if len(all2_preturbations)>0:
+                            start_solution = all2_preturbations[self.rg.randrange(len(all2_preturbations))]
 
                 print("RANDOMIZING "+str(best_solution)+" TO "+str(start_solution))
                 if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:

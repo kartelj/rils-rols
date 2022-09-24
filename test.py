@@ -9,8 +9,8 @@ from os.path import isfile, join
 instances_dir = "random_12345_data" 
 random_state = 23654
 train_perc = 0.75
-time = 1200
-max_fit = 1000000
+time = 300
+max_fit = 100000
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 #instance_files = ["random_04_01_0010000_04.data"]
