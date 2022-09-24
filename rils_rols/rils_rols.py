@@ -156,7 +156,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.model = best_solution
         self.modelSimp = simplify(str(self.model), ratio=1)
         self.modelSimp = self.round_floats(self.modelSimp)
-        self.modelSimp = str(self.modelSimp)
+        #self.modelSimp = str(self.modelSimp)
     
     def round_floats(self, ex1):
         ex2 = ex1
@@ -164,8 +164,8 @@ class RILSROLSRegressor(BaseEstimator):
             if isinstance(a, Float):
                 if round(a, 8)==round(a, 0):
                     ex2 = ex2.subs(a, Integer(round(a)))
-                else:
-                    ex2 = ex2.subs(a, Float(round(a, 8),8))
+                #else:
+                #    ex2 = ex2.subs(a, Float(round(a, 8),8))
         return ex2
 
     def predict(self, X):
@@ -187,7 +187,13 @@ class RILSROLSRegressor(BaseEstimator):
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
         return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], fitness[2], self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.modelSimp)
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.modelSimp)
+
+    def complexity(self):
+        c=0
+        for arg in preorder_traversal(self.modelSimp):
+            c += 1
+        return c
 
     def preturb(self, solution:Solution,varCnt):
         shaked_solution = copy.deepcopy(solution)

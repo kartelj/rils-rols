@@ -27,7 +27,7 @@ noise_level = float(sys.argv[7])
 test_size = 0.25
 label="target"
 
-pmlb_cache = "../pmlb/datasets"
+pmlb_cache = "../../pmlb/datasets"
 excluded_feynman = ["feynman_I_26_2", "feynman_I_30_5", "feynman_test_10"] # this are using arcsin or arcos
 ground_truth_regr_datasets = list(filter(lambda x: (x.startswith("feynman") or x.startswith("strogatz")) and not x in excluded_feynman, listdir(pmlb_cache)))
 

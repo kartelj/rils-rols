@@ -1,13 +1,13 @@
 from datetime import datetime
 from random import Random
-from rils_rols.rils_rols import RILSRegressor
+from rils_rols.rils_rols import RILSROLSRegressor
 from rils_rols import utils
 from os import listdir
 from os.path import isfile, join
 
 
 instances_dir = "random_12345_data" 
-random_state = 12345
+random_state = 23654
 train_perc = 0.75
 time = 1200
 max_fit = 1000000
@@ -44,7 +44,7 @@ for fpath in instance_files:
                 X_test.append(newX)
                 y_test.append(newY)
 
-    vnl = RILSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state)
+    vnl = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state)
     vnl.fit(X_train, y_train)
     reportString = vnl.fit_report_string(X_train, y_train)
     rils_R2 = ""
