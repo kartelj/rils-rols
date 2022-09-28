@@ -113,7 +113,7 @@ class Solution:
             else:
                 factors = list(expr_exp.args)
             for factor in factors:
-                myFactor = self.convert_to_my_nodes(factor)
+                myFactor = Solution.convert_to_my_nodes(factor)
                 my_factors.append(myFactor)
         except Exception as ex:
             #print("Expand to factors error: "+str(ex))
@@ -147,7 +147,7 @@ class Solution:
         expression_str = str(expression)
         expression_simpy = sympify(expression_str).evalf()
         try:
-            new_expression = self.convert_to_my_nodes(expression_simpy)
+            new_expression = Solution.convert_to_my_nodes(expression_simpy)
             new_factors = self.expand_to_factors(new_expression)
             if new_factors is not None:
                 self.factors = new_factors
@@ -168,7 +168,7 @@ class Solution:
             expr_str_before = str(fact)
             expr_simpl = sympify(expr_str_before).evalf()
             try:
-                newFact = self.convert_to_my_nodes(expr_simpl)
+                newFact = Solution.convert_to_my_nodes(expr_simpl)
                 if type(newFact)==type(NodeConstant(0)) and newFact.value==0:
                     continue
                 new_factors.append(newFact)
@@ -195,7 +195,7 @@ class Solution:
             try:
                 my_expanded_fact = []
                 for f in expanded_fact:
-                    new_factor = self.convert_to_my_nodes(f)
+                    new_factor = Solution.convert_to_my_nodes(f)
                     my_expanded_fact.append(new_factor)  
                 # when all converted correctly, than add them to the final list
                 for f in my_expanded_fact:
@@ -211,12 +211,13 @@ class Solution:
                 return True
         return False
 
-    def convert_to_my_nodes(self,sympy_node):
+    @staticmethod
+    def convert_to_my_nodes(sympy_node):
         if type(sympy_node)==ImaginaryUnit:
             raise Exception("Not working with imaginary (complex) numbers.")
         sub_nodes = []
         for i in range(len(sympy_node.args)):
-            sub_nodes.append(self.convert_to_my_nodes(sympy_node.args[i]))
+            sub_nodes.append(Solution.convert_to_my_nodes(sympy_node.args[i]))
 
         if len(sympy_node.args)==0:
             if type(sympy_node)==Symbol:
@@ -229,7 +230,7 @@ class Solution:
                     print(sympy_node)
                     print(ex)
             else:
-                return NodeConstant(float(sympy_node))
+                return NodeConstant(float(str(sympy_node)))
 
         if len(sympy_node.args)==1:
             if type(sympy_node)==exp:
@@ -257,7 +258,7 @@ class Solution:
             elif type(sympy_node)==ceiling:
                 new = NodeCeil()
             elif type(sympy_node)==re:
-                new = self.convert_to_my_nodes(sympy_node.args[0])
+                new = Solution.convert_to_my_nodes(sympy_node.args[0])
             elif type(sympy_node)==im:
                 return NodeConstant(0) # not doing with imaginary numbers
             else:

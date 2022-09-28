@@ -20,7 +20,7 @@ class RILSROLSRegressor(BaseEstimator):
     improvements_cnt = 0
     tries_cnt = 0
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=0.000001,random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=0.00000001,random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
@@ -123,7 +123,7 @@ class RILSROLSRegressor(BaseEstimator):
                 all_preturbations = self.all_preturbations(best_solution, len(X[0]))
                 self.rg.shuffle(all_preturbations)
                 k=0
-                while len(all_preturbations)>0 and str(all_preturbations[k]) in start_solutions:
+                while k<len(all_preturbations) and str(all_preturbations[k]) in start_solutions:
                     k+=1
                 if k<len(all_preturbations):
                     start_solution = all_preturbations[k]
@@ -153,21 +153,22 @@ class RILSROLSRegressor(BaseEstimator):
             print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
             %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(), len(best_solution.factors), Solution.math_error_count, Solution.fit_calls, Solution.fit_fails, Node.cache_hits, Node.cache_tries, Node.cache_hits*100.0/Node.cache_tries, len(Node.node_value_cache), best_solution))
             self.main_it+=1
-            if best_fitness[0]<self.error_tolerance and best_fitness[1] < self.error_tolerance:
+            if best_fitness[0]<self.error_tolerance and best_fitness[1] < pow(self.error_tolerance, 0.125):
                 break
-        self.model = best_solution
-        self.modelSimp = simplify(str(self.model), ratio=1)
-        self.modelSimp = self.round_floats(self.modelSimp)
-        #self.modelSimp = str(self.modelSimp)
+        self.model_simp = simplify(str(best_solution), ratio=1)
+        self.model_simp = self.round_floats(self.model_simp)
+        self.model = Solution([Solution.convert_to_my_nodes(self.model_simp)], self.complexity_penalty)
     
     def round_floats(self, ex1):
+        round_digits = int(math.log10(1/self.error_tolerance))
+        print("Round to "+str(round_digits)+" digits.")
         ex2 = ex1
         for a in preorder_traversal(ex1):
             if isinstance(a, Float):
-                if round(a, 8)==round(a, 0):
+                if round(a, round_digits)==round(a, 0):
                     ex2 = ex2.subs(a, Integer(round(a)))
-                #else:
-                #    ex2 = ex2.subs(a, Float(round(a, 8),8))
+                else:
+                    ex2 = ex2.subs(a, Float(round(a, round_digits)))
         return ex2
 
     def predict(self, X):
@@ -180,20 +181,20 @@ class RILSROLSRegressor(BaseEstimator):
         return math.inf
 
     def modelString(self):
-        if self.modelSimp is not None:
-            return str(self.modelSimp)
+        if self.model_simp is not None:
+            return str(self.model_simp)
         return ""
 
     def fit_report_string(self, X, y):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
-        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.modelSimp)
+        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}".format(
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance)
 
     def complexity(self):
         c=0
-        for arg in preorder_traversal(self.modelSimp):
+        for arg in preorder_traversal(self.model_simp):
             c += 1
         return c
 
@@ -302,41 +303,6 @@ class RILSROLSRegressor(BaseEstimator):
                 #    print("IMPROVED with LS-change impr="+str(impr)+" impr2="+str(impr2)+" "+str(1-best_fitness[0])+"  "+str(best_solution))
                 continue  
         return best_solution
-
-    def log_try(self, location, ref_node, cand):
-        RILSRegressor.tries_cnt+=1
-        if ref_node.size()==cand.size():
-            subtype = "same"
-        elif ref_node.size()<cand.size():
-            subtype = "inc"
-        else:
-            subtype = "dec"
-        change_type = location+"_from_"+subtype+"_"+str(type(ref_node))+"_to_"+str(type(cand))
-        if change_type in RILSRegressor.tries_by_type:
-            RILSRegressor.tries_by_type[change_type]+=1
-        else:
-            RILSRegressor.tries_by_type[change_type]=1
-            RILSRegressor.improvements_by_type[change_type]=0
-        if RILSRegressor.tries_cnt%10000==0:
-            print("Improvements so far "+str(RILSRegressor.improvements_cnt)+" out of "+str(RILSRegressor.tries_cnt)+" tries")
-            print("----------------------------------------------------------------------------")
-            sorted_impr = sorted(RILSRegressor.tries_by_type.items(), key = lambda x: x[1], reverse=True)
-            for item in sorted_impr:
-                print(str(item[1])+ "\t"+str(RILSRegressor.improvements_by_type[item[0]])+"\t"+item[0])
-
-    def log_improvement(self, location, ref_node, cand):
-        RILSRegressor.improvements_cnt+=1
-        if ref_node.size()==cand.size():
-            subtype = "same"
-        elif ref_node.size()<cand.size():
-            subtype = "inc"
-        else:
-            subtype = "dec"
-        change_type = location+"_from_"+subtype+"_"+str(type(ref_node))+"_to_"+str(type(cand))
-        if change_type in RILSRegressor.improvements_by_type:
-            RILSRegressor.improvements_by_type[change_type]+=1
-        else:
-            RILSRegressor.improvements_by_type[change_type]=1
 
     def LS_best_change_iteration(self, solution: Solution, X, y, cache, joined=False):
         best_fitness = solution.fitness(X, y, False)

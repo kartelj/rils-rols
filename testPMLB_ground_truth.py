@@ -66,17 +66,20 @@ for i in range(len(ground_truth_regr_datasets)):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
     y_train = noisefy(y_train, noise_level, seed)
     
-    rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, complexity_penalty=complexity_penalty)
+    if noise_level==0:
+        rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, complexity_penalty=complexity_penalty)
+    else:
+        rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, complexity_penalty=complexity_penalty, error_tolerance=noise_level)
     rils.fit(X_train, y_train)
     report_string = rils.fit_report_string(X_train, y_train)
     rils_R2 = ""
     rils_RMSE = ""
     try:
         yp = rils.predict(X_test)
-        rils_R2 = round(R2(y_test, yp),7)
-        rils_RMSE = round(RMSE(y_test, yp),7)
-        print("%s\tR2=%.7f\tRMSE=%.7f\texpr=%s"%(dataset, rils_R2, rils_RMSE, rils.model))
+        rils_R2 = R2(y_test, yp)
+        rils_RMSE = RMSE(y_test, yp)
+        print("%s\tR2=%.8f\tRMSE=%.8f\texpr=%s"%(dataset, rils_R2, rils_RMSE, rils.model))
     except:
         print("ERROR during test.")
     with open(out_path, "a") as f:
-        f.write(dataset+"\t"+report_string+"\tTestR2="+str(rils_R2)+"\tTestRMSE="+str(rils_RMSE)+"\n")
+        f.write("{0}\t{1}\tTestR2={2:.8f}\tTestRMSE={3:.8f}\n".format(dataset, report_string, rils_R2, rils_RMSE))
