@@ -11,6 +11,7 @@ random_state = 23654
 train_perc = 0.75
 time = 300
 max_fit = 100000
+noise_level = 0.01
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 #instance_files = ["random_04_01_0010000_04.data"]
@@ -44,17 +45,22 @@ for fpath in instance_files:
                 X_test.append(newX)
                 y_test.append(newY)
 
-    vnl = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state)
-    vnl.fit(X_train, y_train)
-    reportString = vnl.fit_report_string(X_train, y_train)
-    rils_R2 = ""
-    rils_RMSE = ""
+        y_train = utils.noisefy(y_train, noise_level, random_state)
+
+    if noise_level == 0:
+        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state)
+    else:
+        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, error_tolerance=noise_level)
+    rils.fit(X_train, y_train)
+    report_string = rils.fit_report_string(X_train, y_train)
+    rils_R2 = -1
+    rils_RMSE = -1
     try:
-        yp = vnl.predict(X_test)
-        rils_R2 = round(utils.R2(y_test, yp),7)
-        rils_RMSE = round(utils.RMSE(y_test, yp),7)
-        print("R2=%.7f\tRMSE=%.7f\texpr=%s"%(rils_R2, rils_RMSE, vnl.model))
+        yp = rils.predict(X_test)
+        rils_R2 = utils.R2(y_test, yp)
+        rils_RMSE = utils.RMSE(y_test, yp)
+        print("R2=%.8f\tRMSE=%.8f\texpr=%s"%(rils_R2, rils_RMSE, rils.model))
     except:
         print("ERROR during test.")
     with open(out_path, "a") as f:
-        f.write(fpath+"\tTestRMSE="+str(rils_RMSE)+"\tTestR2="+str(rils_R2)+"\t"+reportString+"\n")
+        f.write("{0}\t{1}\tTestR2={2:.8f}\tTestRMSE={3:.8f}\n".format(fpath, report_string, rils_R2, rils_RMSE))

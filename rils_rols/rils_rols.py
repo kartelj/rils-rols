@@ -20,7 +20,7 @@ class RILSROLSRegressor(BaseEstimator):
     improvements_cnt = 0
     tries_cnt = 0
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=0.00000001,random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16,random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
@@ -153,7 +153,7 @@ class RILSROLSRegressor(BaseEstimator):
             print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
             %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(), len(best_solution.factors), Solution.math_error_count, Solution.fit_calls, Solution.fit_fails, Node.cache_hits, Node.cache_tries, Node.cache_hits*100.0/Node.cache_tries, len(Node.node_value_cache), best_solution))
             self.main_it+=1
-            if best_fitness[0]<self.error_tolerance and best_fitness[1] < pow(self.error_tolerance, 0.125):
+            if best_fitness[0]<=self.error_tolerance and best_fitness[1] <= pow(self.error_tolerance, 0.125):
                 break
         self.model_simp = simplify(str(best_solution), ratio=1)
         self.model_simp = self.round_floats(self.model_simp)
@@ -161,6 +161,10 @@ class RILSROLSRegressor(BaseEstimator):
     
     def round_floats(self, ex1):
         round_digits = int(math.log10(1/self.error_tolerance))
+        if round_digits>8:
+            round_digits = 8
+        #if round_digits<4:
+        #    round_digits = 4
         print("Round to "+str(round_digits)+" digits.")
         ex2 = ex1
         for a in preorder_traversal(ex1):
@@ -578,9 +582,9 @@ class RILSROLSRegressor(BaseEstimator):
 
             new_tot = new_fit_wo_size_pen*(1+new_fit[2]*self.complexity_penalty)
             old_tot = old_fit_wo_size_pen*(1+old_fit[2]*self.complexity_penalty)
-            if new_tot<old_tot-self.error_tolerance:
+            if new_tot<old_tot-0.00000001:
                 return -1
-            if new_tot>old_tot+self.error_tolerance:
+            if new_tot>old_tot+0.00000001:
                 return 1
             return 0
         else:
