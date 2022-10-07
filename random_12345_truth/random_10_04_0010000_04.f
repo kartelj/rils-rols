@@ -1,0 +1,1 @@
+log(cos(x0*x2)*cos(x1*x3))

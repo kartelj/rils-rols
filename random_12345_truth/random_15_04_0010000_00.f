@@ -1,0 +1,1 @@
+cos(x2*x3/cos(x0) + exp(sin(x1))*log(4))

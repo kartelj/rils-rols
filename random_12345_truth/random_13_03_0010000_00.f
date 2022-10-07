@@ -1,0 +1,1 @@
+-x2 + sin(x0) + sqrt(cos(x1)) - 10 + log(10)

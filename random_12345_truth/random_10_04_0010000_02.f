@@ -1,0 +1,1 @@
+sin(x0 - x3 + log(x1) + sin(x2))

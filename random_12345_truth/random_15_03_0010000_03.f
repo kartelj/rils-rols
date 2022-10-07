@@ -1,0 +1,1 @@
+exp(sqrt(x2)*cos(100))/cos(x1 + log(x0))

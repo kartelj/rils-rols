@@ -1,0 +1,1 @@
+cos(x3*sin(x1)*cos(x0 + x2**2))

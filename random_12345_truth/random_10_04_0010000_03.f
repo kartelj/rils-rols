@@ -1,0 +1,1 @@
+sin(x1*x2)*cos(x0 + log(x3))

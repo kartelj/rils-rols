@@ -1,0 +1,1 @@
+log(sqrt(x0) + 10) + sin(x1) + exp(-1)

@@ -1,0 +1,1 @@
+log(-x1 + exp(cos(x0)))

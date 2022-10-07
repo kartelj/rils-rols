@@ -1,0 +1,1 @@
+sin((x1 + log(x0))*log(x2*x3))

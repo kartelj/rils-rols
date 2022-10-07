@@ -1,0 +1,1 @@
+-x2*x3 + cos(x0)*cos(exp(10)) + cos(exp(x1))
