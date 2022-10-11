@@ -40,6 +40,8 @@
 \usepackage{calc}
 \usetikzlibrary{positioning,shadows,arrows,trees,shapes,fit}
 \usepackage{blindtext}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
 
 \usepackage{numprint}
 \npdecimalsign{.}
@@ -381,6 +383,175 @@ SAMO JEDAN PARAMETAR!!!
 		\hline
 	\end{tabular}
 \end{table}
+
+\begin{center}
+ \begin{tikzpicture}
+ 	\begin{axis}[
+		xlabel=$size$,
+		ylabel=$exact\;percentage$,
+		xmin=0, xmax=4,
+		ymin=0, ymax=100,
+		xtick={1,2,3},
+		xticklabels={small,medium,large},   % <---
+		ytick={0,10,...,100}
+		]
+		\addplot[smooth,mark=*,blue] plot coordinates {
+			(1,85)
+			(2,42.5)
+			(3,21.05)
+		};
+		\addlegendentry{No noise}
+		
+		\addplot[smooth,color=red,mark=x]
+		plot coordinates {
+			(1,51.67)
+			(2,13.75)
+			(3,5.26)
+		};
+		\addlegendentry{Noise level 0.001}
+		
+		\addplot[smooth,color=green,mark=o]
+		plot coordinates {
+			(1,31.67)
+			(2,5)
+			(3,4.21)
+		};
+		\addlegendentry{Noise level 0.01}
+	\end{axis}
+\end{tikzpicture}
+\captionof{figure}{Exact solution percentages for varying levels of noise and formulae sizes}
+\label{fig:compExact_noise_size}
+\end{center}
+
+\begin{center}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel=$size$,
+			ylabel=$R^2 > 0.999\;percentage$,
+			xmin=0, xmax=4,
+			ymin=20, ymax=100,
+			xtick={1,2,3},
+			xticklabels={small,medium,large},   % <---
+			ytick={20,30,...,100}
+			]
+			\addplot[smooth,mark=*,blue] plot coordinates {
+				(1,98.33)
+				(2,62.5)
+				(3,58.95)
+			};
+			\addlegendentry{No noise}
+			
+			\addplot[smooth,color=red,mark=x]
+			plot coordinates {
+				(1,93.33)
+				(2,53.75)
+				(3,40)
+			};
+			\addlegendentry{Noise level 0.001}
+			
+			\addplot[smooth,color=green,mark=o]
+			plot coordinates {
+				(1,65)
+				(2,31.25)
+				(3,20)
+			};
+			\addlegendentry{Noise level 0.01}
+		\end{axis}
+	\end{tikzpicture}
+	\captionof{figure}{Percentages of solutions having $R^2 > 0.999$ for varying levels of noise and formulae sizes}
+	\label{fig:compR2_noise_size}
+\end{center}
+
+\begin{center}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel=$variable\;count$,
+			ylabel=$exact\;percentage$,
+			xmin=0, xmax=6,
+			ymin=0, ymax=100,
+			xtick={1,2,3,4,5},
+			xticklabels={1,2,3,4,5},   % <---
+			ytick={0,10,...,100}
+			]
+			\addplot[smooth,mark=*,blue] plot coordinates {
+				(1,52.31)
+				(2,50)
+				(3,44)
+				(4,37.78)
+				(5,13.33)
+			};
+			\addlegendentry{No noise}
+			
+			\addplot[smooth,color=red,mark=x]
+			plot coordinates {
+				(1,16.92)
+				(2,21.67)
+				(3,28)
+				(4,17.78)
+				(5,6.67)
+			};
+			\addlegendentry{Noise level 0.001}
+			
+			\addplot[smooth,color=green,mark=o]
+			plot coordinates {
+				(1,9.23)
+				(2,15)
+				(3,12)
+				(4,11.11)
+				(5,6.67)
+			};
+			\addlegendentry{Noise level 0.01}
+		\end{axis}
+	\end{tikzpicture}
+	\captionof{figure}{Exact solution percentages for varying levels of noise and variable counts}
+	\label{fig:compExact_noise_varcnt}
+\end{center}
+
+\begin{center}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel=$variable\;count$,
+			ylabel=$exact\;percentage$,
+			xmin=0, xmax=6,
+			ymin=0, ymax=100,
+			xtick={1,2,3,4,5},
+			xticklabels={1,2,3,4,5},   % <---
+			ytick={0,10,...,100}
+			]
+			\addplot[smooth,mark=*,blue] plot coordinates {
+				(1,86.15)
+				(2,75)
+				(3,72)
+				(4,48.89)
+				(5,40)
+			};
+			\addlegendentry{No noise}
+			
+			\addplot[smooth,color=red,mark=x]
+			plot coordinates {
+				(1,64.62)
+				(2,66.67)
+				(3,62)
+				(4,40)
+				(5,40)
+			};
+			\addlegendentry{Noise level 0.001}
+			
+			\addplot[smooth,color=green,mark=o]
+			plot coordinates {
+				(1,32.31)
+				(2,43.33)
+				(3,46)
+				(4,24.44)
+				(5,13.33)
+			};
+			\addlegendentry{Noise level 0.01}
+		\end{axis}
+	\end{tikzpicture}
+	\captionof{figure}{Percentages of solutions having $R^2 > 0.999$ for varying levels of noise and variable counts}
+	\label{fig:compR2_noise_varcnt}
+\end{center}
+
 
 \subsection{Statistical evaluation}
 
