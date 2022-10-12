@@ -178,19 +178,18 @@
 	symbolic regression methods and 7 machine learning methods are compared on the  set of 252 diverse
     regression problems. The general conclusions derived from there are: ($i$) when comes to real-world problem, the best performing algorithms are those which combine genetic algorithm with parameter estimation; ($ii$) when come to the instances with the presence of noise, the GP--based and deep learning techniques are performing similarly. 
     
-    In this work we present yet another GP--based approach to solve SR, which utilizes the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2019iterated}; in the remaining text, we label the metod by \textsc{Rils-Rols}.  The main code of the efficient local search is utilization of the ordinary least square method (OLS)~\cite{leng2007ordinary} that is in charge for an efficient finding suitable coefficients of linearised formulas.  \fxnote{TODO: maybe expand the core of the algorithm... }
+    In this work we present a novel approach to solve SR, which combines the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2019iterated} with ordinary least squares method (OLS)~\cite{leng2007ordinary}. Briefly, ILS handles combinatorial (discrete) aspects of search space, while OLS helps in the process of coefficient determination, so it handles continuous parts of the search space. As will be shown later, the proposed method seems to be very robust w.r.t. introduced noise, therefore we called the method RILS-ROLS (with letters R corresponding to regression and robust).  \fxnote{TODO: maybe expand the core of the algorithm... }
  
-
 The main contributions of this work may be summarized as follows:
 
 \begin{enumerate}
 	\item The proposed method outperforms all state-of-the-art methods for ground-truth problems from literature, considered in the SRBench benchmark. 
 	
-	\item It shows high robustness, which is proved by testing methods under different levels of Gaussian white noise. 
+	\item It shows high robustness, which is proved by comparison to other algorithms under different levels of Gaussian white noise. 
 	
 	\item The method is very efficient, taking in average around xyz seconds to reach exact solution -- when exact solution is found. 
 	
-	\item The new set of unbiased instances is introduced -- randomly generated formula of various sizes. All the other methods were tested against this new test-bed. The proposed \textsc{Rils-Rols} method showed to be dominant here as well. 
+	\item The new set of unbiased instances is also introduced -- randomly generated formula of various sizes and number of input variables. This set was employed to understand the influence of formula size, number of input variables and noise on the solving difficulty. 
 \end{enumerate}
 
 
@@ -253,36 +252,36 @@ Koza~\cite{koza1994genetic} introduced the problem of SR as a specific applicati
 %\section{Literature review}\label{sec:lit-rev}
 
 
-\section{Proposed iterated local search method}\label{sec:rils}
-   Before we give details on our \textsc{Rils-Rols} method fro solving SR, we explain the basics of the two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods, respectively. 
+\section{The proposed method}\label{sec:rils}
+   Before we give details on our RILS-ROLS method for solving SR, we will explain the basics of two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods. 
    
   \subsection{Iterated local search}
-    Iterated local search (ILS)~\cite{lourencco2003iterated} is an efficient meta-heuristics, whose essential idea is given as follow. Iteratively generate a sequence of solutions produced by the (embedded) heuristic, such as local search or  randomized greedy heuristics,  leading
-    towards better solutions than if one uses repeated random trials of that heuristic. This simple idea appeared in the literature by Baxter~\cite{baxter1981local} in early 1980s, and, since then, had been many time re-invented by many researches under different names; some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
-    Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases,  combinations of these~\cite{applegate2003chained}. 
+    Iterated local search (ILS)~\cite{lourencco2003iterated} is an efficient meta-heuristics, whose essential idea is given as follow. Iteratively generate a sequence of solutions produced by the (embedded) heuristic, such as local search or randomized greedy heuristics. When the search gets \emph{stuck} in local optimum, a \emph{perturbation} is performed -- this step is usually non-deterministic. This simple idea appeared in the literature by Baxter~\cite{baxter1981local} in early 1980s, and, since then, has been  re-invented by many researches under different names; some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
+    Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases, combinations of these~\cite{applegate2003chained}. 
   
-   In the literate, one of the mostly applied ILS versions is pseudo-coded in Algorithm~\ref{alg:ils}. Note that we also used the core of this version in our \textsc{Risl-Rols} algorithm. \fxnote{Provjeriti da li je ovo tačno -- popraviti algoritam ako nije sa onim što je korišten...}
+   The most popular version of ILS is shown in Algorithm~\ref{alg:ils}. Note that we use this version of ILS as the backbone of our RILS-ROLS algorithm.
    
    \begin{algorithm}
   		\begin{algorithmic}[1] 
-  			 \State \textbf{Input}: a COP problem; a LS procedure  of the problem 
+  			 \State \textbf{Input}: problem instance
   	 		\State \textbf{Output}: an approximate (feasible) solution 
-  	 		\State $s \gets$ Generate an initial solution
-  	 		\State  $s \gets LS(s)$
-   	 		\While{\emph{Stopping criteria is not met}}
+  	 		\State $s \gets$ \texttt{Initialize}$()$
+  	 		\State  $s \gets$ \texttt{LocalSearch}($s$)
+   	 		\While{\emph{stopping criteria is not met}}
    	    		 \State  $s' \gets$ \texttt{Perturbation}($s$)
-   	    		 \State  $s' \gets$ \texttt{LS}($s'$)
+   	    		 \State  $s' \gets$ \texttt{LocalSearch}($s'$)
    	    		 \State  $ s \gets$ \texttt{AcceptanceCriterion}($s, s'$)
    	 		\EndWhile
+   	 		\State \Return $s$
    		\end{algorithmic}
     	\caption{An ILS framework from   literature.}
     	   	     \label{alg:ils}
     \end{algorithm}  
    
-An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by LS procedure. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed, that is mutated in a way the knowledge of the current best solution is (partially) used at the next iterations.  Secondly, the perturbed solution is then improved by LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Usually, this basic variant of ILS incorporates a mechanism of tabu list, that avoids the search getting back to already visited local search within a number of iterations. 
+An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed -- it is partially randomized. Next, the perturbed solution is improved with LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions. 
    
  \subsection{Ordinary least square method}
-   Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_n)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know by the term the sum of squared error (SSE). There are many methods to minimize SSE; one of the analytical methods is the calculus method that takes into account   partial derivation w.r.t.  $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
+   Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know as the sum of squared error (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account   partial derivation w.r.t. $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
    
    $$  \frac{\partial}{\partial k} \sum_{i} |\tilde{y}_i - y_i|^2 = \frac{\partial}{\partial k} \sum ( kx_i+b  - y_i)^2 =  \sum -2x_i(kx_i + b - y_i)  =  \sum -2x_i (\tilde{y}_i - y_i ) . $$
    
@@ -297,11 +296,39 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
      The above system can be transformed to 
      \begin{align*}
      	 & \sum y_i \cdot x_i   = b\sum x_i \cdot x_i  +  k \cdot \sum x_i \\
-     	 & \sum y_i  = k \sum x_i + b \cdot n 
+     	 & \sum y_i  = k \sum x_i + b \cdot n. 
      \end{align*}
-     which is a system of two equations with two variables ($k$ and $b$) that is  solved efficiently.
-   \subsection{The proposed Rils-Rols}
-    \fxnote{TODO}
+     By solving this system of equations, one can easily obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. \fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }
+   \subsection{RILS-ROLS method}
+   Now we will explain the proposed RILS-ROLS method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.  
+   
+    \begin{algorithm}
+   	\begin{algorithmic}[1] 
+   		\State \textbf{Input}: input training dataset $D_{tr}$
+   		\State \textbf{Output}: symbolic formula solution $s$
+   		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}$)
+   		\State $s \gets NodeConstant(0)$ // tree with 0 as root node
+   		\State $s_{fit} \gets$ \texttt{Fitness}($s, D_{tr}'$)
+   		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
+   		\While{\emph{stopping criteria is not met}}
+   			\State $start_{tried} \gets start_{tried} \cup \{s\}$
+   			\State $s_{perturbations} \gets $ \texttt{Generate1PerturbationsAndFitOLS}($s$)
+   			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$)
+   			\For{$p \in s_{perturbations}$}
+   				\If{$p \notin perturbations_{tried}$}
+   					\State $p \gets $ \texttt{Simplify}($p$)
+   					\State $p \gets $ \texttt{LocalSearch}($p$)
+   					\State $p_{fit} \gets$ \texttt{Fitness}($p$)
+   					\State $perturbations_{tried} \gets perturbations_{tried} \cup p$
+   				\EndIf
+   			\EndFor
+   		\EndWhile
+   		\State \Return $s$
+   	\end{algorithmic}
+   	\caption{RILS-ROLS outline.}
+   	\label{alg:rilsrols}
+   \end{algorithm}  
+   
 \section{Experimental evaluation}\label{sec:experiments}
 
 \subsection{Parameter tuning}

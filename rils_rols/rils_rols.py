@@ -74,17 +74,8 @@ class RILSROLSRegressor(BaseEstimator):
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
             start_solutions.add(str(start_solution))
             all_preturbations = self.all_preturbations(start_solution, len(X[0]))
-            #self.rg.shuffle(all_preturbations)
-            #print("-------------------------")
-            #print(best_solution)
-            #print("-------------------------")
-            #for p in all_preturbations:
-            #    print(p)
-            #new_solution = self.preturb(best_solution, len(X[0]))
-
-            # TODO: statistically check if this is good criterion for ordering preturbations
             pret_fits = {}
-            for pret in all_preturbations: #[:tournament_members]:
+            for pret in all_preturbations: 
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
                 pret_ols_fit = pret_ols.fitness(X, y)
@@ -94,7 +85,6 @@ class RILSROLSRegressor(BaseEstimator):
 
             impr = False
             p = 0
-            #for pret in all_preturbations:
             for pret, r2Inv in sorted_pret_fits:
                 p+=1
                 self.time_elapsed = time.time()-self.start
