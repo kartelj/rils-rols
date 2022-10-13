@@ -307,7 +307,7 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    		\State \textbf{Input}: input training dataset $D_{tr}$
    		\State \textbf{Output}: best symbolic formula solution $bs$
    		\State $n_{tr} \gets |D_{tr}|$
-   		\State $sample_{size} \gets max(100, 0.01 \times n_{tr})$
+   		\State $sample_{size} \gets $ \texttt{InitialSampleSize}($n_{tr}$)
    		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
    		\State $s \gets NodeConstant(0)$ 
    		\State $s_{fit} \gets$ \texttt{Fitness}($s, D_{tr}'$)
@@ -315,7 +315,7 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
    		\While{\emph{stopping criteria is not met}}
    			\State $start_{tried} \gets start_{tried} \cup \{s\}$
-   			\State $s_{perturbations} \gets $ \texttt{GeneratePerturbations}($s$, 1)
+   			\State $s_{perturbations} \gets $ \texttt{Generate1Perturbations}($s$)
    			\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$)
    			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$)
    			\State $improved \gets false $
@@ -332,10 +332,13 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
   				\EndIf
   				\State $perturbations_{tried} \gets perturbations_{tried} \cup \{p\}$
    			\EndFor
-   			\If{not improved}
-   				\State $start_{candidates} \gets $ \texttt{GeneratePerturbations}($bs$, 1)
+   			\If{improved}
+   				\State $s \gets bs$
+   			\Else
+   				\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($bs$)
    				\If{$start_{candidates} \cap start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
-   					\State $start_{candidates} \gets $ \texttt{GeneratePerturbations}($bs$, 2) 
+   					\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)
+   					\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($s'$) 
    				\EndIf
    				\State $s \gets $ \texttt{RandomPick}($start_{candidates} \setminus start_{tried}$)
    				\If{not improved for too many iterations}
