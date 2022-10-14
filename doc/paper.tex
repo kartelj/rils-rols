@@ -309,27 +309,54 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
     \begin{algorithm}
    	\begin{algorithmic}[1] 
    		\State \textbf{Input}: input training dataset $D_{tr}$
-   		\State \textbf{Output}: symbolic formula solution $s$
-   		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}$)
-   		\State $s \gets NodeConstant(0)$ // tree with 0 as root node
+   		\State \textbf{Output}: best symbolic formula solution $bs$
+   		\State $n_{tr} \gets |D_{tr}|$
+   		\State $sample_{size} \gets $ \texttt{InitialSampleSize}($n_{tr}$)
+   		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
+   		\State $s \gets NodeConstant(0)$ 
    		\State $s_{fit} \gets$ \texttt{Fitness}($s, D_{tr}'$)
+   		\State $bs, bs_{fit} \gets s, s_{fit}$ 
    		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
    		\While{\emph{stopping criteria is not met}}
    			\State $start_{tried} \gets start_{tried} \cup \{s\}$
-   			\State $s_{perturbations} \gets $ \texttt{Generate1PerturbationsAndFitOLS}($s$)
+   			\State $s_{perturbations} \gets $ \texttt{Generate1Perturbations}($s$)
+   			\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$)
    			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$)
+   			\State $improved \gets false $
    			\For{$p \in s_{perturbations}$}
-   				\If{$p \notin perturbations_{tried}$}
-   					\State $p \gets $ \texttt{Simplify}($p$)
-   					\State $p \gets $ \texttt{LocalSearch}($p$)
-   					\State $p_{fit} \gets$ \texttt{Fitness}($p$)
-   					\State $perturbations_{tried} \gets perturbations_{tried} \cup p$
+   				\If{$p \in perturbations_{tried}$}
+   					\State \textbf{continue}
    				\EndIf
+  				\State $p \gets $ \texttt{Simplify}($p$)
+  				\State $p \gets $ \texttt{LocalSearch}($p$)
+  				\State $p_{fit} \gets$ \texttt{Fitness}($p$)
+  				\If{$p_{fit} < bs_{fit}$}
+  					\State $bs, bs_{fit}, improved \gets p, p_{fit}, true$ // new best solution
+  					\State \textbf{break}
+  				\EndIf
+  				\State $perturbations_{tried} \gets perturbations_{tried} \cup \{p\}$
    			\EndFor
+   			\If{improved}
+   				\State $s \gets bs$
+   			\Else
+   				\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($bs$)
+   				\If{$start_{candidates} \cap start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
+   					\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)
+   					\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($s'$) 
+   				\EndIf
+   				\State $s \gets $ \texttt{RandomPick}($start_{candidates} \setminus start_{tried}$)
+   				\If{not improved for too many iterations}
+   					\State $sample_{size} \gets$ \texttt{IncreaseSampleSize}($sample_{size}, n_{tr}$)
+   					\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
+   				\EndIf
+   			\EndIf
+   			\If{$R^2$ almost 1 and RMSE almost 0}
+   				\State \textbf{break} // early exit
+   			\EndIf
    		\EndWhile
-   		\State \Return $s$
+   		\State \Return $bs$
    	\end{algorithmic}
-   	\caption{RILS-ROLS outline.}
+   	\caption{RILS-ROLS algorithm.}
    	\label{alg:rilsrols}
    \end{algorithm}  
    
