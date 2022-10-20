@@ -315,39 +315,39 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
    		\State $s \gets NodeConstant(0)$ 
    		\State $s_{fit} \gets$ \texttt{Fitness}($s, D_{tr}'$)
-   		\State $bs, bs_{fit} \gets s, s_{fit}$ 
+   		\State $bs, bs_{fit} \gets s, s_{fit}$ \label{line:solSet}
    		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
    		\While{\emph{stopping criteria is not met}}
    			\State $start_{tried} \gets start_{tried} \cup \{s\}$
-   			\State $s_{perturbations} \gets $ \texttt{Generate1Perturbations}($s$)
-   			\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$)
-   			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$)
+   			\State $s_{perturbations} \gets $ \texttt{Generate1Perturbations}($s$) \label{line:sPert}
+   			\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$, $D_{tr}'$)
+   			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$) \label{line:orderR2}
    			\State $improved \gets false $
    			\For{$p \in s_{perturbations}$}
    				\If{$p \in perturbations_{tried}$}
    					\State \textbf{continue}
    				\EndIf
-  				\State $p \gets $ \texttt{Simplify}($p$)
-  				\State $p \gets $ \texttt{LocalSearch}($p$)
-  				\State $p_{fit} \gets$ \texttt{Fitness}($p$)
-  				\If{$p_{fit} < bs_{fit}$}
+  				\State $p \gets $ \texttt{Simplify}($p$) \label{line:simp}
+  				\State $p \gets $ \texttt{LocalSearch}($p$, $D_{tr}'$) \label{line:ls}
+  				\State $p_{fit} \gets$ \texttt{Fitness}($p$, $D_{tr}'$)
+  				\If{$p_{fit} < bs_{fit}$} \label{line:avoid1}
   					\State $bs, bs_{fit}, improved \gets p, p_{fit}, true$ // new best solution
   					\State \textbf{break}
-  				\EndIf
+  				\EndIf \label{line:avoid2}
   				\State $perturbations_{tried} \gets perturbations_{tried} \cup \{p\}$
    			\EndFor
    			\If{improved}
-   				\State $s \gets bs$
+   				\State $s \gets bs$ \label{line:improved}
    			\Else
    				\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($bs$)
-   				\If{$start_{candidates} \cap start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
-   					\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)
-   					\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($s'$) 
+   				\If{$start_{candidates} \setminus start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
+   					\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)  \label{line:pert21}
+   					\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($s'$) \label{line:pert22}
    				\EndIf
-   				\State $s \gets $ \texttt{RandomPick}($start_{candidates} \setminus start_{tried}$)
+   				\State $s \gets $ \texttt{RandomPick}($start_{candidates} \setminus start_{tried}$) \label{line:randPick}
    				\If{not improved for too many iterations}
-   					\State $sample_{size} \gets$ \texttt{IncreaseSampleSize}($sample_{size}, n_{tr}$)
-   					\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
+   					\State $sample_{size} \gets$ \texttt{IncreaseSampleSize}($sample_{size}, n_{tr}$) \label{line:sampleAdj1}
+   					\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)\label{line:sampleAdj2}
    				\EndIf
    			\EndIf
    			\If{$R^2$ almost 1 and RMSE almost 0}
@@ -359,6 +359,33 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    	\caption{RILS-ROLS algorithm.}
    	\label{alg:rilsrols}
    \end{algorithm}  
+
+RILS-ROLS algorithms receives training dataset $D_{tr}$ as input. $D_{tr}$ can have very large number of records, so the first step of RILS-ROLS is to make a random sample $D_{tr}'$ of size $sample_{size}$. Initial sample size is calculated as $\max(0.01 \cdot n_{tr}, 100)$. Sample is later dynamically adjusted -- when there are no solution improvements for some number of iterations, the sample size is doubled (lines~\ref{line:sampleAdj1}-\ref{line:sampleAdj2} of Algorithm~\ref{alg:rilsrols}).
+
+
+As previously stated, solution is usually represented as a tree. We use simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: i) $s$ denotes starting (or working) solution and ii) $bs$ stands for the best solution so far. Solution quality is measured by evaluating fitness function (more on this in the following Section~\ref{sec:fitness}). Before entering the main loop, the best solution is set to initial solution (line~\ref{line:solSet}).
+
+
+Main loop iterates as long as none of termination criteria is met: i) maximal running time has been reached; ii) maximal number of fitness calls has been made; iii) best solution is sufficiently good.
+The third criterion is based on the $R^2$ and $RMSE$ of the best solution. If $R^2$ is sufficiently close to 1 and, at the same time, $RMSE$ is sufficiently close to 0, the algorithm stops prematurely -- this significantly reduces the running times for the majority of tested instances.  
+On of the first steps in the main loop is to generate perturbations near the starting solution $s$ (line~\ref{line:sPert}). 
+As the name of this procedure (\texttt{Generate1Perturbations}) suggests, perturbation is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described in a separate Section~\ref{sec:pertGen}. 
+Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in linear combinations are being set by means of ordinary least squares method.  
+After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
+Further, they are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
+Now, the algorithm enters internal loop -- it iterates over ordered perturbations and aims to find the one which improves the best solution $bs$. But, before comparing candidate perturbation solution $p$ with $bs$, $p$ is first simplified (line~\ref{line:simp}) after which the local search is performed (line~\ref{line:ls}).
+Solution simplification is done in a symbolical fashion by popular Python library called Sympy~\cite{sympy}.
+Local search tries to find local optima expressions close to the given $p$ -- there is a separate Section~\ref{sec:ls} dedicated to local search. 
+Finally, fitness function value of $p$ is compared to fitness function value of $bs$. If it is better, $bs$ is updated correspondingly and internal loop that goes across ordered perturbations is immediately stopped (\emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
+Note that probed perturbations are remembered in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}).
+If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
+Otherwise, it makes no sense to set starting solution to $bs$, since nothing changed -- search is \emph{trapped} in local optimum. Therefore, a randomness needs to be introduced. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{Generate1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is small chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that perturbations on distance 2 from $bs$ are used. There is a very small chance that these 2-perturbations will have empty set difference with $start_{tried}$ set of starting solutions. Therefore, 3-perturbations are not considered. 
+
+\subsubsection{Fitness function}\label{sec:fitness}
+
+\subsubsection{Perturbations}\label{sec:pertGen}
+
+\subsubsection{Local search}\label{sec:ls}
    
 \section{Experimental evaluation}\label{sec:experiments}
 
@@ -612,11 +639,7 @@ SAMO JEDAN PARAMETAR!!!
  \newpage
  \appendix
  
- \section{Complete results for a single random seed}\label{sec:appendix-1}
- 
- \section{Overview of RILS-ROLS python package}\label{sec:appendix-2}
- 
- \section{Analysis within SRBench}
+ \section{Overview of RILS-ROLS python package}\label{sec:appendix-1}
   
   
   
