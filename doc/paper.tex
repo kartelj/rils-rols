@@ -288,7 +288,7 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    Taking into account   partial derivation w.r.t.  $b$, we have 
     $$  \frac{\partial}{\partial b} \sum_{i} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum ( kX_i+b  - y_i)^2 = \sum -2  (y_i - \tilde{y}_i). $$
     
-    Thus, we get the system of equation: 
+    Thus, we get the system of equations: 
     \begin{align*}
     	 % &\sum -2X_i (\tilde{y}_i - y_i )  = 0 \\
     	  & -2X_1 (y_1 - \tilde{y}_1)  = 0 \\
@@ -368,20 +368,45 @@ As previously stated, solution is usually represented as a tree. We use simple s
 
 Main loop iterates as long as none of termination criteria is met: i) maximal running time has been reached; ii) maximal number of fitness calls has been made; iii) best solution is sufficiently good.
 The third criterion is based on the $R^2$ and $RMSE$ of the best solution. If $R^2$ is sufficiently close to 1 and, at the same time, $RMSE$ is sufficiently close to 0, the algorithm stops prematurely -- this significantly reduces the running times for the majority of tested instances.  
+
+
 On of the first steps in the main loop is to generate perturbations near the starting solution $s$ (line~\ref{line:sPert}). 
 As the name of this procedure (\texttt{Generate1Perturbations}) suggests, perturbation is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described in a separate Section~\ref{sec:pertGen}. 
+
+
 Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in linear combinations are being set by means of ordinary least squares method.  
 After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
 Further, they are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
+
+
 Now, the algorithm enters internal loop -- it iterates over ordered perturbations and aims to find the one which improves the best solution $bs$. But, before comparing candidate perturbation solution $p$ with $bs$, $p$ is first simplified (line~\ref{line:simp}) after which the local search is performed (line~\ref{line:ls}).
-Solution simplification is done in a symbolical fashion by popular Python library called Sympy~\cite{sympy}.
+Solution simplification is done in a symbolical fashion by popular Python library called SymPy~\cite{sympy}.
 Local search tries to find local optima expressions close to the given $p$ -- there is a separate Section~\ref{sec:ls} dedicated to local search. 
 Finally, fitness function value of $p$ is compared to fitness function value of $bs$. If it is better, $bs$ is updated correspondingly and internal loop that goes across ordered perturbations is immediately stopped (\emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
 Note that probed perturbations are remembered in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}).
+
+
 If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
 Otherwise, it makes no sense to set starting solution to $bs$, since nothing changed -- search is \emph{trapped} in local optimum. Therefore, a randomness needs to be introduced. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{Generate1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is small chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that perturbations on distance 2 from $bs$ are used. There is a very small chance that these 2-perturbations will have empty set difference with $start_{tried}$ set of starting solutions. Therefore, 3-perturbations are not considered. 
 
 \subsubsection{Fitness function}\label{sec:fitness}
+
+Symbolic regression objective is to determine the expression governing available data. It is also allowed to obtain some equivalent expression, having in mind there are many ways to express some symbolical equation. Although logically sound and intuitive, this objective is not quantifiable during the solution search/training phase, simply because the goal expression is not known at that point -- only target values for some of the input features are known. So, different numerical metrics are being used in literature to guide the symbolic regression search process. The most popular are the coefficient of determination, also known as $R^2$ and mean squared error (MSE) or root mean squared error (RMSE). The important aspect of the solution quality might also be the solution expression complexity. This follows the Occam's razor principle that simpler solution is more likely to be a correct one. 
+The search process of RILS-ROLS is guided by the non-linear combination of $R^2$, RMSE and solution expression size (complexity) presented in Equation~\ref{eq:fitness}. 
+
+\begin{equation}
+	\label{eq:fitness}
+	fit(s) = (2-R^2(s)) \cdot (1+RMSE(s)) \cdot (1+penalty_{size} \cdot size(S))
+\end{equation}
+
+Since the presented fitness function needs to be minimized, the following conclusions may be drawn:
+\begin{itemize}
+	\item higher $R^2$ is preferred -- ideally, when $R^2(s)=1$, the effect of term $1+R^2(s)$ is neutralized, since 1 is neutral for multiplication;
+	\item lower RMSE is preferred, ideally, when $RMSE(s)=0$, the whole term $(1+RMSE(s))$ becomes 1;
+	\item since $penalty_{size} > 0$, larger expressions tend to have higher fitness (which follows the Occam's razor principle).
+\end{itemize}
+
+The size of expression is calculated by simply counting all nodes in the expression tree -- this includes leaves (variables and constants) and internal nodes (operations). 
 
 \subsubsection{Perturbations}\label{sec:pertGen}
 
