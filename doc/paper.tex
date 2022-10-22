@@ -307,9 +307,11 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    Now we will explain the proposed RILS-ROLS method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.  
    
     \begin{algorithm}
+    \small
+    \hspace*{\algorithmicindent} \textbf{Input}: input training dataset $D_{tr}$ \\
+    \hspace*{\algorithmicindent} \textbf{Output}: best symbolic formula solution $bs$
    	\begin{algorithmic}[1] 
-   		\State \textbf{Input}: input training dataset $D_{tr}$
-   		\State \textbf{Output}: best symbolic formula solution $bs$
+   		\Procedure{RILS-ROLS}{$D_{tr}$}
    		\State $n_{tr} \gets |D_{tr}|$
    		\State $sample_{size} \gets $ \texttt{InitialSampleSize}($n_{tr}$)
    		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
@@ -319,7 +321,7 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
    		\While{\emph{stopping criteria is not met}}
    			\State $start_{tried} \gets start_{tried} \cup \{s\}$
-   			\State $s_{perturbations} \gets $ \texttt{Generate1Perturbations}($s$) \label{line:sPert}
+   			\State $s_{perturbations} \gets $ \texttt{All1Perturbations}($s$) \label{line:sPert}
    			\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$, $D_{tr}'$)
    			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$) \label{line:orderR2}
    			\State $improved \gets false $
@@ -339,7 +341,7 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    			\If{improved}
    				\State $s \gets bs$ \label{line:improved}
    			\Else
-   				\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($bs$)
+   				\State $start_{candidates} \gets $ \texttt{All1Perturbations}($bs$)
    				\If{$start_{candidates} \setminus start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
    					\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)  \label{line:pert21}
    					\State $start_{candidates} \gets $ \texttt{Generate1Perturbations}($s'$) \label{line:pert22}
@@ -355,8 +357,9 @@ An initial solution may be generated randomly or by using a greedy heuristic, wh
    			\EndIf
    		\EndWhile
    		\State \Return $bs$
+   		\EndProcedure
    	\end{algorithmic}
-   	\caption{RILS-ROLS algorithm.}
+   	\caption{RILS-ROLS method.}
    	\label{alg:rilsrols}
    \end{algorithm}  
 
@@ -371,7 +374,7 @@ The third criterion is based on the $R^2$ and $RMSE$ of the best solution. If $R
 
 
 On of the first steps in the main loop is to generate perturbations near the starting solution $s$ (line~\ref{line:sPert}). 
-As the name of this procedure (\texttt{Generate1Perturbations}) suggests, perturbation is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described in a separate Section~\ref{sec:pertGen}. 
+As the name of this procedure (\texttt{All1Perturbations}) suggests, perturbation is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described in a separate Section~\ref{sec:pertGen}. 
 
 
 Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in linear combinations are being set by means of ordinary least squares method.  
@@ -387,7 +390,7 @@ Note that probed perturbations are remembered in a set denoted by $perturbations
 
 
 If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
-Otherwise, it makes no sense to set starting solution to $bs$, since nothing changed -- search is \emph{trapped} in local optimum. Therefore, a randomness needs to be introduced. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{Generate1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is small chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that perturbations on distance 2 from $bs$ are used. There is a very small chance that these 2-perturbations will have empty set difference with $start_{tried}$ set of starting solutions. Therefore, 3-perturbations are not considered. 
+Otherwise, it makes no sense to set starting solution to $bs$, since nothing changed -- search is \emph{trapped} in local optimum. Therefore, a randomness needs to be introduced. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{All1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is small chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that perturbations on distance 2 from $bs$ are used. There is a very small chance that these 2-perturbations will have empty set difference with $start_{tried}$ set of starting solutions. Therefore, 3-perturbations are not considered. 
 
 \subsubsection{Fitness function}\label{sec:fitness}
 
@@ -409,6 +412,41 @@ Since the presented fitness function needs to be minimized, the following conclu
 The size of expression is calculated by simply counting all nodes in the expression tree -- this includes leaves (variables and constants) and internal nodes (operations). 
 
 \subsubsection{Perturbations}\label{sec:pertGen}
+
+\begin{algorithm}
+	\hspace*{\algorithmicindent} \textbf{Input}: solution $s$ \\
+	\hspace*{\algorithmicindent} \textbf{Output}: local perturbations (1-perturbations) around solution $s$ -- $s_{perturbations}$
+	\begin{algorithmic}[1] 
+		\Procedure{All1Perturbations}{$s$}
+		\State $s_{perturbations} \gets \emptyset$
+		\State $s \gets$ \texttt{NormalizeConstants}($s$)
+		\State $s \gets$ \texttt{Simplify}($s$)
+		\State $s_{subtrees} \gets$ \texttt{SubTrees}($s$)
+		\For{$ss \in s_{subtrees}$}
+			\If{$ss = s$}
+				\State $s_{perturbations} \gets s_{perturbations} \cup$ \texttt{Node1Perturbations}($ss$)
+			\EndIf
+			\If{$ss.arity \geq 1$}
+				\State $node_{perturbations} \gets$ \texttt{Node1Perturbations}($ss.left$)
+				\For{$np \in node_{perturbations}$}
+					\State $ss_{new} \gets$ \texttt{Replace}($ss$, $ss.left$, $np$)
+					\State $s_{perturbations} \gets s_{perturbations} \cup \{ss_{new}\}$
+				\EndFor
+			\EndIf
+			\If{$ss.arity = 2$}
+				\State $node_{perturbations} \gets$ \texttt{Node1Perturbations}($ss.right$)
+				\For{$np \in node_{perturbations}$}
+					\State $ss_{new} \gets$ \texttt{Replace}($ss$, $ss.right$, $np$)
+					\State $s_{perturbations} \gets s_{perturbations} \cup \{ss_{new}\}$
+				\EndFor
+			\EndIf
+		\EndFor
+		\State \Return $s_{perturbations}$
+		\EndProcedure
+	\end{algorithmic}
+	\caption{Generation of 1-perturbations.}
+	\label{alg:pert}
+\end{algorithm}  
 
 \subsubsection{Local search}\label{sec:ls}
    
