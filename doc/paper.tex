@@ -395,6 +395,8 @@ Note that the probed perturbations are stored in a set denoted by $perturbations
 If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
 Otherwise, it makes no sense to set starting solution to $bs$, as nothing changed -- the search is being  \emph{trapped} in a local optimum. In order to avoid this undesired situation, a randomness needs to be triggered. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{All1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is a insignificant chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that the perturbations with distance 2 from $bs$ are used. Indeed, there is a minor chance that these 2-perturbations will have empty set difference with $start_{tried}$ set of starting solutions. Therefore, more expensive 3-perturbations are not considered in our algorithm. 
 
+
+\fxnote{Dati neku smislenu procjenu kompleksnosti algoritma, ako to nije pretesko. }
 \subsubsection{Fitness function}\label{sec:fitness}
 
 Symbolic regression objective is to determine the expression governing available data. It is also allowed to obtain some equivalent expression, keeping in mind that there are multiple ways to express some symbolical equation. Although logically sound and intuitive, this objective is not quantifiable during the solution search/training phase, simply because the goal expression is not known at that point as only target values for some of the input features are known. Thus, different numerical metrics are being used in literature to guide the symbolic regression search process. The most popular are the coefficient of determination, also known as $R^2$ and mean squared error (MSE) or root mean squared error (RMSE). The important aspect of the solution quality might also be the solution expression complexity. This follows the Occam's razor principle~\cite{costa2020fast}~ that simpler solution  is more likely to be a correct one. 
@@ -416,7 +418,7 @@ The size of expression is calculated by simply counting all nodes in the express
 
 \subsubsection{Perturbations}\label{sec:pertGen}
 
-Perturbations allow the algorithm to escape from local optima. As previously described, they are performed in two occasions: the first one during the exhaustive examination of neighboring solutions around the starting solution, and the second one being non-exhaustive, during selection of the next starting solution. 
+Perturbations allow the algorithm to escape from local optima. As previously described, perturbations are performed in two occasions: ($i$) during the exhaustive examination of neighboring solutions around the starting solution, ($ii$)during selection of the next starting solution, a non-exhaustive case.  
 In both cases, the same Algorithm~\ref{alg:pert} is used. 
 
 \begin{algorithm}
@@ -457,10 +459,10 @@ In both cases, the same Algorithm~\ref{alg:pert} is used.
 Initially, the set of perturbations $s_{perturbations}$ is empty (line~\ref{line:pertInit}).
 
 
-This is followed by constant normalization during which coefficients that enter multiplication, division, addition or subtraction are set to 1, while those entering the power function are rounded to integer, with exception of square root, which is kept intact. For example, for expression $3.3\cdot(x+45.1\cdot y^{3.2})\cdot 81\cdot x/\sqrt{y}$ the normalized version is $1\cdot (x+1\cdot y^3)\cdot 1\cdot x/\sqrt{y}$. The reason for performing normalization is to reduce the search space of possible perturbations. This reduction is reasonable, since normalization preserves the essential functional form. (Note that coefficients get tuned later during the OLS phase and local search.)
+This is followed by constant normalization during which coefficients that enter multiplication, division, addition or subtraction are set to 1, while those entering the power function are rounded to integer, with exception of square root, which is kept intact. For example, for expression $3.3\cdot(x+45.1\cdot y^{3.2})\cdot 81\cdot x/\sqrt{y}$ the normalized version is $1\cdot (x+1\cdot y^3)\cdot 1\cdot x/\sqrt{y}$. The reason for performing normalization is reducing the search space of possible perturbations thus keeping them within a reasonable size. This reduction is reasonable, since normalization preserves the essential functional form. (Note that coefficients get tuned later during the OLS phase and local search.)
 
 
-After normalization, the expression is simplified -- getting compact expression is more likely after normalization than before. The previous expression will take form $(x+y^3)\cdot x/\sqrt{y}$ -- this simplification only removed unnecessary coefficients, but in general it can be non-trivial symbolic simplification. 
+After performing the normalization process, the expression is simplified -- getting compact expression is more likely after normalization than before. The previous expression will take form $(x+y^3)\cdot x/\sqrt{y}$. The purpose of simplification is removing unnecessary coefficients, but in general it can also be non-trivial symbolic simplification. 
 
 
 Perturbations are generated by making simple changes on the per-node level of $s$ expression tree.
@@ -468,19 +470,19 @@ Depending on the structure of the expression tree (expression does not have to h
 Lines \ref{line:forSSStart}-\ref{line:forSSEnd} show that there are three possibly overlapping cases when performing perturbations on the per-subtree level. 
 
 \emph{Case 1}. 
-Subtree $ss$ is the whole tree $s$. Following on the the previous exemplary expression tree, this means that multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be changed to addition, which forms a perturbation $(x+y^3)+ x/\sqrt{y}$. 
+Subtree $ss$ is the whole tree $s$. Following on the the previous exemplary expression tree, this means that multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a perturbation $(x+y^3)+ x/\sqrt{y}$. 
 
 
 \emph{Case 2}. 
 Subtree $ss$ has arity of at least 1. This means that the left subtree exists, so the left subtree node is to be changed. 
-For example, if $ss=x+y^3$ the overall perturbation might be $(x/y^3)+x/\sqrt{y}$ (addition is changed to division). 
+For example, if $ss=x+y^3$ the overall perturbation might be $(x/y^3)+x/\sqrt{y}$ (addition is replaced by division). 
 Another example would be the case of unary operation, e.g. when $ss=\sqrt{y}$. In that case, some of the possible perturbations could be $(x+y^3)\cdot x/\sqrt{\ln{y}}$ (application of logarithm to left subtree $y$) or $(x+y^3)\cdot x/\sqrt{x}$ (changing variable $y$ to $x$), etc.
 
 \emph{Case 3}. 
 Subtree $ss$ is binary operation, meaning the right subtree must exist. 
-The idea is analog as in \emph{Case 2}. 
+The analogous idea is applied as in \emph{Case 2}. 
 
-Allowed per-node changes are as follows:
+The algorithm allows the following set of carefully chosen per-node changes:
 
 \begin{enumerate}
 	\item Any node to any of its subtrees (excluding itself). For example, if $(x+y^3)$ is changed to $x$, the perturbation is $(x+y^3)\cdot x/\sqrt{y} \rightarrow x\cdot x/\sqrt{y}$. 
@@ -490,6 +492,7 @@ Allowed per-node changes are as follows:
 	\item Binary operation to another binary operation. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot (x + \sqrt{y})$. 
 	\item Variable or constant enter the binary operation with arbitrary variable. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+x/y^3)\cdot x/\sqrt{y}$. 
 \end{enumerate} 
+\fxnote{Dati kompleksnost velicine skupa perturbacija u odnosu na velicinu drveta i dopustene promjene}
 
 \subsubsection{Local search}\label{sec:ls}
    
