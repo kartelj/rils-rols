@@ -500,11 +500,26 @@ The algorithm allows the following set of carefully chosen per-node changes:
 
 Our proposed algorithm was implemented in Python version 3.x. All experiments were performed on a machine xx with xx GHz and a memory limit of xx GB in single-threaded mode. The maximum computation time allowed for each run was limited to 1h minutes, i.e., 3600 seconds.
  
-The following algorithms are compared: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{AFP-FE}, \textsc{ITEA}, \textsc{AFP}, \textsc{DSR}, \textsc{Operon},  a python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{SBP-GP}, \textsc{EPLEX}, \textsc{BSR}, \textsc{FEAT}, \textsc{FFX}, \textsc{MRGP} and our \textsc{Rils}-\textsc{Rols} algorithm.
+The following 15 algorithms are compared: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{AFP-FE}, \textsc{ITEA}, \textsc{AFP}, \textsc{DSR}, \textsc{Operon},  a python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{SBP-GP}, \textsc{EPLEX}, \textsc{BSR}, \textsc{FEAT}, \textsc{FFX}, \textsc{MRGP} and our \textsc{Rils}-\textsc{Rols} algorithm.
 
 
  
 \subsection{Datasets and SRBench}
+
+SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and the environment for analysis, see~\cite{la2021contemporary}. It brought researchers an easy handled environment to evaluation, compare, and analyse their methods. Among all benchmark sets, we involve two real-world inspired benchmark sets into our computational evaluation: 
+\begin{itemize}
+	\item \textsc{Feynman} benchmark set, inspired from physics and formulas/models that correspond to various natural laws.  
+	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. 
+	\item \textsc{Strogatz} benchmark set from~\cite{la2016inference}. 
+	Each dataset is represented by a 2-state system of first-order, ordinary differential equations. 
+	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes various non-linear dynamics and exhibiting chaos.   
+
+\end{itemize}
+The abovementioned benchmark sets may be biased as models which describe phisical laws may have various symmetries, periodically w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be biased and in-advance significantly reduced. Thus, some methods may get significant help with this regards, while some others may be in the subordinate situation. 
+  In order to permit any kind of favoritism, we generate a set of randomly generated instances, called \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.}
+
+
+
 
 \subsection{Parameter tuning}
 SAMO JEDAN PARAMETAR!!!
