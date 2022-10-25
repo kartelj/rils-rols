@@ -585,60 +585,39 @@ The above-mentioned benchmark sets may be biased as models which describe physic
 
 
 \subsection{Parameter tuning}
-The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose a value for which a larger average $R^2$ and a smaller average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with the cardinalty of ... 
-
+The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose $tolerance_{error}=?$ for which a larger average $R^2$ and a smaller average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with a cardinalty of...
 
 \fxnote{ drugi parametar manje vise zavistan od ocekivanog 
 nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
 \subsection{Comparison with other methods}
-\fxnote{Marko: TODO}
+In this section, we deal with evaluating the performance of \textsc{Rils-Rols} algorithm with 15 other competitors from the literature that solve the problem of Symbolic regression. The results are reported in terms of two numerical tables~, Tables~\ref{tab:comp_noise0},\ref{tab:comp_noise001}, and \ref{tab:comp_noise0001} on real-world benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, utilizing  different values of noise: 0.0, 0.01, and 0.001, respectively. 
+
+
+ 
+
+
 \begin{table}[!htb]
 	\caption{Comparison without noise}\label{tab:comp_noise0}
 	\centering
 		\begin{tabular}{l|rrr|rrr} \hline
 			& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 			Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
-			RILS-ROLS&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
-			AIFeynman&55.78&27.14&52.69&78.51&35.71&73.9\\
-			GP-GOMEA&26.83&29.46&27.12&71.55&71.43&71.54\\
-			AFP\_FE&26.98&20&26.23&59.05&28.57&55.77\\
-			ITEA&22.41&7.14&20.77&27.59&21.43&26.93\\
-			AFP&21.12&15.18&20.48&44.83&25&42.69\\
-			DSR&19.72&19.64&19.71&25&14.29&23.85\\
-			Operon&16.55&11.43&16&86.21&\bf{92.86}&86.93\\
-			gplearn&16.27&8.93&15.48&32.76&7.14&30\\
-			SBP-GP&12.72&11.61&12.6&73.71&78.57&74.23\\
-			EPLEX&12.39&8.93&12.02&46.98&21.43&44.23\\
-			BSR&2.48&0.89&2.31&10.78&21.43&11.93\\
-			FEAT&0&0.89&0.1&39.66&42.86&40\\
-			FFX&0&0&0&0&0&0\\
-			MRGP&0&0&0&\bf{93.1}&89.29&\bf{92.69}\\
-			\hline
-		\end{tabular}
-\end{table}
-
-\begin{table}[!htb]
-	\caption{Comparison with noise level 0.001}\label{tab:comp_noise0001}
-	\centering
-		\begin{tabular}{l|rrr|rrr} \hline
-			& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
-			Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
-			RILS-ROLS&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
-			DSR&16.81&18.75&17.02&26.29&14.29&25\\
-			gplearn&15.84&8.93&15.1&24.14&7.14&22.31\\
-			AFP\_FE&15.95&6.43&14.92&57.76&28.57&54.62\\
-			AFP&14.87&7.14&14.04&44.83&25&42.69\\
-			EPLEX&10.02&2.68&9.23&48.71&21.43&45.77\\
-			AIFeynman&1.49&13.73&2.81&9.73&35.71&12.53\\
-			ITEA&1.94&4.46&2.21&26.72&21.43&26.15\\
-			GP-GOMEA&1.62&0.89&1.54&72.84&71.43&72.69\\
-			Operon&0.34&0&0.31&\bf{81.9}&\bf{92.86}&\bf{83.08}\\
-			FFX&0.11&0&0.1&19.4&14.29&18.85\\
-			FEAT&0&0.89&0.1&13.79&50&17.69\\
-			SBP-GP&0&0&0&62.07&53.57&61.15\\
-			BSR&0&0&0&7.76&14.29&8.46\\
-			MRGP&0&0&0&0.86&17.86&2.69\\
+			\textsc{Rils-Rols}&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
+			 \textsc{AI-Feynman} &55.78&27.14&52.69&78.51&35.71&73.9\\
+			 \textsc{Gomea} &26.83&29.46&27.12&71.55&71.43&71.54\\
+			\textsc{AFP-FE} &26.98&20&26.23&59.05&28.57&55.77\\
+			 \textsc{ITEA}&22.41&7.14&20.77&27.59&21.43&26.93\\
+			\textsc{AFP}&21.12&15.18&20.48&44.83&25&42.69\\
+			\textsc{DSR}&19.72&19.64&19.71&25&14.29&23.85\\
+			 \textsc{Operon}&16.55&11.43&16&86.21&\bf{92.86}&86.93\\
+			 \textsc{gplearn}&16.27&8.93&15.48&32.76&7.14&30\\
+			\textsc{SBP-GP}&12.72&11.61&12.6&73.71&78.57&74.23\\
+			\textsc{EPLEX}  &12.39&8.93&12.02&46.98&21.43&44.23\\
+			\textsc{BSR}&2.48&0.89&2.31&10.78&21.43&11.93\\
+			 \textsc{FEAT}&0&0.89&0.1&39.66&42.86&40\\
+			\textsc{FFX}&0&0&0&0&0&0\\
+			\textsc{MRGP}&0&0&0&\bf{93.1}&89.29&\bf{92.69}\\
 			\hline
 		\end{tabular}
 \end{table}
@@ -667,6 +646,32 @@ nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na tren
 		\hline
 	\end{tabular}
 \end{table}
+
+\begin{table}[!htb]
+	\caption{Comparison with noise level 0.001}\label{tab:comp_noise0001}
+	\centering
+		\begin{tabular}{l|rrr|rrr} \hline
+			& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
+			Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
+				\textsc{Rils-Rols}&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
+				\textsc{DSR}&16.81&18.75&17.02&26.29&14.29&25\\
+			 \textsc{gplearn}&15.84&8.93&15.1&24.14&7.14&22.31\\
+			\textsc{AFP-FE}&15.95&6.43&14.92&57.76&28.57&54.62\\
+			\textsc{AFP}&14.87&7.14&14.04&44.83&25&42.69\\
+				\textsc{EPLEX} &10.02&2.68&9.23&48.71&21.43&45.77\\
+			 \textsc{AI-Feynman}&1.49&13.73&2.81&9.73&35.71&12.53\\
+	         \textsc{ITEA}&1.94&4.46&2.21&26.72&21.43&26.15\\
+			 \textsc{Gomea}&1.62&0.89&1.54&72.84&71.43&72.69\\
+	        \textsc{Operon}&0.34&0&0.31&\bf{81.9}&\bf{92.86}&\bf{83.08}\\
+				\textsc{FFX}&0.11&0&0.1&19.4&14.29&18.85\\
+	    \textsc{FEAT}&0&0.89&0.1&13.79&50&17.69\\
+		\textsc{SBP-GP}&0&0&0&62.07&53.57&61.15\\
+			\textsc{BSR}&0&0&0&7.76&14.29&8.46\\
+				\textsc{MRGP}&0&0&0&0.86&17.86&2.69\\
+			\hline
+		\end{tabular}
+\end{table}
+
 
 \begin{center}
  \begin{tikzpicture}
