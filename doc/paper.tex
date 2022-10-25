@@ -584,15 +584,15 @@ The above-mentioned benchmark sets may be biased as models which describe physic
   In order to permit any kind of favoritism, we generate a set of randomly generated instances, called \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.}
 
 
-
-
 \subsection{Parameter tuning}
-SAMO JEDAN PARAMETAR!!!
-Zapravo dva parametra $penalty_{size}$ i $tolerance_{error}$ pri cemu je drugi manje vise zavistan od ocekivanog 
-nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). 
+The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose a value for which a larger average $R^2$ and a smaller average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with the cardinalty of ... 
+
+
+\fxnote{ drugi parametar manje vise zavistan od ocekivanog 
+nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
 \subsection{Comparison with other methods}
-
+\fxnote{Marko: TODO}
 \begin{table}[!htb]
 	\caption{Comparison without noise}\label{tab:comp_noise0}
 	\centering
