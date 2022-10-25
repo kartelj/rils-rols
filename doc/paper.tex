@@ -585,13 +585,14 @@ The above-mentioned benchmark sets may be biased as models which describe physic
 
 
 \subsection{Parameter tuning}
-The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose $tolerance_{error}=?$ for which a larger average $R^2$ and a smaller average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with a cardinalty of...
+The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose $tolerance_{error}=?$ for which a largest average $R^2$ and the smallest average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with a cardinalty of xx instances. 
 
 \fxnote{ drugi parametar manje vise zavistan od ocekivanog 
 nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
-\subsection{Comparison with other methods}
-In this section, we deal with evaluating the performance of \textsc{Rils-Rols} algorithm with 15 other competitors from the literature that solve the problem of Symbolic regression. The results are reported in terms of two numerical tables~, Tables~\ref{tab:comp_noise0},\ref{tab:comp_noise001}, and \ref{tab:comp_noise0001} on real-world benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, utilizing  different values of noise: 0.0, 0.01, and 0.001, respectively. 
+\subsection{Comparison with other methods on real--world benchark sets}
+In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm with 15 other competitors from the literature that solve the problem of Symbolic regression. The results are reported in terms of three numerical Tables~\ref{tab:comp_noise0}--\ref{tab:comp_noise001} on real-world benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, utilizing  different values of noise: 0.0 (no noise), 0.001, and 0.01, respectively. Each table consists of three blocks. The first block reports the algorithm whose performances are measured. The second block reports, in two columns,  percentages of instances where the exact model has been found by respective algorithms on both, \textsc{Feynman} and \textsc{Strogatz}, benchmark sets. The third column provides the overall summary percentage of algorithms' success over all instances. The third block displays the results of respective algorithm in the presence of $R^2$ error, that is when $R^2$ error reached the value of 0.999, but not necessary equal to 1. \fxnote{Marko: proceed...}
+
 
 
  
@@ -622,30 +623,6 @@ In this section, we deal with evaluating the performance of \textsc{Rils-Rols} a
 		\end{tabular}
 \end{table}
 
-\begin{table}[!htb]
-	\caption{Comparison with noise level 0.01}\label{tab:comp_noise001}
-	\centering
-	\begin{tabular}{l|rrr|rrr} \hline
-		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
-		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
-		RILS-ROLS&\bf{36.29}&\bf{22.14}&\bf{34.77}&\bf{64.91}&\bf{46.43}&\bf{62.92}\\
-		gplearn&13.21&8.93&12.75&14.22&7.14&13.46\\
-		DSR&8.41&16.07&9.23&17.24&14.29&16.92\\
-		EPLEX&8.77&0&7.83&14.22&3.57&13.07\\
-		AFP&7.11&0.89&6.44&8.19&7.14&8.08\\
-		AFP\_FE&6.12&3.57&5.85&5.6&0&5\\
-		ITEA&0.11&0.89&0.19&1.72&10.71&2.69\\
-		AIFeynman&0&0.79&0.09&0&0&0\\
-		Operon&0.09&0&0.08&0&0&0\\
-		GP-GOMEA&0&0&0&0&0&0\\
-		SBP-GP&0&0&0&0&0&0\\
-		BSR&0&0&0&0&0&0\\
-		FEAT&0&0&0&0&14.29&1.54\\
-		FFX&0&0&0&0&0&0\\
-		MRGP&0&0&0&0&0&0\\
-		\hline
-	\end{tabular}
-\end{table}
 
 \begin{table}[!htb]
 	\caption{Comparison with noise level 0.001}\label{tab:comp_noise0001}
@@ -672,6 +649,31 @@ In this section, we deal with evaluating the performance of \textsc{Rils-Rols} a
 		\end{tabular}
 \end{table}
 
+
+\begin{table}[!htb]
+	\caption{Comparison with noise level 0.01}\label{tab:comp_noise001}
+	\centering
+	\begin{tabular}{l|rrr|rrr} \hline
+		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
+		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
+		\textsc{Rils-Rols}&\bf{36.29}&\bf{22.14}&\bf{34.77}&\bf{64.91}&\bf{46.43}&\bf{62.92}\\
+		 \textsc{gplearn}&13.21&8.93&12.75&14.22&7.14&13.46\\
+		\textsc{DSR}&8.41&16.07&9.23&17.24&14.29&16.92\\
+		\textsc{EPLEX}&8.77&0&7.83&14.22&3.57&13.07\\
+			\textsc{AFP}&7.11&0.89&6.44&8.19&7.14&8.08\\
+	\textsc{AFP-FE}&6.12&3.57&5.85&5.6&0&5\\
+		\textsc{ITEA}&0.11&0.89&0.19&1.72&10.71&2.69\\
+	 \textsc{AI-Feynman}&0&0.79&0.09&0&0&0\\
+		\textsc{Operon}&0.09&0&0.08&0&0&0\\
+		\textsc{Gomea}&0&0&0&0&0&0\\
+		\textsc{SBP-GP}&0&0&0&0&0&0\\
+			\textsc{BSR}&0&0&0&0&0&0\\
+		\textsc{FEAT}&0&0&0&0&14.29&1.54\\
+		\textsc{FFX}&0&0&0&0&0&0\\
+		\textsc{MRGP}&0&0&0&0&0&0\\
+		\hline
+	\end{tabular}
+\end{table}
 
 \begin{center}
  \begin{tikzpicture}
