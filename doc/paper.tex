@@ -122,15 +122,15 @@
 	 
 	 
 	 There are many different ways to tackle the SR by achieving the right analytic expressions, most of them are related to machine learning techniques or to the technique of genetic programming (GP) and various approximate methods, such as meta-heuristics. Among the first GP methods to tackle SR is the one of Raidl~\cite{raidl1998hybrid} based on a hybrid variant of genetic programming. A differential evolution algorithm was proposed by Cerny et al.~\cite{cerny2008using}. Age-fitness Pareto Optimization approach is proposed by Smidt and Lipson~\cite{schmidt2010age}.  Application of artificial bee colony programming to solve SR is proposed by Karaboga et al.~\cite{karaboga2012artificial}. 
-	 Influence of local--based heuristics on solving SR is reported by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (ITEA) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. A Variable neighborhood programming approach to solve SR  is proposed by Elleurich et al.~\cite{elleuch2020variable}; this technique is initially proposed in~\cite{elleuch2016variable}. 
+	 Influence of local--based heuristics on solving SR is reported by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (Itea) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. A Variable neighborhood programming approach to solve SR  is proposed by Elleurich et al.~\cite{elleuch2020variable}; this technique is initially proposed in~\cite{elleuch2016variable}. 
 	 Kommenda et al.~\cite{kommenda2020parameter} proposed a method called OPERON algorithm, which uses nonlinear least squares for parameter identification of SR models further integrated into a local search mechanism in
-	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The method that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (SBP-GP) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eurequa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
+	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The method that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (Sbp-Gp) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eurequa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
 	 
 	 
-	 Machine learning--based method   based on Bayesian symbolic regression (BSR) is proposed in~\cite{jin2019bayesian},  belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (DSR), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further investigated in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
+	 Machine learning--based method   based on Bayesian symbolic regression (Bsr) is proposed in~\cite{jin2019bayesian},  belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (Dsr), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further investigated in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
 	
-	Powerful hybrid techniques to solve SR are also well studied; among them, we emphasize the EPLEX solver from~\cite{la2019probabilistic,la2016epsilon} and AI Feynman algorithm from~\cite{udrescu2020ai}, a physics-inspired divide-and-conquer method that  combines neural network
-	fitting. The later one is one of the most efficient method for physically inspired models. We also mention the Fast Function Extraction (FFX) algorithm developed by McConaghy~\cite{mcconaghy2011ffx},  a non-evolutionary method in combination with a machine learning technique---path-wise regularized learning--- which   quickly prune a huge set of candidate basis functions down to compact models.
+	Powerful hybrid techniques to solve SR are also well studied; among them, we emphasize the Eplex solver from~\cite{la2019probabilistic,la2016epsilon} and AI Feynman algorithm from~\cite{udrescu2020ai}, a physics-inspired divide-and-conquer method that  combines neural network
+	fitting. The later one is one of the most efficient method for physically inspired models. We also mention the Fast Function Extraction (Ffx) algorithm developed by McConaghy~\cite{mcconaghy2011ffx},  a non-evolutionary method in combination with a machine learning technique---path-wise regularized learning--- which   quickly prune a huge set of candidate basis functions down to compact models.
 	
 	A short chronological overview of the most important  literature methods to solve SR are given in Table~\ref{tab:gp-based}. 
 	
@@ -140,33 +140,33 @@
 		\scalebox{0.7}{
 		\begin{tabularx}{550pt}{l  l  X}  
 			Algorithm          &   Paper/year &   Short details   \\ \hline
-			GP         &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
-	        Hybrid GP  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
-	        DFE        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
-	        APF-FE                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
+			\textsc{Gp}        &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
+	        \textsc{Hybrid-Gp}  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
+	        \textsc{Dfe}        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
+	        \textsc{Apf-Fe}                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
         	APF            &      \cite{schmidt2010age} (2010)        &  Age-fitness pareto optimization approach                        \\
-        	FFX  & \cite{mcconaghy2011ffx} (2011)  & The Fast Function Extraction algorithm --  non-evolutionary technique based on a machine learning technique called path-wise regularized learning \\
-             ABCP &  \cite{karaboga2012artificial} (2012)  & Artificial bee colony programming  approach \\
-			EPLEX          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection  \\ 
-			MRGP & \cite{arnaldo2014multiple} (2014) & It decouples and
+        	\textsc{Ffx}  & \cite{mcconaghy2011ffx} (2011)  & The Fast Function Extraction algorithm --  non-evolutionary technique based on a machine learning technique called path-wise regularized learning \\
+             \textsc{Abcp} &  \cite{karaboga2012artificial} (2012)  & Artificial bee colony programming  approach \\
+			\textsc{Eplex}          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection  \\ 
+			\textsc{Mrgp} & \cite{arnaldo2014multiple} (2014) & It decouples and
 			linearly combines a program's subexpressions via multiple regression on the target variable  \\
 	       Local optimization NLS    & \cite{kommenda2018local} (2018)   & Constants Optimization in GP by Nonlinear Least Square \\
-	       FEAT & \cite{la2018learning} (2018) & Features are represented as networks of multi-type expression trees  comprised of activation functions; Differentiable features are trained via gradient descent \\
-	       SBP-GP &  \cite{virgolin2019linear} (2019)  & The idea of semantic back-propagation utilized in GP \\
-	       BSR & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
-	       DSR  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
-	       OPERON & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
-	       VNP    & \cite{elleuch2020variable} (2020) & VNS based GP approach \\
-	       OccamNet & \cite{costa2020fast} (2020) &   A fast neural network approach; the model defines a probability distribution over a non-differentiable function space; it samples functions and updates the weights with back-propagation  based on cross-entropy matching in an EA strategy	 \\
+	       \textsc{Feat} & \cite{la2018learning} (2018) & Features are represented as networks of multi-type expression trees  comprised of activation functions; Differentiable features are trained via gradient descent \\
+	       \textsc{Sbp-Gp} &  \cite{virgolin2019linear} (2019)  & The idea of semantic back-propagation utilized in GP \\
+	       \textsc{Bsr} & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
+	       \textsc{Dsr}  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
+	       \textsc{Operon} & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
+	       \textsc{Vnp}    & \cite{elleuch2020variable} (2020) & VNS based GP approach \\
+	       \textsc{OccamNet} & \cite{costa2020fast} (2020) &   A fast neural network approach; the model defines a probability distribution over a non-differentiable function space; it samples functions and updates the weights with back-propagation  based on cross-entropy matching in an EA strategy	 \\
 	       
-	       AI-Feynman  & \cite{udrescu2020ai} (2020) & A physics-inspired divide-and-conquer method; it  combines neural network fitting \\
-	             GOMEA  & \cite{virgolin2021improving} (2021)    & A model-based
+	       \textsc{AI-Feynman} & \cite{udrescu2020ai} (2020) & A physics-inspired divide-and-conquer method; it  combines neural network fitting \\
+	       \textsc{Gomea}  & \cite{virgolin2021improving} (2021)    & A model-based
 	       EA framework called Gene-pool optimal mixing evolutionary algorithm \\
-	       ITEA & \cite{de2021interaction} (2021)   & EA based approach called the interaction-transformation EA   \\
-	       SA & \cite{kantor2021simulated} (2021) &  Simulated annealing approach \\
+	       \textsc{Itea} & \cite{de2021interaction} (2021)   & EA based approach called the interaction-transformation EA   \\
+	       \textsc{Sa} & \cite{kantor2021simulated} (2021) &  Simulated annealing approach \\
 	       
-         DRLA & \cite{mundhenk2021symbolic} (2021)  &    A deep reinforcement learning approach enhanced with genetic programming \\
-            Taylor GP &  \cite{he2022taylor} (2022)  &  Taylor polynomials approximations  \\ \hline
+         \textsc{Drla} & \cite{mundhenk2021symbolic} (2021)  &    A deep reinforcement learning approach enhanced with genetic programming \\
+          \textsc{Taylor-Gp} &  \cite{he2022taylor} (2022)  &  Taylor polynomials approximations  \\ \hline
          
 
 	\end{tabularx} }
@@ -565,7 +565,7 @@ For a given perturbation $p$, local search systematically explores all 1-perturb
 
 Our proposed algorithm was implemented in Python version 3.x. All experiments were performed on a machine xx with xx GHz and a memory limit of xx GB in single-threaded mode. The maximum computation time allowed for each run was limited to 1h minutes, i.e., 3600 seconds.
  
-The following 15 algorithms are compared: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{AFP-FE}, \textsc{ITEA}, \textsc{AFP}, \textsc{DSR}, \textsc{Operon},  a python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{SBP-GP}, \textsc{EPLEX}, \textsc{BSR}, \textsc{FEAT}, \textsc{FFX}, \textsc{MRGP} and our \textsc{Rils}-\textsc{Rols} algorithm.
+The following 15 algorithms are compared: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon},  a python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp} and our \textsc{Rils}-\textsc{Rols} algorithm.
 
 
  
@@ -591,7 +591,18 @@ The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need
 nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
 \subsection{Comparison with other methods on real--world benchark sets}
-In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm with 15 other competitors from the literature that solve the problem of Symbolic regression. The results are reported in terms of three numerical Tables~\ref{tab:comp_noise0}--\ref{tab:comp_noise001} on real-world benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, utilizing  different values of noise: 0.0 (no noise), 0.001, and 0.01, respectively. Each table consists of three blocks. The first block reports the algorithm whose performances are measured. The second block reports, in two columns,  percentages of instances where the exact model has been found by respective algorithms on both, \textsc{Feynman} and \textsc{Strogatz}, benchmark sets. The third column provides the overall summary percentage of algorithms' success over all instances. The third block displays the results of respective algorithm in the presence of $R^2$ error, that is when $R^2$ error reached the value of 0.999, but not necessary equal to 1. \fxnote{Marko: proceed...}
+In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm with 15 other competitors from the literature that solve the problem of Symbolic regression. The results are reported in terms of three numerical Tables~\ref{tab:comp_noise0}--\ref{tab:comp_noise001} on real-world benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, utilizing  different values of noise: 0.0 (no noise), 0.001, and 0.01, respectively. Each table consists of three blocks. The first block reports the algorithm whose performances are measured. The second block reports, in two columns,  percentages of instances where the exact model has been found by respective algorithms on both, \textsc{Feynman} and \textsc{Strogatz}, benchmark sets. The third column provides the overall summary percentage of algorithms' success over all instances. The third block displays the results of respective algorithm in the presence of $R^2$ error, that is when $R^2$ error reached the value of 0.999, when the algorithm gets terminated providing a correct output w.r.t.\ the error. Note that the termination may not necessary be triggered by the error equal to 1. This situation is of interest as it may indicate to the existence of an over-fitting. This block consists of three rows that indicate the percentage of instances where respective algorithm is successfully terminated (fulfilling condition $R^2 \geq 1$) on the both real--world benchmark sets separately, and the overall percentage of success rate (over all considered instances).
+
+Note that when the algorithm terminates with $R^2=1$ and $RMSE=0$, the match of found model and the exact model is proved -- the results are reported in the second block. However, in case when $R^2 \neq 1$, that is $R^2 \geq 0.999$, we manually check these cases comparing the match of obtained model and the exact model, indicating the result. \fxnote{Aco, projeri ovu recenicu, da nisam promasio...}
+
+The following conclusions may be drawn from the numerical results: 
+
+\begin{itemize}
+	\item Concerning the exact results in case noise is not presented, the best performing algorithm is our \textsc{Rils}--\textsc{Rols}, able to find the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, begin successful in 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% and 27.14\% instances of the benchmark set \textsc{Feynman} and \textsc{Strogatz}, respectively. All other approaches are performing significantly worse, and none of them is able to solve more than 30\% instances of any of the two considered benchmark sets. 
+	\item   Concerning the exact results when noise is presented with a value of 0.001, our \textsc{Rils}--\textsc{Rols} is still performing reasonably well, having found an exact model in more than 42\%, considering problems from the both benchmark set. Interestingly, \textsc{AI-Feynman} is quite sensible w.r.t.\ the change in noise, as its performances rapidly drop off -- it is successful on just 2.81\% of the all problem instances. Better from \textsc{AI-Feynman} are in this case \textsc{Dsr}, \textsc{Gplearn}, and \textsc{Afp-Fe} in this order, whose percentages of success range from about 15--17\%. 
+	\item  Concerning the exact results when noise is high, that is with a value of 0.01,  our \textsc{Rils}--\textsc{Rols} is still reasonably good, having found an exact model for  34.77\% of the all problem instances. The second best is \textsc{Gplearn} which percentage of success is 12.75\%, followed by \textsc{Dsr} which is successful on just 9.23\% of the all problem instances. 
+	\item \fxnote{Marko: opisati rezultate za $R^2 >0.999$}
+\end{itemize}
 
 
 
@@ -607,18 +618,18 @@ In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm wit
 			\textsc{Rils-Rols}&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
 			 \textsc{AI-Feynman} &55.78&27.14&52.69&78.51&35.71&73.9\\
 			 \textsc{Gomea} &26.83&29.46&27.12&71.55&71.43&71.54\\
-			\textsc{AFP-FE} &26.98&20&26.23&59.05&28.57&55.77\\
-			 \textsc{ITEA}&22.41&7.14&20.77&27.59&21.43&26.93\\
-			\textsc{AFP}&21.12&15.18&20.48&44.83&25&42.69\\
-			\textsc{DSR}&19.72&19.64&19.71&25&14.29&23.85\\
+			\textsc{Afp-Fe} &26.98&20&26.23&59.05&28.57&55.77\\
+			 \textsc{Itea}&22.41&7.14&20.77&27.59&21.43&26.93\\
+			\textsc{Afp}&21.12&15.18&20.48&44.83&25&42.69\\
+			\textsc{Dsr}&19.72&19.64&19.71&25&14.29&23.85\\
 			 \textsc{Operon}&16.55&11.43&16&86.21&\bf{92.86}&86.93\\
 			 \textsc{gplearn}&16.27&8.93&15.48&32.76&7.14&30\\
-			\textsc{SBP-GP}&12.72&11.61&12.6&73.71&78.57&74.23\\
-			\textsc{EPLEX}  &12.39&8.93&12.02&46.98&21.43&44.23\\
-			\textsc{BSR}&2.48&0.89&2.31&10.78&21.43&11.93\\
-			 \textsc{FEAT}&0&0.89&0.1&39.66&42.86&40\\
-			\textsc{FFX}&0&0&0&0&0&0\\
-			\textsc{MRGP}&0&0&0&\bf{93.1}&89.29&\bf{92.69}\\
+			\textsc{Sbp-Gp}&12.72&11.61&12.6&73.71&78.57&74.23\\
+			\textsc{Eplex}  &12.39&8.93&12.02&46.98&21.43&44.23\\
+			\textsc{Bsr}&2.48&0.89&2.31&10.78&21.43&11.93\\
+			 \textsc{Feat}&0&0.89&0.1&39.66&42.86&40\\
+			\textsc{Ffx}&0&0&0&0&0&0\\
+			\textsc{Mrgp}&0&0&0&\bf{93.1}&89.29&\bf{92.69}\\
 			\hline
 		\end{tabular}
 \end{table}
@@ -631,20 +642,20 @@ In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm wit
 			& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 			Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
 				\textsc{Rils-Rols}&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
-				\textsc{DSR}&16.81&18.75&17.02&26.29&14.29&25\\
+				\textsc{Dsr}&16.81&18.75&17.02&26.29&14.29&25\\
 			 \textsc{gplearn}&15.84&8.93&15.1&24.14&7.14&22.31\\
-			\textsc{AFP-FE}&15.95&6.43&14.92&57.76&28.57&54.62\\
-			\textsc{AFP}&14.87&7.14&14.04&44.83&25&42.69\\
-				\textsc{EPLEX} &10.02&2.68&9.23&48.71&21.43&45.77\\
+			\textsc{Afp-Fe}&15.95&6.43&14.92&57.76&28.57&54.62\\
+			\textsc{Afp}&14.87&7.14&14.04&44.83&25&42.69\\
+				\textsc{Eplex} &10.02&2.68&9.23&48.71&21.43&45.77\\
 			 \textsc{AI-Feynman}&1.49&13.73&2.81&9.73&35.71&12.53\\
-	         \textsc{ITEA}&1.94&4.46&2.21&26.72&21.43&26.15\\
+	         \textsc{Itea}&1.94&4.46&2.21&26.72&21.43&26.15\\
 			 \textsc{Gomea}&1.62&0.89&1.54&72.84&71.43&72.69\\
 	        \textsc{Operon}&0.34&0&0.31&\bf{81.9}&\bf{92.86}&\bf{83.08}\\
-				\textsc{FFX}&0.11&0&0.1&19.4&14.29&18.85\\
-	    \textsc{FEAT}&0&0.89&0.1&13.79&50&17.69\\
-		\textsc{SBP-GP}&0&0&0&62.07&53.57&61.15\\
-			\textsc{BSR}&0&0&0&7.76&14.29&8.46\\
-				\textsc{MRGP}&0&0&0&0.86&17.86&2.69\\
+				\textsc{Ffx}&0.11&0&0.1&19.4&14.29&18.85\\
+	    \textsc{Feat}&0&0.89&0.1&13.79&50&17.69\\
+		\textsc{Sbp-Gp}&0&0&0&62.07&53.57&61.15\\
+			\textsc{Bsr}&0&0&0&7.76&14.29&8.46\\
+				\textsc{Mrgp}&0&0&0&0.86&17.86&2.69\\
 			\hline
 		\end{tabular}
 \end{table}
@@ -658,19 +669,19 @@ In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm wit
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
 		\textsc{Rils-Rols}&\bf{36.29}&\bf{22.14}&\bf{34.77}&\bf{64.91}&\bf{46.43}&\bf{62.92}\\
 		 \textsc{gplearn}&13.21&8.93&12.75&14.22&7.14&13.46\\
-		\textsc{DSR}&8.41&16.07&9.23&17.24&14.29&16.92\\
-		\textsc{EPLEX}&8.77&0&7.83&14.22&3.57&13.07\\
-			\textsc{AFP}&7.11&0.89&6.44&8.19&7.14&8.08\\
-	\textsc{AFP-FE}&6.12&3.57&5.85&5.6&0&5\\
-		\textsc{ITEA}&0.11&0.89&0.19&1.72&10.71&2.69\\
+		\textsc{Dsr}&8.41&16.07&9.23&17.24&14.29&16.92\\
+		\textsc{Eplex}&8.77&0&7.83&14.22&3.57&13.07\\
+			\textsc{Afp}&7.11&0.89&6.44&8.19&7.14&8.08\\
+	\textsc{Afp-Fe}&6.12&3.57&5.85&5.6&0&5\\
+		\textsc{Itea}&0.11&0.89&0.19&1.72&10.71&2.69\\
 	 \textsc{AI-Feynman}&0&0.79&0.09&0&0&0\\
 		\textsc{Operon}&0.09&0&0.08&0&0&0\\
 		\textsc{Gomea}&0&0&0&0&0&0\\
-		\textsc{SBP-GP}&0&0&0&0&0&0\\
-			\textsc{BSR}&0&0&0&0&0&0\\
-		\textsc{FEAT}&0&0&0&0&14.29&1.54\\
-		\textsc{FFX}&0&0&0&0&0&0\\
-		\textsc{MRGP}&0&0&0&0&0&0\\
+		\textsc{Sbp-Gp}&0&0&0&0&0&0\\
+			\textsc{Bsr}&0&0&0&0&0&0\\
+		\textsc{Feat}&0&0&0&0&14.29&1.54\\
+		\textsc{Ffx}&0&0&0&0&0&0\\
+		\textsc{Mrgp}&0&0&0&0&0&0\\
 		\hline
 	\end{tabular}
 \end{table}
