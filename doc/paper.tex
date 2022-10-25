@@ -426,7 +426,7 @@ The size of expression is calculated by simply counting all nodes in the express
 
 \subsubsection{Perturbations}\label{sec:pertGen}
 
-Perturbations allow the algorithm to escape from local optima. As previously described, perturbations are performed in two occasions: ($i$) during the exhaustive examination of neighboring solutions around the starting solution, ($ii$)during selection of the next starting solution, a non-exhaustive case.  
+Perturbations allow the algorithm to escape from local optima. As previously described, perturbations are performed in two occasions: ($i$) during the exhaustive examination of neighboring solutions around the starting solution, ($ii$) during selection of the next starting solution, a non-exhaustive case.  
 In both cases, the same Algorithm~\ref{alg:pert} is used. 
 
 \begin{algorithm}
@@ -445,7 +445,7 @@ In both cases, the same Algorithm~\ref{alg:pert} is used.
 		\State \Return $s_{perturbations}$
 		\EndProcedure
 	\end{algorithmic}
-	\caption{Generation of all 1-perturbations for a given solution.}
+	\caption{Generation of all 1-perturbations of a given solution.}
 	\label{alg:pert}
 \end{algorithm}  
 
@@ -471,17 +471,17 @@ Algorithm~\ref{alg:pertNode} shows how perturbations around given subtree (node)
 	\begin{algorithmic}[1]
 		\Procedure{All1PerturbationsAroundNode}{$s$, $n$}
 		\State $n_{perturbations} \gets \emptyset$
-		\If{$n = s$}
+		\If{$n = s$} \label{alg:alg4-case-1}
 		\State $n_{perturbations} \gets n_{perturbations} \cup$ \texttt{NodeChanges}($n$)
 		\EndIf
-		\If{$n.arity \geq 1$}
+		\If{$n.arity \geq 1$}\label{alg:alg4-case-2}
 		\State $n_{changes} \gets$ \texttt{NodeChanges}($n.left$)
 		\For{$nc \in n_{changes}$}
 		\State $new \gets$ \texttt{Replace}($s$, $n.left$, $nc$)
 		\State $n_{perturbations} \gets n_{perturbations} \cup \{new\}$
 		\EndFor
 		\EndIf
-		\If{$n.arity = 2$}
+		\If{$n.arity = 2$}\label{alg:alg4-case-3}
 		\State $n_{changes} \gets$ \texttt{NodeChanges}($n.right$)
 		\For{$nc \in n_{changes}$}
 		\State $new \gets$ \texttt{Replace}($s$, $n.right$, $nc$)
@@ -491,23 +491,23 @@ Algorithm~\ref{alg:pertNode} shows how perturbations around given subtree (node)
 		\State \Return $n_{perturbations}$
 		\EndProcedure
 	\end{algorithmic}
-	\caption{Generation of 1-perturbations for a given solution around given node.}
+	\caption{Generation of 1-perturbations of a given solution around given node.}
 	\label{alg:pertNode}
 \end{algorithm}
 
 It can be seen that there are three possibly overlapping cases when performing perturbations on the per-node level. 
 
 \emph{Case 1}. 
-Observed node $n$ is the whole tree $s$. Following on the the previous exemplary expression tree, this means that multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a perturbation $(x+y^3)+ x/\sqrt{y}$. 
+Observed node $n$ is the whole tree $s$ (see line ~\ref{alg:alg4-case-1} in Algorithm~\ref{alg:pertNode}). Following on   the previous exemplary expression tree, this means that multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a 1-perturbation expression (tree) $(x+y^3)+ x/\sqrt{y}$. 
 
 
 \emph{Case 2}. 
-Node $n$ has arity of at least 1. This means that the left subtree exists, so the left subtree node is to be changed. 
+Node $n$ has arity of at least 1 (see line ~\ref{alg:alg4-case-2} in Algorithm~\ref{alg:pertNode}). This means that the left subtree exists, so the left subtree node is to be changed. 
 For example, if $n=x+y^3$ the overall perturbation might be $(x/y^3)+x/\sqrt{y}$ (addition is replaced by division). 
 Another example would be the case of unary operation, e.g. when $n=\sqrt{y}$. In that case, some of the possible perturbations could be $(x+y^3)\cdot x/\sqrt{\ln{y}}$ (application of logarithm to left subtree $y$) or $(x+y^3)\cdot x/\sqrt{x}$ (changing variable $y$ to $x$), etc.
 
 \emph{Case 3}. 
-Subtree $ss$ is binary operation, meaning the right subtree must exist. 
+Subtree $ss$ is binary operation, meaning the right subtree must exist (Line ~\ref{alg:alg4-case-3} in Algorithm~\ref{alg:pertNode}). 
 The analogous idea is applied as in \emph{Case 2}. 
 
 The algorithm allows the following set of carefully chosen per-node changes:
@@ -520,6 +520,9 @@ The algorithm allows the following set of carefully chosen per-node changes:
 	\item Binary operation to another binary operation. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot (x + \sqrt{y})$. 
 	\item Variable or constant enter the binary operation with arbitrary variable. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+x/y^3)\cdot x/\sqrt{y}$. 
 \end{enumerate} 
+\fxnote{Nekako zbunjuje u Algoritmu 4, pojava NodeChanges)() i Replace(). Mislim, razumijem iz opisa sta one rade, ali nisam siguran da treba imenovati metode, ako ih barem u kontekstu opisa ne pomenemo direktno po nazivu. }
+
+
 \fxnote{Dati kompleksnost velicine skupa perturbacija u odnosu na velicinu drveta i dopustene promjene}
 
 \subsubsection{Local search}\label{sec:ls}
@@ -531,7 +534,7 @@ Perturbations are further improved by means of local search procedure (Algorithm
 	\hspace*{\algorithmicindent} \textbf{Output}: local optimum $bp$ in the vicinity of perturbation $p$
 	\begin{algorithmic}[1] 
 		\Procedure{LocalSearch}{$p$, $D_{tr}'$}
-		\State $bp, bp_{fit} \gets p, $\texttt{Fitness}$(p, D_{tr}')$ 
+		\State $bp, bp_{fit} \gets p,\ $\texttt{Fitness}$(p,D_{tr}')$ 
 		\State $improved \gets true$
 		\While{$improved$}
 			\State $improved \gets false$
@@ -556,7 +559,7 @@ Perturbations are further improved by means of local search procedure (Algorithm
 	\label{alg:ls}
 \end{algorithm}  
 
-For a given perturbation $p$, local search systematically explores all 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better that the actual best $bp$, OLS coefficient fitting is performed. 
+For a given perturbation $p$, local search systematically explores all 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better that the actual best $bp$, the OLS coefficient fitting (\texttt{FitOLS}) is performed. 
    
 \section{Experimental evaluation}\label{sec:experiments}
 
@@ -577,7 +580,7 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes various non-linear dynamics and exhibiting chaos.   
 
 \end{itemize}
-The abovementioned benchmark sets may be biased as models which describe phisical laws may have various symmetries, periodically w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be biased and in-advance significantly reduced. Thus, some methods may get significant help with this regards, while some others may be in the subordinate situation. 
+The above-mentioned benchmark sets may be biased as models which describe physical laws may have various symmetries, periodically w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be biased and in-advance significantly reduced. Thus, some methods may get significant help with this regards, while some others may be in the subordinate situation. 
   In order to permit any kind of favoritism, we generate a set of randomly generated instances, called \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.}
 
 
