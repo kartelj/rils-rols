@@ -574,10 +574,40 @@ The following 15 algorithms are compared: \textsc{AI-Feynman}, \textsc{GOMEA}, \
 SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and the environment for analysis, see~\cite{la2021contemporary}. It brought researchers an easy handled environment to evaluation, compare, and analyze their methods. Among all benchmark sets, we involve two real-world inspired benchmark sets into our computational evaluation: 
 \begin{itemize}
 	\item \textsc{Feynman} benchmark set, inspired from physics and formulas/models that correspond to various natural laws.  
-	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. 
+	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. Some exact models (equations) of problem instances from this benchmark are shown in Table~\ref{tab:Feynamn-Eq}.  
+	
+   \begin{table}
+		\centering
+		\begin{tabular}{l}   \hline
+	       $x = \sqrt{x_1^2 + x_2^2 - 2 x_1 x_2 \cos(\theta_1 - \theta_2)}$ \\
+	       $ \theta_1 = \arcsin(n \sin \theta_2)$ \\
+	       $E =  \frac{m c^2 }{1 - \frac{v^2}{c^2}}$ \\
+	       $\omega = \frac{1 + \frac{v}{c}}{ \sqrt{1 - \frac{v^2}{c^2}}} \omega_0$ \\ \hline
+	       
+	    \end{tabular}
+		\caption{Some Feynman equations.}
+		\label{tab:Feynamn-Eq}
+	\end{table}
+
+
 	\item \textsc{Strogatz} benchmark set from~\cite{la2016inference}. 
 	Each dataset is represented by a 2-state system of first-order, ordinary differential equations. 
-	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes various non-linear dynamics and exhibiting chaos.   
+	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes various non-linear dynamics and exhibiting chaos.  The equations for some of the datasets of this benchmark are shown in Table~\ref{table:strogatz-ODEs}.
+	
+	%table, an instance -- example
+	
+	\begin{table}
+		\centering
+		\begin{tabular}{ll} \\ \hline
+			Bacterial representation &   $x' = 20 - x - \frac{x \cdot y}{1 + 0.5 x^2 }$ \\ 
+			                         &   $y' = 10 - \frac{x \cdot y}{1 + 0.5 x^2  }$ \\ \hline
+			Shear Flow               &  $\theta' = \cot(\phi)\cos(\theta)$ \\
+			                         &  $ \phi'  = ( \cos^2(\phi) + 0.1 \cdot \sin^2 (\phi)) \sin(\theta) $ \\ \hline
+		\end{tabular}
+	    \caption{Some Strogatz ODE problems.}
+	    \label{table:strogatz-ODEs}
+	\end{table}
+	 
 
 \end{itemize}
 The above-mentioned benchmark sets may be biased as models which describe physical laws may have various symmetries, periodically w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be biased and in-advance significantly reduced. Thus, some methods may get significant help with this regards, while some others may be in the subordinate situation. 
@@ -585,14 +615,14 @@ The above-mentioned benchmark sets may be biased as models which describe physic
 
 
 \subsection{Parameter tuning}
-The \textsc{Rils}-\textsc{Rols} algorithms employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose $tolerance_{error}=?$ for which a largest average $R^2$ and the smallest average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with a cardinalty of xx instances. 
+The \textsc{Rils}-\textsc{Rols} algorithms, apart of the most other methods for SR, employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose $tolerance_{error}=?$ for which a largest average $R^2$ and the smallest average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with a cardinalty of xx instances. 
 
 \fxnote{ drugi parametar manje vise zavistan od ocekivanog 
 nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
 \subsection{Comparison with other methods on real--world benchark sets}
 In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm with 15 other competitors from the literature that solve the problem of Symbolic regression. The results are reported in terms of three numerical Tables~\ref{tab:comp_noise0}--\ref{tab:comp_noise001}, where two real-world benchmark sets, \textsc{Feynman} and \textsc{Storgatz} are considered, utilizing  different values of the noise levels: 0.0 (no noise), 0.001 (a low-level noise), and 0.01 (a high-level noise), respectively. Concerning the added noise, the White Gaussian noise was added to the target ($y$-axis values) as a fraction of the signal RMS value, also applied in~\cite{la2021contemporary}, i.e. for target noise level $\alpha$, we have
-$$ y_{noise} = y + \epsilon, \epsilon \sim \mathcal{N}\left(0, \alpha \sqrt{\frac{1}{N} \sum_{y_i^2}}\right). $$
+$$ y_{noise} = y + \epsilon, \epsilon \sim \mathcal{N}\left(0, \alpha \sqrt{\frac{1}{N} \sum {y_i^2}}\right). $$
 
 Each table consist of three blocks. The first block reports the algorithm whose performances are reported. The second block reports, in two columns,  percentages of instances where the model which matches to the exact one has been found by respective algorithms on both, \textsc{Feynman} and \textsc{Strogatz}, benchmark sets. The third column of this block provides the overall summary percentage of success over all instances. The third block displays the results of the respective algorithm in the presence of $R^2$ error which can indicate on  accuracy, i.e. in our cases when the algorithm  at least reached the accuracy ($R^2$ score) of 0.999.  Note that the termination of our algorithm may not necessary be triggered by the error equal to 1. These results are of interest as it may point out the existence of an over-fitting. This block consists of three rows that indicate the percentage of instances where respective algorithm is able to reach the desired accuracy (fulfilling condition $R^2 \geq 0.999$ before a termination due exceeding the time limit) on the both real--world benchmark sets separately, and the overall percentage of success rate (over all considered instances) w.r.t. the same criterion of success.
 
