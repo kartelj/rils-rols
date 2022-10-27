@@ -742,8 +742,15 @@ First, we divide our benchmark sets into three parts as follows.
 	\item Large--sized instances: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 12 to 15 nodes belong to this sub-set. 
 \end{itemize}
 
-The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are grouped with accordance to the (three) formed sub-groups ($x$-axis) and for each of them the exact percentage rate of success of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis). As expected, the success rate is the highest for the small--sized instances; it is sightly bellow 90\% for the clean (no-noise) data. For more noisy data, the success rate of the algorithm gets decreased. For example, on the small-sized instances on the noisy data with the level of noise of 0.01, the rate of success is about 35 \%.
+The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are grouped with accordance to the (three) formed sub-groups ($x$-axis) and for each of them the exact percentage rate of success of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis). The following conclusions may be drawn from here:
 
+\begin{itemize}
+	\item   As expected, the success rate is the highest for the small--sized instance problems; it is sightly bellow 90\% for the clean (no-noise) data. For more noisy data, the success rate of the algorithm gets decreased. For example, on the small-sized instances with the presence of the noise of level 0.0001, and 0.01, the rate of success of \textsc{Rils}--\textsc{Rols} is still reasonably well, about 55\%~ and 35 \%, respectively. 
+	\item For middle-sized instance problems, the rate of success is slightly bellow 50\%. It also decreases by increasing the level of noise in the target data; for the highest level of chosen noise (of 0.01), the success of rate is about 6\%. 
+	\item For the large-sized instance problems without the presence of a noise, the rate fo success of \textsc{Rils}--\textsc{Rols} algorithm is at about 25\%, which shows that increase in the size of exact models affects the algorithm's performance, but within reasonable expectations.  
+	
+	\item We conclude that the size of exact models (solutions) and the increase of the noise level evenly contribute to overall performance of our \textsc{Rils}--\textsc{Rols} method. The success rate of the algorithm (i.e. the exact percentage) seems decreasing linearly  with the average growing size of the exact models, regardless of the value of the noise level.
+\end{itemize}
 
 \begin{center}
  \begin{tikzpicture}
