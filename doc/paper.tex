@@ -749,7 +749,14 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are gro
 	\item For middle-sized instance problems, the rate of success is slightly bellow 50\%. It also decreases by increasing the level of noise in the target data; for the highest level of chosen noise (of 0.01), the success of rate is about 6\%. 
 	\item For the large-sized instance problems without the presence of a noise, the rate fo success of \textsc{Rils}--\textsc{Rols} algorithm is at about 25\%, which shows that increase in the size of exact models affects the algorithm's performance, but within reasonable expectations.  
 	
-	\item We conclude that the size of exact models (solutions) and the increase of the noise level evenly contribute to overall performance of our \textsc{Rils}--\textsc{Rols} method. The success rate of the algorithm (i.e. the exact percentage) seems decreasing linearly  with the average growing size of the exact models, regardless of the value of the noise level.
+	\item We conclude that the size of exact models (solutions) and the increase of the noise level evenly contribute to overall performance of our \textsc{Rils}--\textsc{Rols} method. The success rate of the algorithm (i.e. the exact percentage) seems decreasing linearly  with the average growing size of the exact models, regardless of values of the noise level.
+	
+	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm -- that is when termination of the algorithm yielded the error $R^2 \geq 0.999$ -- for the input data with the zero noise level on the small--sized random instance problems, it almost reaches the perfect score (i.e. $\approx$100\%). In the presence of a low noise level (equals to 0.001), the accuracy delivered by the algorithm is still high, at about 95\%. Just when a high level of noise (equals to 0.01) is presented in the input data, the accuracy stagnates, but still with the respectable 66\% small-sized instances it reaches at least a precision of $R^2=0.999$. However, as we said, a half of them math to the respectable exact models.
+	 
+	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm on the middle-sized instance problems, it is obtained for 65\% cases in the case when the input data are free of the noise.  The noisy the data are, the accuracy of the algorithms, as expected, drops off. However, not so dramatically~. For the level of noise of 0.01, the high--accuracy is reported on $\approx$30\% cases.
+	 
+	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm on the large-sized instance problems,  the high--accuracy in the data free of the noise presence is reported for 60\% cases. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring $R^2\geq 0.999$ upon termination) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of the considered large--sized instance problems. 
+	 
 \end{itemize}
 
 \begin{center}
@@ -829,6 +836,9 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are gro
 	\captionof{figure}{Percentages of solutions having $R^2 > 0.999$ for varying levels of noise and formulae sizes}
 	\label{fig:compR2_noise_size}
 \end{center}
+
+
+Checking the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm w.r.t.\ the number of variables presented in the corresponding exact models of the problem instances is shown by Figures~\ref{fig:compExact_noise_varcnt}--\ref{fig:compR2_noise_varcnt}. \fxnote{TODO} 
 
 \begin{center}
 	\begin{tikzpicture}
