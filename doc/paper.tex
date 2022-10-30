@@ -116,7 +116,6 @@
 	The problem of symbolic regression (SR)~\cite{billard2002symbolic} has attracted many researchers over the last decade to study it intensively. SR can be seen as a generalization of the well known  concept of linear regression, i.e., polynomial regression~\cite{stimson1978interpreting}. All regression models in principle have the same task: given a set of a $n$-dimensional input data and the output data, the aim is to find a  mathematical expression (function) consisting of $n$ (input) variables that fits to the output data w.r.t. some in advance known measure.  This computationally intensive task is in general  provenly NP--hard~\cite{virgolin2022symbolic}. When aiming a model to be a linear combination of input variables, it represents the problem of linear regression. However, when there are some nonlinear relations between variables, which are relevant, linear regression models are not enough. This is the point where symbolic regression comes into the play. Unlike linear regression, it allows the search over the space of all possible mathematical formulas in order to find the best fitting ones able to  predict the output variable from the input variables. The base of constructing the explicit formula are the basis operations like addition and multiplication, as well as polynomial, trigonometric, exponential, and other elementary functions.  
 	%Application: https://towardsdatascience.com/real-world-applications-of-symbolic-regression-2025d17b88ef
 	
-	
 	 Concrete examples of application of SR include having a less black--box tool, as it may say much more how SR model achieve predictions, that is the coefficients and functions that build the model may indicate on larger importance of some variables over the others. Moreover, in that way we may grasp why the variables are related in the obtained way. As an example, appearance of an exponential function may associate  to  some physical phenomenon such as intensity of radiation or acceleration over time, see~\cite{udrescu2020ai}. Additionally, the SR models, if they are correct, may have    posses  larger extrapolation power than other mathematical models, and especially than neural network--based methods. SR models may maximize obtaining physically more reasonable equations that could serve as insight towards  establishing  physical theory behind as the final goal.  Practical applications of SR in chemical and biological sciences are listed in~\cite{weng2020simple}. In particular,  the discovery of a series of new oxide perovskite catalysts with improved activities is presented there. Applications of SR to discovering physical laws from distorted video is studied in~\cite{udrescu2021symbolic} by means of a unsupervised learning method. Revealing complex ecological dynamics by SR is presented in~\cite{chen2019revealing}, tackled by  a machine learning method. Application of SR to model the mutations effects on protein  stability, in the domain of fundamental and applied biology,  is shown in~\cite{louis2021reviewing}. One of the recent work studies of  auto-discovering conserved quantities using trajectory data from unknown dynamical systems, where SR is solved by a machine learning algorithm, see~\cite{liu2021machine}. Last but not least, we mention the paper~\cite{liang2019phillips} discovers  the application of  SR to model analytic representations of the exciton binding energy. The use of solving the SR in material science is described in~\cite{wang2019symbolic,wang2022symbolic,burlacu2022symbolic,kabliman2021application}. Yet another application to wind speed forecasting is given in~\cite{abdellaoui2021symbolic}. 
 	 
 	 
@@ -751,11 +750,11 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are gro
 	
 	\item We conclude that the size of exact models (solutions) and the increase of the noise level evenly contribute to overall performance of our \textsc{Rils}--\textsc{Rols} method. The success rate of the algorithm (i.e. the exact percentage) seems decreasing linearly  with the average growing size of the exact models, regardless of values of the noise level.
 	
-	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm -- that is when termination of the algorithm yielded the error $R^2 \geq 0.999$ -- for the input data with the zero noise level on the small--sized random instance problems, it almost reaches the perfect score (i.e. $\approx$100\%). In the presence of a low noise level (equals to 0.001), the accuracy delivered by the algorithm is still high, at about 95\%. Just when a high level of noise (equals to 0.01) is presented in the input data, the accuracy stagnates, but still with the respectable 66\% small-sized instances it reaches at least a precision of $R^2=0.999$. However, as we said, a half of them math to the respectable exact models.
+	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm -- that is when termination of the algorithm yielded the error $R^2 \geq 0.999$ -- for the input data with the zero noise level on the small--sized random instance problems, it almost reaches the perfect score (i.e. $\approx$100\%). In the presence of a low noise level (equals to 0.001), the accuracy delivered by the algorithm is still high, at about 95\%. Just when a high level of noise (equals to 0.01) is presented in the input data, the accuracy stagnates, but still on the respectable 66\% small-sized instances it reaches a high--precision of $R^2=0.999$ upon termination. However, as we said, a half of them math to the respectable exact models.
 	 
 	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm on the middle-sized instance problems, it is obtained for 65\% cases in the case when the input data are free of the noise.  The noisy the data are, the accuracy of the algorithms, as expected, drops off. However, not so dramatically~. For the level of noise of 0.01, the high--accuracy is reported on $\approx$30\% cases.
 	 
-	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm on the large-sized instance problems,  the high--accuracy in the data free of the noise presence is reported for 60\% cases. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring $R^2\geq 0.999$ upon termination) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of the considered large--sized instance problems. 
+	 \item Concerning the high--accuracy of the \textsc{Rils}--\textsc{Rols} algorithm on the large-sized instance problems,  the high--accuracy in the data free of the noise presence is reported for 60\% cases. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring n accuracy of $R^2\geq 0.999$ upon termination) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of the considered large--sized instance problems. 
 	 
 \end{itemize}
 
@@ -838,12 +837,17 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are gro
 \end{center}
 
 
-Checking the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm w.r.t.\ the number of variables presented in the corresponding exact models of the problem instances is shown by Figures~\ref{fig:compExact_noise_varcnt}--\ref{fig:compR2_noise_varcnt}. \fxnote{TODO} 
+In this section we investigate the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm w.r.t.\ the number of variables presented in the corresponding exact models of the problem instances whose sizes are ranging from 7 to 12. There is one line plot per each level of noise.  These are shown by Figure~\ref{fig:compExact_noise_varcnt}. The instances are grouped according to the different variable count that are included into respective exact models ($x$-axis). For each of the (four) group, the exact percentages of success rate of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis). The following conclusions can be drawn from there.
+
+The rate of success of \textsc{Rils}--\textsc{Rols} algorithm seems to slightly increase as the expected number of variables gets larger in case of the data with no noise;
+	the increase is significant in the case of a higher noise in data. For example, the lowest percentages of success for \textsc{Rils}-\textsc{Rols} algorithm are noticed for noisy data where exact models consist of just one or two variables. It seems that in these cases the algorithm is more likely favorizing including additional variables at the cost of increasing model accuracy  in order to improve the fitness value over iterations. %Obtaining an accurate model with a few variables in the presence of a high level of nose in the data 
+
+
 
 \begin{center}
 	\begin{tikzpicture}
 		\begin{axis}[
-			xlabel=$variable\;count$,
+			xlabel=$variable\;count\;in\;exact\;models$,
 			ylabel=$exact\;percentage$,
 			xmin=0, xmax=5,
 			ymin=0, ymax=100,
@@ -882,51 +886,51 @@ Checking the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm w.r.t.\ 
 	\label{fig:compExact_noise_varcnt}
 \end{center}
 
-\begin{center}
-	\begin{tikzpicture}
-		\begin{axis}[
-			xlabel=$variable\;count$,
-			ylabel=$exact\;percentage$,
-			xmin=0, xmax=5,
-			ymin=0, ymax=100,
-			xtick={1,2,3,4},
-			xticklabels={1,2,3,4},   % <---
-			ytick={0,10,...,100}
-			]
-			\addplot[smooth,mark=*,blue] plot coordinates {
-				(1,83.33)
-				(2,66.67)
-				(3,73.33)
-				(4,46.67)
-			};
-			\addlegendentry{No noise}
-			
-			\addplot[smooth,color=red,mark=x]
-			plot coordinates {
-				(1,56.67)
-				(2,63.33)
-				(3,66.67)
-				(4,46.67)
-			};
-			\addlegendentry{Noise level 0.001}
-			
-			\addplot[smooth,color=green,mark=o]
-			plot coordinates {
-				(1,23.33)
-				(2,43.33)
-				(3,53.33)
-				(4,26.67)
-			};
-			\addlegendentry{Noise level 0.01}
-		\end{axis}
-	\end{tikzpicture}
-	\captionof{figure}{Percentages of solutions having $R^2 > 0.999$ for varying levels of noise and variable counts (only sizes ranging from 7 to 12)}
-	\label{fig:compR2_noise_varcnt}
-\end{center}
+%\begin{center}
+%	\begin{tikzpicture}
+%		\begin{axis}[
+%			xlabel=$variable\;count$,
+%			ylabel=$exact\;percentage$,
+%			xmin=0, xmax=5,
+%			ymin=0, ymax=100,
+%			xtick={1,2,3,4},
+%			xticklabels={1,2,3,4},   % <---
+%			ytick={0,10,...,100}
+%			]
+%			\addplot[smooth,mark=*,blue] plot coordinates {
+%				(1,83.33)
+%				(2,66.67)
+%				(3,73.33)
+%				(4,46.67)
+%			};
+%			\addlegendentry{No noise}
+%			
+%			\addplot[smooth,color=red,mark=x]
+%			plot coordinates {
+%				(1,56.67)
+%				(2,63.33)
+%				(3,66.67)
+%				(4,46.67)
+%			};
+%			\addlegendentry{Noise level 0.001}
+%			
+%			\addplot[smooth,color=green,mark=o]
+%			plot coordinates {
+%				(1,23.33)
+%				(2,43.33)
+%				(3,53.33)
+%				(4,26.67)
+%			};
+%			\addlegendentry{Noise level 0.01}
+%		\end{axis}
+%	\end{tikzpicture}
+%	\captionof{figure}{Percentages of solutions having $R^2 > 0.999$ for varying levels of noise and variable counts (only sizes ranging from 7 to 12)}
+%	\label{fig:compR2_noise_varcnt}
+%\end{center}
 
 
 \subsection{Statistical evaluation}
-
+ \fxnote{TODO}
 \section{Conclusions and future work}\label{sec:conclusions}
   
  \newpage
