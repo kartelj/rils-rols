@@ -904,10 +904,13 @@ The  following conclusions may be drawn from Figure~\ref{fig:compExact_noise_var
 	\label{fig:compExact_noise_varsizes}
 \end{figure}
 
-When one concern of the runtime analysis of the \textsc{Rils}--\textsc{Rols} algorithm on the \textsc{Random} benchmark set, the results are shown by Figure~\ref{fig:runtime_rils_rols}. The following conclusions may be drawn from there.
+When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algorithm on the \textsc{Random} benchmark set w.r.t\ number of variables, the results are shown in Figure~\ref{fig:runtime_rils_rols}. The instances are grouped w.r.t.\ number of variables included into corresponding exact model. The following conclusions may be drawn from there.
 
 \begin{itemize}
-	\item abc...\fxnote{TODO}
+	\item As expected, average runtime is getting increased with the increase of the number of variables. 
+	\item Note that the average runtime in case of the instances whose exact models have the largest number of variables (5) is about 200s.
+	\item The two above-mentioned points indicate efficacy of our method especially in case of expected exact models of a smaller size on the data with small--to--middle levels of noise. In these cases, the algorithm is still able to deliver the reasonable exact percentages, which are larger than 50\%. Note that 
+	the models with these characteristics are desirable in the areas of natural sciences due to their interpret-ability more than models represented by complex expressions.   
 \end{itemize}
 
 \begin{figure}[H]
