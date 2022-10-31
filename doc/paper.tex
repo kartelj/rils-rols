@@ -837,15 +837,18 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are gro
 \end{center}
 
 
-In this section we investigate the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm w.r.t.\ the number of variables presented in the corresponding exact models of the problem instances whose sizes are ranging from 7 to 12 varying levels of noise. There is one line plot shown per each level of noise.  These are shown by Figure~\ref{fig:compExact_noise_varcnt}. The instances are grouped according to the different variable count that are included into respective exact models ($x$-axis). For each of the (four) group, the exact percentages of success rate of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis). The following conclusions can be drawn from there.
+In this section we investigate the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm in terms of the number of variables and sizes of corresponding exact models of the problem instances varying levels of noise. There is one line plot shown per each level of noise.  These are shown by Figures~\ref{fig:compExact_noise_varcnt} and~\ref{fig:compExact_noise_varsizes}. The instances are grouped according to the different variable count/size of respective exact models ($x$-axis). For each group, the exact percentages of success rate of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis).
 
-The rate of success of \textsc{Rils}--\textsc{Rols} algorithm seems to slightly increase as the expected number of variables gets larger in case of the data with no noise;
-	the increase is significant in the case of a higher noise in data. For example, the lowest percentages of success for \textsc{Rils}-\textsc{Rols} algorithm are noticed for noisy data where exact models consist of just one or two variables. It seems that in these cases the algorithm is more likely in favor of including additional variables at the cost of increasing model accuracy  in order to improve the fitness value over iterations. In the presence of zero level od noise, OLS method will find much easier a smaller model (on $\approx$ 45\% cases) of a high  accuracy w.r.t.\ the input data. In the next iterations, the method will hardly intend for adding variables in the current best solution at the cost of improving fitness value, as the size of model will contribute more to its increase as the first two product terms in~\ref{eq:fitness} are already small (close to 1).      \fxnote{TODO: need to be further expanded...}
+ The following conclusions can be drawn from Figure~\ref{fig:compExact_noise_varcnt}.
+
+\begin{itemize}
+    \item The rate of success of \textsc{Rils}--\textsc{Rols} algorithm  slightly decrease as the expected number of variables gets larger in case of the data with no noise.
+    \item The success rate percentages drop off with the presence of noise. The higher the noise level, the smaller the success rate percentages. 
+    \item Interestingly, in the presence of noise, the highest exact percentages are not for the instances whose exact models have one variable, but two or three. We argue it by the fact that the early phase of the algorithm will more frequently include additional variables in the solution at the cost of increasing model accuracy to ensure the fitness value improvements over iterations. In the presence of the zero noise, OLS method efficiently finds a smaller model (on $\approx$ 50\% cases) of a high  accuracy that fits to the input data. However, this is no the case when the data is noisy and the decision of adding more variables is forced. By a progression of the algorithms, it gets harder improving the fitness value of the current best solution by adding variables, and other operations are more frequently involved. %This conclusion also correlates to the shape of fitness function given by Equation~(\ref{eq:fitness}) where the first two product terms there are already small (close to 1).      \fxnote{TODO: need to be further expanded...}
 	%Obtaining an accurate model with a few variables in the presence of a high level of nose in the data 
+\end{itemize}
 
-
-
-\begin{figure}[!htb]
+\begin{figure}[H]
 	
 	
 	\begin{subfigure}[b]{0.40\textwidth}
@@ -853,24 +856,32 @@ The rate of success of \textsc{Rils}--\textsc{Rols} algorithm seems to slightly 
 		\caption{No noise}
 		\label{fig:noNoise}
 	\end{subfigure}
-		\hfill
-		\begin{subfigure}[b]{0.4\textwidth}
-			
-			\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_001.eps}
-			\caption{Level of noise equal to 0.001}
-			\label{fig:noise0.001}
-		\end{subfigure}
-		\centering
-		\begin{subfigure}[b]{0.40\textwidth}
-					\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_01.eps}
-					\caption{Level of noise equal to 0.01.}
-					\label{fig:noise0.01}
-				\end{subfigure}
-		\caption{Exact solution percentages for varying levels of noise and variable counts.}
-		\label{fig:compExact_noise_varcnt}
-	\end{figure}
+	\hfill
+	\begin{subfigure}[b]{0.4\textwidth}
+		
+		\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_001.eps}
+		\caption{Level of noise equal to 0.001}
+		\label{fig:noise0.001}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}[b]{0.40\textwidth}
+		\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_01.eps}
+		\caption{Level of noise equal to 0.01.}
+		\label{fig:noise0.01}
+	\end{subfigure}
+	\caption{Exact solution percentages for varying levels of noise and variable counts.}
+	\label{fig:compExact_noise_varcnt}
+\end{figure}
 
-\begin{figure}[!htb]
+The  following conclusions may be drawn from Figure~\ref{fig:compExact_noise_varsizes}.
+\begin{itemize}
+	\item The exact percentage rates are decreased as the size of exact models increase, in case of any level of noise is utilized within the input data.
+	\item The highest exact percentages, higher than 70\%, are noticed for the instances with a small-to-middle size  (3--7) exact models. However, for the same sizes, for noisy data, these percentages are significantly lower; for example, in case of models of size 7 and the level of noise of 0.001 and 0.01, the exact percentages obtained are 20\% and 10\%, respectively. 
+	
+	\item   For the largest sizes of (exact) models, for the no noisy data the exact percentages are never lower from 20\%. The other way around holds for noisy data. 
+\end{itemize}
+
+\begin{figure}[H]
 	\begin{subfigure}[b]{0.40\textwidth}
 		\includegraphics[  width=180pt,height=140pt]{plots/numsize_vs_exact_correct_no_noise.eps}
 		\caption{No noise}
@@ -890,11 +901,16 @@ The rate of success of \textsc{Rils}--\textsc{Rols} algorithm seems to slightly 
 		\label{fig:size-noise0.01}
 	\end{subfigure}
 	\caption{Exact solution percentages for varying levels of noise and exact model sizes.}
-	\label{fig:compExact_noise_varsize}
+	\label{fig:compExact_noise_varsizes}
 \end{figure}
 
+When one concern of the runtime analysis of the \textsc{Rils}--\textsc{Rols} algorithm on the \textsc{Random} benchmark set, the results are shown by Figure~\ref{fig:runtime_rils_rols}. The following conclusions may be drawn from there.
 
-\begin{figure}[!htb]
+\begin{itemize}
+	\item abc...\fxnote{TODO}
+\end{itemize}
+
+\begin{figure}[H]
 	\begin{subfigure}[b]{0.40\textwidth}
 		\includegraphics[  width=180pt,height=140pt]{plots/numsize_vs_time_no_noise.eps}
 		\caption{No noise}
