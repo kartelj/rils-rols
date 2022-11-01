@@ -609,9 +609,10 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 	 
 
 \end{itemize}
-The above-mentioned benchmark sets may be biased as models which describe physical laws may have various symmetries, periodically w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be biased and in-advance significantly reduced. Thus, some methods may get significant help with this regards, while some others may be in the subordinate situation. 
+The above-mentioned benchmark sets may be biased as models which describe physical laws usually have  symmetries, periodicity w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be biased and in-advance significantly reduced. Thus, some methods may get significant help with this regards, while some others may be in the subordinate situation. 
   In order to permit any kind of favoritism, we generate a set of randomly generated instances, called \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.}
 
+All (15) competitor algorithms were run once per each instance.  
 
 \subsection{Parameter tuning}
 The \textsc{Rils}-\textsc{Rols} algorithms, apart of the most other methods for SR, employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is set to 0.001(?), according to the preliminary experimental evaluation. The second parameter is tuned monitoring the two errors the algorithm produced on the training set; we choose $tolerance_{error}=?$ for which a largest average $R^2$ and the smallest average RMSE error over all instances from the training set are produced. Note that the training set is chosen randomly with a cardinalty of xx instances. 
@@ -1023,7 +1024,10 @@ When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algori
 
 
 \subsection{Statistical evaluation}
- \fxnote{TODO}
+
+In order to check the statistical significance of the obtained differences between the studied approaches, we employed the statistical methodology which is outlined below. This concerns the 15 approaches on two real-world benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the results of the competitor approaches) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.  \fxnote{Marko: continue}
+
+
 \section{Conclusions and future work}\label{sec:conclusions}
   
  \newpage
