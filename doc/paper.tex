@@ -591,7 +591,7 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 
 	\item \textsc{Strogatz} benchmark set from~\cite{la2016inference}. 
 	Each dataset is represented by a 2-state system of first-order, ordinary differential equations. 
-	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes various non-linear dynamics and exhibiting chaos.  The equations for some of the datasets of this benchmark are shown in Table~\ref{table:strogatz-ODEs}.
+	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes various non-linear dynamics also exhibiting chaos.  The equations for some of the datasets that belong to this benchmark are shown in Table~\ref{table:strogatz-ODEs}.
 	
 	%table, an instance -- example
 	
@@ -1025,7 +1025,7 @@ When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algori
 
 \subsection{Statistical evaluation}
 
-In order to check the statistical significance of the obtained differences between the studied approaches, we employed the statistical methodology which is outlined below. This concerns the 15 approaches on two real-world benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the results of the competitor approaches) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.  \fxnote{Marko: continue}
+In order to check the statistical significance of the obtained exact percentages and their differences between the studied approaches, we employed the statistical methodology which is outlined below. This concerns the 15 approaches on two real-world benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the results of the competitor approaches) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.  \fxnote{Marko: continue}
 
 
 \section{Conclusions and future work}\label{sec:conclusions}
