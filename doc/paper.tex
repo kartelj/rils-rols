@@ -570,7 +570,7 @@ The following 15 algorithms are compared: \textsc{AI-Feynman}, \textsc{GOMEA}, \
  
 \subsection{Datasets and SRBench}
 
-SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and the environment for analysis, see~\cite{la2021contemporary}. It brought researchers an easy handled environment to evaluation, compare, and analyze their methods. Among all benchmark sets, we involve two real-world inspired benchmark sets into our computational evaluation: 
+SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and the environment for analysis, see~\cite{la2021contemporary}. It brought researchers an easy handled environment to evaluation, compare, and analyze their methods. Among all benchmark sets, we involve two real-world inspired benchmark sets, the ground-truth regression problems, into our computational evaluation: 
 \begin{itemize}
 	\item \textsc{Feynman} benchmark set, inspired from physics and formulas/models that correspond to various natural laws.  
 	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. Some exact models (equations) of problem instances from this benchmark are shown in Table~\ref{tab:Feynamn-Eq}.  
@@ -1025,7 +1025,37 @@ When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algori
 
 \subsection{Statistical evaluation}
 
-In order to check the statistical significance of the obtained exact percentages and their differences between the studied approaches, we employed the statistical methodology which is outlined below. This concerns the 15 approaches on two real-world benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the results of the competitor approaches) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.  \fxnote{Marko: continue}
+In order to check the statistical significance of the obtained exact percentages and their differences between the studied approaches, we employed the statistical methodology comparing the results of  the 15 approaches on all problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the results of the competitor approaches) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there.
+
+\begin{itemize}
+	\item \fxnote{TODO}
+\end{itemize}
+
+
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.40\textwidth}
+		\includegraphics[  width=290pt,height=180pt]{plots/Feynman__strogatz_noise_0_0.pdf}
+		\caption{No noise}
+		\label{fig:CDplots-no-noise}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.4\textwidth}
+		
+		\includegraphics[  width=290pt,height=180pt]{plots/Feynman__strogatz_noise_0_001.pdf}
+		\caption{Level of noise equal to 0.001}
+		\label{fig:CDplots-noise0.001}
+	\end{subfigure}
+	
+	\begin{subfigure}[b]{0.40\textwidth}
+		\includegraphics[  width=290pt,height=180pt]{plots/Feynman__strogatz_noise_0_01.pdf}
+		\caption{Level of noise equal to 0.01.}
+		\label{fig:CDplots-noise0.01}
+	\end{subfigure}
+	\caption{CD plots comparisons in terms of exact percentages over all problem instances from the both ground-truth benchmark sets,  varying levels of noise.}
+	\label{fig:cd-plots-exact-pcts}
+\end{figure}
 
 
 \section{Conclusions and future work}\label{sec:conclusions}
@@ -1036,6 +1066,32 @@ In order to check the statistical significance of the obtained exact percentages
  \section{Overview of RILS-ROLS python package}\label{sec:appendix-1}
   
   
+  \section{Additional statistical analysis}\label{sec:appendix-2}
+  
+  
+  
+  \begin{figure}[H]
+  	\begin{subfigure}[b]{0.40\textwidth}
+  		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_0acc.pdf}
+  		\caption{No noise}
+  		\label{fig:CDplotsR2-no-noise}
+  	\end{subfigure}
+  	\hfill
+  	\begin{subfigure}[b]{0.4\textwidth}
+  		
+  		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_001acc.pdf}
+  		\caption{Level of noise equal to 0.001}
+  		\label{fig:CDplotsR2-noise0.001}
+  	\end{subfigure}
+  	\centering
+  	\begin{subfigure}[b]{0.40\textwidth}
+  		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_01acc.pdf}
+  		\caption{Level of noise equal to 0.01.}
+  		\label{fig:CDplotsR2-noise0.01}
+  	\end{subfigure}
+  	\caption{CD plots comparisons in terms of obtained $R^2$ score over all problem instances from both ground-truth benchmark sets,  varying levels of noise.}
+  	\label{fig:cd-plotsR2-varying_noise}
+  \end{figure}
   
  
 \newpage
