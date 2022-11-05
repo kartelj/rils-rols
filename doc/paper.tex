@@ -735,18 +735,18 @@ The following conclusions may be drawn from the numerical results:
 
 
 \subsection{Scalability of \textsc{Rils}-\textsc{Rols} algorithm}
-   \fxnote{Marko: Came up to here!}
-In this section we study scalability of our method in terms of different noise level in the input data as well as different complexity of the exact solutions (models). 
+ 
+In this section we study the scalability of our method in terms of the size of  instance problems and  the presence of different noise level in the input data. 
 
 First, we divide our benchmark sets into three parts as follows. 
 \begin{itemize}
-	\item Small--sized instances: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 3 to 7 nodes belong to this sub-set.
-	\item Middle--sized instances:  all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 8 to 11 nodes belong to this sub-set.
-	\item Large--sized instances: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 12 to 15 nodes belong to this sub-set. 
+	\item \textit{Small--sized instances}: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 3 to 7 nodes belong to this sub-set.
+	\item \textit{Middle--sized instances}:  all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 8 to 11 nodes belong to this sub-set.
+	\item \textit{Large--sized instances}: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 12 to 15 nodes belong to this sub-set. 
 \end{itemize}
 
-The results are displayed in Figure~\ref{fig:compExact_noise_size}. They are grouped with accordance to the (three) formed sub-groups ($x$-axis) and for each of them the exact percentage rate of success of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis). The following conclusions may be drawn from here:
-
+The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with accordance to the (three) formed sub-groups ($x$-axis); for each of them the exact percentage rate of success of \textsc{Rils}--\textsc{Rols} algorithm is shown ($y$-axis). The following conclusions may be drawn from here:
+   \fxnote{Marko: Came up to here!}
 \begin{itemize}
 	\item   As expected, the success rate is the highest for the small--sized instance problems; it is sightly bellow 90\% for the clean (no-noise) data. For more noisy data, the success rate of the algorithm gets decreased. For example, on the small-sized instances with the presence of the noise of level 0.0001, and 0.01, the rate of success of \textsc{Rils}--\textsc{Rols} is still reasonably well, about 55\%~ and 35 \%, respectively. 
 	\item For middle-sized instance problems, the rate of success is slightly bellow 50\%. It also decreases by increasing the level of noise in the target data; for the highest level of chosen noise (of 0.01), the success of rate is about 6\%. 
