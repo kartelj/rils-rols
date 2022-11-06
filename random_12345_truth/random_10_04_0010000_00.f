@@ -1,1 +1,0 @@
-cos(x3*(x0 + log(x2))/sqrt(x1))

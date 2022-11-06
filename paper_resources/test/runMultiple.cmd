@@ -1,0 +1,10 @@
+start runSeeds.cmd run00.cmd %1 %2 %3 %4
+start runSeeds.cmd run01.cmd %1 %2 %3 %4
+start runSeeds.cmd run02.cmd %1 %2 %3 %4
+start runSeeds.cmd run03.cmd %1 %2 %3 %4
+start runSeeds.cmd run04.cmd %1 %2 %3 %4
+start runSeeds.cmd run05.cmd %1 %2 %3 %4
+start runSeeds.cmd run06.cmd %1 %2 %3 %4
+start runSeeds.cmd run07.cmd %1 %2 %3 %4
+start runSeeds.cmd run08.cmd %1 %2 %3 %4
+start runSeeds.cmd run09.cmd %1 %2 %3 %4

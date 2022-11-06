@@ -1,1 +1,0 @@
-exp(cos(x0) + exp(2)) - log(x1) + 100

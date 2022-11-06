@@ -1,0 +1,1 @@
+sin(cos(log(x0) - sin(x0))/sin(1))

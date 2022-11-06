@@ -1,0 +1,1 @@
+sqrt(x3*exp(x1) + cos(x2*sin(x0)))

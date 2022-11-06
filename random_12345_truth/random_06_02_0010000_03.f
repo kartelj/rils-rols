@@ -1,1 +1,0 @@
-exp(x1)*sin(cos(x0))

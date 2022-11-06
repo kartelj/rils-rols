@@ -1,1 +1,0 @@
-exp(sin(x1*cos(x2))*sin(x0 + x3))

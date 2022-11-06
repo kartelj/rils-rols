@@ -1,1 +1,0 @@
-sin(exp(x1 - 1) + cos(x0*log(x0)))

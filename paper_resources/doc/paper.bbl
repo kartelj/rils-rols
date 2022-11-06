@@ -1,0 +1,346 @@
+\begin{thebibliography}{10}
+
+\bibitem{abdellaoui2021symbolic}
+I.~A. Abdellaoui and S.~Mehrkanoon.
+\newblock Symbolic regression for scientific discovery: an application to wind
+  speed forecasting.
+\newblock In {\em 2021 IEEE Symposium Series on Computational Intelligence
+  (SSCI)}, pages 01--08. IEEE, 2021.
+
+\bibitem{applegate2003chained}
+D.~Applegate, W.~Cook, and A.~Rohe.
+\newblock Chained lin-kernighan for large traveling salesman problems.
+\newblock {\em INFORMS Journal on Computing}, 15(1):82--92, 2003.
+
+\bibitem{arnaldo2014multiple}
+I.~Arnaldo, K.~Krawiec, and U.-M. O'Reilly.
+\newblock Multiple regression genetic programming.
+\newblock In {\em Proceedings of the 2014 Annual Conference on Genetic and
+  Evolutionary Computation}, pages 879--886, 2014.
+
+\bibitem{baum1998iterated}
+E.~Baum.
+\newblock Iterated descent: a better algorithm for local search in
+  combinatorial optimization, 1998.
+
+\bibitem{baxter1981local}
+J.~Baxter.
+\newblock Local optima avoidance in depot location.
+\newblock {\em Journal of the Operational Research Society}, 32(9):815--819,
+  1981.
+
+\bibitem{billard2002symbolic}
+L.~Billard and E.~Diday.
+\newblock Symbolic regression analysis.
+\newblock In {\em Classification, clustering, and data analysis}, pages
+  281--288. Springer, 2002.
+
+\bibitem{burlacu2022symbolic}
+B.~Burlacu, M.~Kommenda, G.~Kronberger, S.~Winkler, and M.~Affenzeller.
+\newblock Symbolic regression in materials science: Discovering interatomic
+  potentials from data.
+\newblock {\em arXiv preprint arXiv:2206.06422}, 2022.
+
+\bibitem{burlacu2020operon}
+B.~Burlacu, G.~Kronberger, and M.~Kommenda.
+\newblock Operon c++ an efficient genetic programming framework for symbolic
+  regression.
+\newblock In {\em Proceedings of the 2020 Genetic and Evolutionary Computation
+  Conference Companion}, pages 1562--1570, 2020.
+
+\bibitem{cerny2008using}
+B.~M. Cerny, P.~C. Nelson, and C.~Zhou.
+\newblock Using differential evolution for symbolic regression and numerical
+  constant creation.
+\newblock In {\em Proceedings of the 10th annual conference on Genetic and
+  evolutionary computation}, pages 1195--1202, 2008.
+
+\bibitem{chen2019revealing}
+Y.~Chen, M.~T. Angulo, and Y.-Y. Liu.
+\newblock Revealing complex ecological dynamics via symbolic regression.
+\newblock {\em BioEssays}, 41(12):1900069, 2019.
+
+\bibitem{costa2020fast}
+A.~Costa, R.~Dangovski, O.~Dugan, S.~Kim, P.~Goyal, M.~Solja{\v{c}}i{\'c}, and
+  J.~Jacobson.
+\newblock Fast neural models for symbolic regression at scale.
+\newblock {\em arXiv preprint arXiv:2007.10784}, 2020.
+
+\bibitem{de2021interaction}
+F.~O. de~Fran{\c{c}}a and G.~S.~I. Aldeia.
+\newblock Interaction--transformation evolutionary algorithm for symbolic
+  regression.
+\newblock {\em Evolutionary computation}, 29(3):367--390, 2021.
+
+\bibitem{elleuch2020variable}
+S.~Elleuch, B.~Jarboui, N.~Mladenovic, and J.~Pei.
+\newblock Variable neighborhood programming for symbolic regression.
+\newblock {\em Optimization Letters}, pages 1--20, 2020.
+
+\bibitem{elleuch2016variable}
+S.~Elleuch, N.~Mladenovic, and B.~Jarboui.
+\newblock {\em Variable neighborhood programming: a new automatic programming
+  method in artificial intelligence}.
+\newblock GERAD HEC Montr{\'e}al, 2016.
+
+\bibitem{glover1998tabu}
+F.~Glover and M.~Laguna.
+\newblock Tabu search.
+\newblock In {\em Handbook of combinatorial optimization}, pages 2093--2229.
+  Springer, 1998.
+
+\bibitem{he2022taylor}
+B.~He, Q.~Lu, Q.~Yang, J.~Luo, and Z.~Wang.
+\newblock Taylor genetic programming for symbolic regression.
+\newblock {\em arXiv preprint arXiv:2205.09751}, 2022.
+
+\bibitem{jin2019bayesian}
+Y.~Jin, W.~Fu, J.~Kang, J.~Guo, and J.~Guo.
+\newblock Bayesian symbolic regression.
+\newblock {\em arXiv preprint arXiv:1910.08892}, 2019.
+
+\bibitem{kabliman2021application}
+E.~Kabliman, A.~H. Kolody, J.~Kronsteiner, M.~Kommenda, and G.~Kronberger.
+\newblock Application of symbolic regression for constitutive modeling of
+  plastic deformation.
+\newblock {\em Applications in Engineering Science}, 6:100052, 2021.
+
+\bibitem{kammerer2021empirical}
+L.~Kammerer, G.~Kronberger, and S.~Winkler.
+\newblock Empirical analysis of variance for genetic programming based symbolic
+  regression.
+\newblock In {\em Proceedings of the Genetic and Evolutionary Computation
+  Conference Companion}, pages 251--252, 2021.
+
+\bibitem{kantor2021simulated}
+D.~Kantor, F.~J. Von~Zuben, and F.~O. de~Franca.
+\newblock Simulated annealing for symbolic regression.
+\newblock In {\em proceedings of the genetic and evolutionary computation
+  conference}, pages 592--599, 2021.
+
+\bibitem{karaboga2012artificial}
+D.~Karaboga, C.~Ozturk, N.~Karaboga, and B.~Gorkemli.
+\newblock Artificial bee colony programming for symbolic regression.
+\newblock {\em Information Sciences}, 209:1--15, 2012.
+
+\bibitem{kommenda2018local}
+M.~Kommenda and M.~Affenzeller.
+\newblock Local optimization and complexity control for symbolic regression.
+\newblock {\em Ph. D. dissertation, Ph. D. thesis}, 2018.
+
+\bibitem{kommenda2020parameter}
+M.~Kommenda, B.~Burlacu, G.~Kronberger, and M.~Affenzeller.
+\newblock Parameter identification for symbolic regression using nonlinear
+  least squares.
+\newblock {\em Genetic Programming and Evolvable Machines}, 21(3):471--501,
+  2020.
+
+\bibitem{koza1994genetic}
+J.~R. Koza.
+\newblock Genetic programming as a means for programming computers by natural
+  selection.
+\newblock {\em Statistics and computing}, 4(2):87--112, 1994.
+
+\bibitem{la2016inference}
+W.~La~Cava, K.~Danai, and L.~Spector.
+\newblock Inference of compact nonlinear dynamic models by epigenetic local
+  search.
+\newblock {\em Engineering Applications of Artificial Intelligence},
+  55:292--306, 2016.
+
+\bibitem{la2019probabilistic}
+W.~La~Cava, T.~Helmuth, L.~Spector, and J.~H. Moore.
+\newblock A probabilistic and multi-objective analysis of lexicase selection
+  and $\varepsilon$-lexicase selection.
+\newblock {\em Evolutionary Computation}, 27(3):377--402, 2019.
+
+\bibitem{la2021contemporary}
+W.~La~Cava, P.~Orzechowski, B.~Burlacu, F.~O. de~Fran{\c{c}}a, M.~Virgolin,
+  Y.~Jin, M.~Kommenda, and J.~H. Moore.
+\newblock Contemporary symbolic regression methods and their relative
+  performance.
+\newblock {\em arXiv preprint arXiv:2107.14351}, 2021.
+
+\bibitem{la2018learning}
+W.~La~Cava, T.~R. Singh, J.~Taggart, S.~Suri, and J.~H. Moore.
+\newblock Learning concise representations for regression by evolving networks
+  of trees.
+\newblock {\em arXiv preprint arXiv:1807.00981}, 2018.
+
+\bibitem{la2016epsilon}
+W.~La~Cava, L.~Spector, and K.~Danai.
+\newblock Epsilon-lexicase selection for regression.
+\newblock In {\em Proceedings of the Genetic and Evolutionary Computation
+  Conference 2016}, pages 741--748, 2016.
+
+\bibitem{landajuela2021improving}
+M.~Landajuela, B.~K. Petersen, S.~K. Kim, C.~P. Santiago, R.~Glatt, T.~N.
+  Mundhenk, J.~F. Pettit, and D.~M. Faissol.
+\newblock Improving exploration in policy gradient search: Application to
+  symbolic optimization.
+\newblock {\em arXiv preprint arXiv:2107.09158}, 2021.
+
+\bibitem{leng2007ordinary}
+L.~Leng, T.~Zhang, L.~Kleinman, and W.~Zhu.
+\newblock Ordinary least square regression, orthogonal regression, geometric
+  mean regression and their applications in aerosol science.
+\newblock In {\em Journal of Physics: Conference Series}, volume~78, page
+  012084. IOP Publishing, 2007.
+
+\bibitem{liang2019phillips}
+J.~Liang and X.~Zhu.
+\newblock Phillips-inspired machine learning for band gap and exciton binding
+  energy prediction.
+\newblock {\em The journal of physical chemistry letters}, 10(18):5640--5646,
+  2019.
+
+\bibitem{liu2021machine}
+Z.~Liu and M.~Tegmark.
+\newblock Machine learning conservation laws from trajectories.
+\newblock {\em Physical Review Letters}, 126(18):180604, 2021.
+
+\bibitem{louis2021reviewing}
+B.~B. Louis and L.~A. Abriata.
+\newblock Reviewing challenges of predicting protein melting temperature change
+  upon mutation through the full analysis of a highly detailed dataset with
+  high-resolution structures.
+\newblock {\em Molecular Biotechnology}, 63(10):863--884, 2021.
+
+\bibitem{lourencco2003iterated}
+H.~R. Louren{\c{c}}o, O.~C. Martin, and T.~St{\"u}tzle.
+\newblock Iterated local search.
+\newblock In {\em Handbook of metaheuristics}, pages 320--353. Springer, 2003.
+
+\bibitem{lourencco2019iterated}
+H.~R. Louren{\c{c}}o, O.~C. Martin, and T.~St{\"u}tzle.
+\newblock Iterated local search: Framework and applications.
+\newblock In {\em Handbook of metaheuristics}, pages 129--168. Springer, 2019.
+
+\bibitem{martin1991large}
+O.~Martin, S.~W. Otto, and E.~W. Felten.
+\newblock {\em Large-step Markov chains for the traveling salesman problem}.
+\newblock Citeseer, 1991.
+
+\bibitem{martin1996combining}
+O.~C. Martin and S.~W. Otto.
+\newblock Combining simulated annealing with local search heuristics.
+\newblock {\em Annals of operations research}, 63(1):57--75, 1996.
+
+\bibitem{mcconaghy2011ffx}
+T.~McConaghy.
+\newblock Ffx: Fast, scalable, deterministic symbolic regression technology.
+\newblock In {\em Genetic Programming Theory and Practice IX}, pages 235--260.
+  Springer, 2011.
+
+\bibitem{sympy}
+A.~Meurer, C.~P. Smith, M.~Paprocki, O.~\v{C}ert\'{i}k, S.~B. Kirpichev,
+  M.~Rocklin, A.~Kumar, S.~Ivanov, J.~K. Moore, S.~Singh, T.~Rathnayake,
+  S.~Vig, B.~E. Granger, R.~P. Muller, F.~Bonazzi, H.~Gupta, S.~Vats,
+  F.~Johansson, F.~Pedregosa, M.~J. Curry, A.~R. Terrel, v.~Rou\v{c}ka,
+  A.~Saboo, I.~Fernando, S.~Kulal, R.~Cimrman, and A.~Scopatz.
+\newblock Sympy: symbolic computing in python.
+\newblock {\em PeerJ Computer Science}, 3:e103, Jan. 2017.
+
+\bibitem{mundhenk2021symbolic}
+T.~Mundhenk, M.~Landajuela, R.~Glatt, C.~P. Santiago, B.~K. Petersen, et~al.
+\newblock Symbolic regression via deep reinforcement learning enhanced genetic
+  programming seeding.
+\newblock {\em Advances in Neural Information Processing Systems},
+  34:24912--24923, 2021.
+
+\bibitem{olson2017pmlb}
+R.~S. Olson, W.~La~Cava, P.~Orzechowski, R.~J. Urbanowicz, and J.~H. Moore.
+\newblock Pmlb: a large benchmark suite for machine learning evaluation and
+  comparison.
+\newblock {\em BioData mining}, 10(1):1--13, 2017.
+
+\bibitem{petersen2019deep}
+B.~K. Petersen, M.~L. Larma, T.~N. Mundhenk, C.~P. Santiago, S.~K. Kim, and
+  J.~T. Kim.
+\newblock Deep symbolic regression: Recovering mathematical expressions from
+  data via risk-seeking policy gradients.
+\newblock {\em arXiv preprint arXiv:1912.04871}, 2019.
+
+\bibitem{pohlert2014pairwise}
+T.~Pohlert.
+\newblock The pairwise multiple comparison of mean ranks package (pmcmr).
+\newblock {\em R package}, 27(2019):9, 2014.
+
+\bibitem{raidl1998hybrid}
+G.~R. Raidl.
+\newblock A hybrid gp approach for numerically robust symbolic regression.
+\newblock {\em Genetic Programming}, pages 323--328, 1998.
+
+\bibitem{schmidt2011machine}
+M.~Schmidt.
+\newblock Machine science: Automated modeling of deterministic and stochastic
+  dynamical systems.
+\newblock 2011.
+
+\bibitem{schmidt2009distilling}
+M.~Schmidt and H.~Lipson.
+\newblock Distilling free-form natural laws from experimental data.
+\newblock {\em science}, 324(5923):81--85, 2009.
+
+\bibitem{schmidt2010age}
+M.~D. Schmidt and H.~Lipson.
+\newblock Age-fitness pareto optimization.
+\newblock In {\em Proceedings of the 12th annual conference on Genetic and
+  evolutionary computation}, pages 543--544, 2010.
+
+\bibitem{stephens2016genetic}
+T.~Stephens.
+\newblock Genetic programming in python with a scikit-learn inspired api:
+  Gplearn, 2016.
+
+\bibitem{stimson1978interpreting}
+J.~A. Stimson, E.~G. Carmines, and R.~A. Zeller.
+\newblock Interpreting polynomial regression.
+\newblock {\em Sociological Methods \& Research}, 6(4):515--524, 1978.
+
+\bibitem{udrescu2020ai}
+S.-M. Udrescu and M.~Tegmark.
+\newblock Ai feynman: A physics-inspired method for symbolic regression.
+\newblock {\em Science Advances}, 6(16):eaay2631, 2020.
+
+\bibitem{udrescu2021symbolic}
+S.-M. Udrescu and M.~Tegmark.
+\newblock Symbolic pregression: Discovering physical laws from distorted video.
+\newblock {\em Physical Review E}, 103(4):043307, 2021.
+
+\bibitem{virgolin2019linear}
+M.~Virgolin, T.~Alderliesten, and P.~A. Bosman.
+\newblock Linear scaling with and within semantic backpropagation-based genetic
+  programming for symbolic regression.
+\newblock In {\em Proceedings of the genetic and evolutionary computation
+  conference}, pages 1084--1092, 2019.
+
+\bibitem{virgolin2021improving}
+M.~Virgolin, T.~Alderliesten, C.~Witteveen, and P.~A. Bosman.
+\newblock Improving model-based genetic programming for symbolic regression of
+  small expressions.
+\newblock {\em Evolutionary computation}, 29(2):211--237, 2021.
+
+\bibitem{virgolin2022symbolic}
+M.~Virgolin and S.~P. Pissis.
+\newblock Symbolic regression is np-hard.
+\newblock {\em arXiv preprint arXiv:2207.01018}, 2022.
+
+\bibitem{wang2022symbolic}
+C.~Wang, Y.~Zhang, C.~Wen, M.~Yang, T.~Lookman, Y.~Su, and T.-Y. Zhang.
+\newblock Symbolic regression in materials science via
+  dimension-synchronous-computation.
+\newblock {\em Journal of Materials Science \& Technology}, 122:77--83, 2022.
+
+\bibitem{wang2019symbolic}
+Y.~Wang, N.~Wagner, and J.~M. Rondinelli.
+\newblock Symbolic regression in materials science.
+\newblock {\em MRS Communications}, 9(3):793--805, 2019.
+
+\bibitem{weng2020simple}
+B.~Weng, Z.~Song, R.~Zhu, Q.~Yan, Q.~Sun, C.~G. Grice, Y.~Yan, and W.-J. Yin.
+\newblock Simple descriptor derived from symbolic regression accelerating the
+  discovery of new perovskite catalysts.
+\newblock {\em Nature communications}, 11(1):1--8, 2020.
+
+\end{thebibliography}

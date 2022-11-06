@@ -1,1 +1,0 @@
-x2 + sin(sin(x2) - cos(sin(x1))) + cos(x0) - 1

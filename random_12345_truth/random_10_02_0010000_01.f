@@ -1,1 +1,0 @@
-cos(x1*sin(x0) + log(2*x1))

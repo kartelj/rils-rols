@@ -1,1 +1,0 @@
-sqrt(x2*exp(x0 + x1)/x1)

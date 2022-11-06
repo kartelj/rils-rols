@@ -1,1 +1,0 @@
-(log(sin(x0)) + sqrt(sin(x2)))*log(sin(x1)/100)

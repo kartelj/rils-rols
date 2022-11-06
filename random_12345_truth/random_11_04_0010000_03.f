@@ -1,1 +1,0 @@
-cos(x1*log(x3) + exp(x0*sin(x2)))

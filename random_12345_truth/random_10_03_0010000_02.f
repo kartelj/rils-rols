@@ -1,1 +1,0 @@
-log(sqrt(x0)*x1/cos(x2))

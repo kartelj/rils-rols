@@ -1,1 +1,0 @@
-sqrt(1 - cos(cos(2))) + log(1 + exp(2))
