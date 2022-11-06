@@ -6,7 +6,7 @@ from random import Random, shuffle
 from sklearn.base import BaseEstimator
 import copy
 from sympy import *
-from .node import Node, NodeConstant, NodeVariable, NodePlus, NodeMinus, NodeMultiply, NodeDivide, NodeSqr, NodeSqrt, NodeLn, NodeExp, NodeSin, NodeCos
+from .node import Node, NodeConstant, NodePow, NodeVariable, NodePlus, NodeMinus, NodeMultiply, NodeDivide, NodeSqr, NodeSqrt, NodeLn, NodeExp, NodeSin, NodeCos
 
 import warnings
 
@@ -20,12 +20,14 @@ class RILSROLSRegressor(BaseEstimator):
     improvements_cnt = 0
     tries_cnt = 0
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16,random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16, sample_share=0.01,  trigonometry=True, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
         self.random_state = random_state
         self.error_tolerance = error_tolerance
+        self.trigonometry = trigonometry
+        self.sample_share = sample_share
 
 
     def __reset(self):
@@ -44,13 +46,17 @@ class RILSROLSRegressor(BaseEstimator):
         self.allowed_nodes=[NodeConstant(-1), NodeConstant(0), NodeConstant(0.5), NodeConstant(1), NodeConstant(2), NodeConstant(math.pi), NodeConstant(10)]
         for i in range(variableCount):
             self.allowed_nodes.append(NodeVariable(i))
-        self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
+        self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp()]
+        if self.trigonometry:
+            print("Adding trigonometric functions")
+            self.allowed_nodes+=[NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
 
     def fit(self, X, y):
         x_all = copy.deepcopy(X)
         y_all = copy.deepcopy(y)
-        # take 1% of points or at least 100 points initially 
-        n = int(0.01*len(x_all))
+        # take just sample of  points or at least 100 points 
+        print("Sample share is "+str(self.sample_share))
+        n = int(self.sample_share*len(x_all))
         if n<100:
             n=100
         print("Taking "+str(n)+" points initially.")
@@ -151,8 +157,8 @@ class RILSROLSRegressor(BaseEstimator):
     
     def round_floats(self, ex1):
         round_digits = int(math.log10(1/self.error_tolerance))
-        if round_digits>8:
-            round_digits = 8
+        #if round_digits>8:
+        #    round_digits = 8
         #if round_digits<4:
         #    round_digits = 4
         print("Round to "+str(round_digits)+" digits.")
