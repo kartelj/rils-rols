@@ -6,15 +6,15 @@ from os import listdir
 from os.path import isfile, join
 
 
-instances_dir = "chemistry_data/instances" 
+instances_dir = "paper_resources/chemistry_data/instances" 
 random_state = 23654
 train_perc = 0.75
 time = 1200
 max_fit = 10000000
 noise_level = 0
-complexity_penalty = 0.005 # 0.001 default
-trigonometry = True
-sample_share = 0.2
+complexity_penalty = 0.01 # 0.001 default
+trigonometry = False
+sample_share = 1
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 #instance_files = ["random_04_01_0010000_04.data"]
