@@ -1,1 +1,0 @@
-exp(-x2*exp(sin(x0))/x3 + 1/cos(x1))

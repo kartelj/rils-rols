@@ -1,1 +1,0 @@
-cos((exp(x0) + exp(2))*exp(x2*cos(x1)))

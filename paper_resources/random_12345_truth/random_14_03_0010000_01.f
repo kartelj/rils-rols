@@ -1,0 +1,1 @@
+sin(5.172318620381e-5*sqrt(cos(x0) + cos(x2))/sin(x1))

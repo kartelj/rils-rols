@@ -1,1 +1,0 @@
-x1*x2*sqrt(exp(x0))

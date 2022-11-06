@@ -1,0 +1,1 @@
+exp(-2*exp(x0) + sin(log(10)))

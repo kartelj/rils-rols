@@ -1,0 +1,1 @@
+cos(log(x0)*cos(cos(2)) + sqrt(cos(x0)) + cos(x1))

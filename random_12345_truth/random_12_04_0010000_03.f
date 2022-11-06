@@ -1,1 +1,0 @@
-cos((sin(x1) + sin(x2))*cos(x0 + cos(x3)))

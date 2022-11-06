@@ -1,1 +1,0 @@
-python ../testPMLB_ground_truth.py 2 10 %1 %2 %3 %4 %5

@@ -1,0 +1,4 @@
+1. Add constraints that enter fitness function such as:
+
+monotonicity (or even more specifically, increasing, decreasing, etc.) -- sympy can check this or it can be checked numerically on given input data (this second is more efficient). 
+

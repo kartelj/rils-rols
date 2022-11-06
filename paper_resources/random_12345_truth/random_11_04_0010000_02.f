@@ -1,0 +1,1 @@
+sqrt(x0*(exp(x2) + exp(x3))*cos(x1))

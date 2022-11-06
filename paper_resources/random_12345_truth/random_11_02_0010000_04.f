@@ -1,0 +1,1 @@
+cos(cos(x1 - 10)/log(sin(x0)))

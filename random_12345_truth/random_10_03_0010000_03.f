@@ -1,1 +1,0 @@
-exp(x0*sqrt(x1 + x2)*log(x0))

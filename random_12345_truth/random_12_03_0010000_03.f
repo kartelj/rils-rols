@@ -1,1 +1,0 @@
-sqrt(x2) + sin(x1) + exp(100)/x0

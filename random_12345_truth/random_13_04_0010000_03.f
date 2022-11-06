@@ -1,1 +1,0 @@
-x0 - x1 + sin(log(x2) + exp(10)) + cos(x3)

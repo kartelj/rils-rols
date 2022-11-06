@@ -1,1 +1,0 @@
-sqrt(x0) + x1*cos(x2) + x3
