@@ -248,7 +248,7 @@
 	
 	
 	\section{The proposed method}\label{sec:rils}
-		\fxnote{TODO: needs for extension...}
+ 
 	Before we give details on our \textsc{Rils}-\textsc{Rols}  method for solving SR, we will explain the basics of two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods. 
 	
 	\subsection{Iterated local search}
@@ -274,13 +274,13 @@
 		\label{alg:ils}
 	\end{algorithm}  
 	
-	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed -- it is partially randomized. Next, the perturbed solution is improved with LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions. 
+	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed -- it is partially randomized. Next, the perturbed solution is improved by a LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions.  		 
 	
 	\subsection{Ordinary least square method}\label{sec:ols}
 	Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}=(X_1, \ldots, X_d)^T, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know as the sum of squared error (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account   partial derivation w.r.t. $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
 	
 	$$  \frac{\partial}{\partial k} \sum_{i} |\tilde{y}_i - y_i|^2 = \frac{\partial}{\partial k} \sum ( kX_i+b  - y_i)^2 =  \sum 2X_i(kX_i + b - y_i)  =  \sum -2X_i (y_i - \tilde{y}_i) . $$
-	
+  
 	Taking into account   partial derivation w.r.t.  $b$, we have 
 	$$  \frac{\partial}{\partial b} \sum_{i} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum ( kX_i+b  - y_i)^2 = \sum -2  (y_i - \tilde{y}_i). $$
 	
@@ -298,9 +298,9 @@
 	%	 & \sum y_i  = k \sum x_i + b \cdot d. 
 	%  \end{align*}
 By solving this system of $(d+1)$ equations, one can obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. %For example, in order to calculate coefficient $k_i$, the following system of equations is 
-\fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
+%\fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
 \subsection{\textsc{Rils}-\textsc{Rols}  method}
-Now we will explain the proposed \textsc{Rils}-\textsc{Rols}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.  
+Now we will explain the proposed \textsc{Rils}-\textsc{Rols}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.  \fxnote{Marko: došao dovde!}
 
 \begin{algorithm}
 	\footnotesize
