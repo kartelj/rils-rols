@@ -193,18 +193,15 @@
 	
 	\section{Problem definition and search space}
 	\label{sec:search-space}
-	In this section we formally define the SR problem, followed by defining the search space framework of the problem. \fxnote{Marko: došao dovde sa ovom sekcijom}
+	In this section we formally define the SR problem, followed by defining the search space framework of the problem.  
 	
 	\begin{definition}
 		Given is a dataset $D = \{(x_i, y_i)\}_{i=1}^n$, where $\textbf{x} \in \mathbb{R}^d$ represents input variables (features), and $y$ target variable. Suppose that there exists an analytical model of the form $f(\textbf{x})= g^*(\textbf{x}, \theta^*) + \epsilon $ that is a generator of all observations from $D$.  
-		The goal of SR is to learn a mapping $\tilde{f}(\textbf{x})=  \tilde{g}(\textbf{x}, \tilde{\theta})  \colon \mathbb{R}^d \mapsto \mathbb{R}$  estimated by searching through the space of (mathematical) expressions  $\tilde{g}$ and parameters $\tilde{\theta}$ where  $\epsilon$ is the presented  white noise using given input data. 
+		The goal of SR is to learn a mapping $\tilde{f}(\textbf{x})=  \tilde{g}(\textbf{x}, \tilde{\theta})  \colon \mathbb{R}^d \mapsto \mathbb{R}$  estimated by searching through the space of (mathematical) expressions  $\tilde{g}$ and parameters $\tilde{\theta}$ where  $\epsilon$ is the presented  white noise within the given input data. 
 		
 	\end{definition}
 	
-	Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants; as an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example} In essence, syntax trees are elements of the search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). Interestingly, the search space of SR consists of its discrete and continuous part. More precisely, the model we are seeking for might be obtained as a composition of some functions from a (finite) set of mathematical functions. It is common to use the set of the following elementary mathematical functions in the experiments: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, and $a^x$. It is allowed to link functions will all four operators: $+$, $-$, $\times$, and $/$. After fixing functions that build models, the set of optimal coefficients that  fits to this model must be provided. For the most physical models, these coefficients may receive any real value, that is they are continuous in its nature. 
-	
-	
-	\fxnote{TODO: needs for extension...}
+	Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants; as an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example} In essence, syntax trees are elements of the search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute on the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). Interestingly, the search space of SR consists of its discrete and continuous part. More precisely, the model we are seeking for might be obtained as a composition of some functions from a (finite) set of mathematical functions. It is common to use the set of the following elementary mathematical functions in the experiments: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, and $a^x$. It is allowed to link functions will all four operators: $+$, $-$, $\times$, and $/$. After fixing functions that build models, the set of optimal coefficients that  fits to this model must be provided. For the most physical models, these coefficients may receive any real value, that is they are continuous in its nature. 
 	
 	\begin{figure}[!ht]
 		\centering
@@ -251,6 +248,7 @@
 	
 	
 	\section{The proposed method}\label{sec:rils}
+		\fxnote{TODO: needs for extension...}
 	Before we give details on our \textsc{Rils}-\textsc{Rols}  method for solving SR, we will explain the basics of two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods. 
 	
 	\subsection{Iterated local search}
