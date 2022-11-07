@@ -297,10 +297,10 @@
 	%	 & \sum y_i \cdot x_i   = b\sum x_i \cdot x_i  +  k \cdot \sum x_i \\
 	%	 & \sum y_i  = k \sum x_i + b \cdot d. 
 	%  \end{align*}
-By solving this system of $(d+1)$ equations, one can obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. %For example, in order to calculate coefficient $k_i$, the following system of equations is 
+By solving the above system of $(d+1)$ equations, one can obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. %For example, in order to calculate coefficient $k_i$, the following system of equations is 
 %\fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
 \subsection{\textsc{Rils}-\textsc{Rols}  method}
-Now we will explain the proposed \textsc{Rils}-\textsc{Rols}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.  \fxnote{Marko: došao dovde!}
+Now we will explain the proposed \textsc{Rils}-\textsc{Rols}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.   
 
 \begin{algorithm}
 	\footnotesize
@@ -363,31 +363,29 @@ Now we will explain the proposed \textsc{Rils}-\textsc{Rols}  method in detail. 
 \end{algorithm}  
 
 \textsc{Rils}-\textsc{Rols}  algorithms receives training dataset $D_{tr}$ as input. In addition, it has two control parameters: $penalty_{size}$ and $tolerance_{error}$. The first one quantifies the importance of solution expression complexity in the overall solution quality measure (more on this in Section~\ref{sec:fitness}). The second parameter is related to the expected noise level in data -- higher noise means that tolerance to errors should be higher.
-$D_{tr}$ can have very large number of records, so the first step of \textsc{Rils}-\textsc{Rols}  is to choose a random sample $D_{tr}' \subseteq D_{tr}$ of size $sample_{size}$. Initial the sample size is calculated as $\max(0.01 \cdot n_{tr}, 100)$. The size of sample is later dynamically adjusted through the algorithm's iterations -- when there are no solution improvements for some number of iterations, the sample size is doubled (lines~\ref{line:sampleAdj1}-\ref{line:sampleAdj2} of Algorithm~\ref{alg:rilsrols}).
+$D_{tr}$ can have very large number of records, so the first step of \textsc{Rils}-\textsc{Rols}  is to choose a random sample $D_{tr}' \subseteq D_{tr}$ of size $sample_{size}$. Initial the sample size is chosen as $\max(0.01 \cdot n_{tr}, 100)$. The size of sample is later dynamically adjusted through the algorithm's iterations -- when there are no solution improvements for some number of iterations, the sample size is doubled (lines~\ref{line:sampleAdj1}-\ref{line:sampleAdj2} of Algorithm~\ref{alg:rilsrols}).
 
-
-As previously stated, solution is usually represented by means of a tree. We use simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: ($i$) $s$ denotes starting (or working) solution and ($ii$) $bs$ stands for the best solution so far. Solution quality is measured by evaluating the fitness function (more about it in the subsequent Section~\ref{sec:fitness}). Before entering the main loop, the best solution \emph{bs} is set to the initial solution (line~\ref{line:solSet}).
+As previously stated, solution is usually represented by means of a tree. We use a simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: ($i$) $s$ denotes starting (or working) solution and ($ii$) $bs$ stands for the best solution so far. Solution quality is measured by evaluating the fitness function (more about it in the subsequent Section~\ref{sec:fitness}). Before entering the main loop, the best solution \emph{bs} is set to the initial solution (line~\ref{line:solSet}). 
 
 
 Main loop iterates as long as none of termination criteria is met: ($i$) maximal running time has been reached; ($ii$) maximal number of fitness calculations has been made; ($iii$) best solution is sufficiently good, 
-w.r.t. the $R^2$ and $RMSE$ of the best solution. More precisely, if $R^2$ is sufficiently close to 1 and, at the same time, $RMSE$ is sufficiently close to 0, the algorithm stops prematurely -- this significantly reduces the running times for the majority of tested instances.
+w.r.t. its $R^2$ and $RMSE$ scores. More precisely, if $R^2$ is sufficiently close to 1 and, at the same time, $RMSE$ is sufficiently close to 0, the algorithm stops prematurely -- this significantly reduces the running times for the majority of tested instances.
 The sufficiency is controlled with parameter $tolerance_{error}$ -- smaller value means that $R^2$ and $RMSE$ should be closer to 1 and 0, respectively. 
 
 
 One of the first steps in the main loop is to generate perturbations near the starting solution $s$ (line~\ref{line:sPert}). 
 As the name of this procedure (\texttt{All1Perturbations}) suggests, perturbation step is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described separately, in Section~\ref{sec:pertGen}. 
+ 
 
-
-Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by means of ordinary least squares method, described in Section~\ref{sec:ols}.   
+Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by applying  ordinary least square method, already described in Section~\ref{sec:ols}.   
 After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
 Further, these perturbations are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
 
-
 Now, the algorithm enters the internal loop -- it iterates over the ordered perturbations and aims to find the one which improves the best solution $bs$. But, before comparing candidate perturbation solution $p$ with $bs$, $p$ is first simplified (line~\ref{line:simp}) after which the local search is performed (line~\ref{line:ls}).
-Solution simplification is done in a symbolical fashion by popular Python library called SymPy~\cite{sympy}.
-Local search tries to find local optima expressions close to the given $p$ -- explained in details in Section~\ref{sec:ls}.  
-Finally, fitness function value of $p$ is compared to fitness function value of $bs$. If a new incumbent is found, $bs$ is updated correspondingly and internal loop that goes across ordered perturbations is immediately terminated (it works in a  \emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
-Note that the probed perturbations are stored in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}), i.e. this structure serves as a kind of tabu list, initially proposed in the famous Tablu search algorithm, see~\cite{glover1998tabu}.  
+Solution simplification is done in a symbolical fashion by popular \texttt{SymPy} Python package~\cite{sympy}.
+Local search tries to find local optima expressions close to the given $p$ -- explained in detail in Section~\ref{sec:ls}.  
+Finally, the fitness function value of $p$ is compared to the fitness function value of $bs$. If a new incumbent is found, $bs$ is updated correspondingly and the internal loop that goes across ordered perturbations is immediately terminated (it works in a  \emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
+Note that the probed perturbations are stored in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}), i.e. $perturbations_{tried}$ serves as a kind of tabu list, initially proposed in the known Tablu search algorithm, see~\cite{glover1998tabu}.      \fxnote{Marko: došao dovde!}
 
 
 If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
