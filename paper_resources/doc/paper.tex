@@ -13,7 +13,7 @@
 \usepackage{algpseudocode}
 \usepackage{enumitem}
 \usepackage[utf8]{inputenc}
- \usepackage{booktabs}
+\usepackage{booktabs}
 \usepackage{array}
 \usepackage[pdfencoding=auto,psdextra]{hyperref}
 \usepackage{booktabs}
@@ -24,7 +24,7 @@
 \pagestyle{plain}
 \usepackage{xcolor}
 \newcommand\ToDo[1]{\textcolor{red}{#1}}
- \usepackage{tabularx}
+\usepackage{tabularx}
 \usepackage{xspace}
 \usepackage{color}
 \usepackage{epsfig}
@@ -99,317 +99,306 @@
 	%\mainmatter  % start of an individual contribution
 	
 	% first the title is needed
-	\title{RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares}
+	\title{\textsc{Rils}-\textsc{Rols} : Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares}
 	
-\author[1]{Aleksandar Kartelj}
-\author[2]{Marko Djukanovi\'c}
+	\author[1]{Aleksandar Kartelj}
+	\author[2]{Marko Djukanovi\'c}
 	\address[1]{$kartelj@matf.bg.ac.rs$, \\  Faculty of Mathematics, University of Belgrade, Serbia}
-    \address[2]{$ marko.djukanovic@pmf.unibl.org$,\\   Faculty of Natural Sciences and Mathematics, University of Banja Luka, Bosnia and Herzegovina}
+	\address[2]{$ marko.djukanovic@pmf.unibl.org$,\\   Faculty of Natural Sciences and Mathematics, University of Banja Luka, Bosnia and Herzegovina}
 	\begin{abstract}
-          In this paper we solve the well-known, prominent problem of Symbolic regression, intensively studied over the last two decades. This problem have a wide range of applications;  for example, the obtained SR models could serve theoretically, providing insight towards  establishing  physical theory behind, thus helping establishing reasonable hypotheses.  Practical applications include revealing complex ecological dynamics in ecology, discovering mutations effects on protein stability in biology,  modeling analytic representations of the exciton binding energy in the energy science, finding models for band gap of NaCl-type compounds
-         in material science, just to name a few. We propose a new meta-heuristic based approach, called \textsc{Rils}-\textsc{Rols} algorithm to solve the problem of Symbolic regression. There are a several key concepts utilized within this algorithm: ($i$) Iterated local search scheme is used as the backbone; ($ii$) ordinary least square method is used within the local search procedure to make it efficient and to fit the coefficients in models (solutions);  ($iii$) a novel fitness function is utilized which combines an accuracy score, error score, and the size of model into one, more compact score. The experiments are conducted on the two ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz} comparing \textsc{Rils}-\textsc{Rols} to 14 other competitors from the literature considering different levels of noise in the input data.  Our method obtains new best exact percentages on the both benchmark sets comparing to the literature approaches. Moreover, new unbiased randomly generated set of problem instances are introduced where scalability and robustness of our method is thoroughly demonstrated in terms of various instance properties. 
+		In this paper, we solve the well-known, prominent problem of Symbolic regression, intensively studied within the last two decades. This problem has a wide range of applications;  for example, the obtained SR models could serve theoretically, providing insight towards establishing physical theory behind, thus helping establish reasonable hypotheses.  Practical applications include revealing complex ecological dynamics in ecology, discovering mutations effects on protein stability in biology, modelling analytic representations of the exciton binding energy in energy science, and finding models for band gaps of NaCl-type compounds
+		in material science, just to name a few. We propose a new meta-heuristic-based approach, called \textsc{Rils}-\textsc{Rols} algorithm to solve the problem of Symbolic regression. There are several key concepts utilized within this algorithm: ($i$) Iterated local search scheme is used as the backbone; ($ii$) ordinary least square method is used within the local search procedure to make it efficient and to   determine the best--fitting   coefficients in considered models (solutions);  ($iii$) a novel fitness function is utilized which combines an accuracy score, error score, and the weighted size of the model into one, more compact score. The experiments are conducted on the two ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz} comparing \textsc{Rils}-\textsc{Rols} algorithm to 14 other competitors from the literature considering different levels of noise in the input data.  Our method obtains new best exact percentages on both benchmark sets compared to other literature approaches. Moreover, a new unbiased randomly generated set of problem instances are introduced where the scalability of our method is thoroughly demonstrated in terms of various instance properties. 
 	\end{abstract}
 	\maketitle
 	
 	
-\section{Introduction}\label{sec:introduction}
+	\section{Introduction}\label{sec:introduction}
 	
-	The problem of symbolic regression (SR)~\cite{billard2002symbolic} has attracted many researchers over the last decade to study it intensively. SR can be seen as a generalization of the well known  concept of linear regression, i.e., polynomial regression~\cite{stimson1978interpreting}. All regression models in principle have the same task: given a set of a $n$-dimensional input data and the output data, the aim is to find a  mathematical expression (function) consisting of $n$ (input) variables that fits to the output data w.r.t. some in advance known measure.  This computationally intensive task is in general  provenly NP--hard~\cite{virgolin2022symbolic}. When aiming a model to be a linear combination of input variables, it represents the problem of linear regression. However, when there are some nonlinear relations between variables, which are relevant, linear regression models are not enough. This is the point where symbolic regression comes into the play. Unlike linear regression, it allows the search over the space of all possible mathematical formulas in order to find the best fitting ones able to  predict the output variable from the input variables. The base of constructing the explicit formula are the basis operations like addition and multiplication, as well as polynomial, trigonometric, exponential, and other elementary functions.  
+	The problem of symbolic regression (SR)~\cite{billard2002symbolic} has attracted many researchers over the last decade to study it intensively. SR can be seen as a generalization of the well-known concept of linear regression, i.e., polynomial regression~\cite{stimson1978interpreting}. All regression models in principle have the same task: given a set of $n$-dimensional input data and the output data, the aim is to find a  mathematical expression (function) consisting of $n$ (input) variables that fit the output data w.r.t. some in advance known measure.  This computationally intensive task is in general provenly NP--hard~\cite{virgolin2022symbolic}. When aiming a model to be a linear combination of input variables, it represents the problem of linear regression. However, when there are some nonlinear relations between variables, which are relevant, linear regression models are not enough. This is the point where symbolic regression comes into play. Unlike linear regression, it allows the search over the space of all possible mathematical formulas to find the best-fitting ones able to predict the output variable from the input variables. The basis of constructing the explicit formula is the basic operations like addition and multiplication, as well as polynomial, trigonometric, exponential, and other elementary functions.  
 	%Application: https://towardsdatascience.com/real-world-applications-of-symbolic-regression-2025d17b88ef
 	
-	 Concrete examples of application of SR include having a less black--box tool, as it may say much more how SR model achieve predictions, that is the coefficients and functions that build the model may indicate on larger importance of some variables over the others. Moreover, in that way we may grasp why the variables are related in the obtained way. As an example, appearance of an exponential function may associate  to  some physical phenomenon such as intensity of radiation or acceleration over time, see~\cite{udrescu2020ai}. Additionally, the SR models, if they are correct, may have    posses  larger extrapolation power than other mathematical models, and especially than neural network--based methods. SR models may maximize obtaining physically more reasonable equations that could serve as insight towards  establishing  physical theory behind as the final goal.  Practical applications of SR in chemical and biological sciences are listed in~\cite{weng2020simple}. In particular,  the discovery of a series of new oxide perovskite catalysts with improved activities is presented there. Applications of SR to discovering physical laws from distorted video is studied in~\cite{udrescu2021symbolic} by means of a unsupervised learning method. Revealing complex ecological dynamics by SR is presented in~\cite{chen2019revealing}, tackled by  a machine learning method. Application of SR to model the mutations effects on protein  stability, in the domain of fundamental and applied biology,  is shown in~\cite{louis2021reviewing}. One of the recent work studies of  auto-discovering conserved quantities using trajectory data from unknown dynamical systems, where SR is solved by a machine learning algorithm, see~\cite{liu2021machine}. Last but not least, we mention the paper~\cite{liang2019phillips} discovers  the application of  SR to model analytic representations of the exciton binding energy. The use of solving the SR in material science is described in~\cite{wang2019symbolic,wang2022symbolic,burlacu2022symbolic,kabliman2021application}. Yet another application to wind speed forecasting is given in~\cite{abdellaoui2021symbolic}. 
-	 
-	 
-	 
-	 There are many different ways to tackle the SR by achieving the right analytic expressions, most of them are related to machine learning techniques or to the technique of genetic programming (GP) and various approximate methods, such as meta-heuristics. Among the first GP methods to tackle SR is the one of Raidl~\cite{raidl1998hybrid} based on a hybrid variant of genetic programming. A differential evolution algorithm was proposed by Cerny et al.~\cite{cerny2008using}. Age-fitness Pareto Optimization approach is proposed by Smidt and Lipson~\cite{schmidt2010age}.  Application of artificial bee colony programming to solve SR is proposed by Karaboga et al.~\cite{karaboga2012artificial}. 
-	 Influence of local--based heuristics on solving SR is reported by Commenda in his Ph.D. thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (GOMEA) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (Itea) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. A Variable neighborhood programming approach to solve SR  is proposed by Elleurich et al.~\cite{elleuch2020variable}; this technique is initially proposed in~\cite{elleuch2016variable}. 
-	 Kommenda et al.~\cite{kommenda2020parameter} proposed a method called OPERON algorithm, which uses nonlinear least squares for parameter identification of SR models further integrated into a local search mechanism in
-	 tree-based GP. The C++ implementation of OPERON is discussed in~\cite{burlacu2020operon}. The method that uses Taylor polynomial to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (Sbp-Gp) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth to mention the GP--based Eurequa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization  with co-evolved fitness estimation. This solver is nowadays accepted for the gold standard of symbolic regression.   
-	 
-	 
-	 Machine learning--based method   based on Bayesian symbolic regression (Bsr) is proposed in~\cite{jin2019bayesian},  belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (Dsr), a RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further investigated in~\cite{landajuela2021improving}. A fast neural network approach, called OccamNet,  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
+	Concrete examples of the application of SR include obtaining a less black--box tool, as it may say more about how SR models achieve predictions, that is the coefficients and functions that build the model may indicate on larger importance of some variables over the others. Moreover, in that way, we may grasp why the variables are related in the obtained way. As an example, the appearance of an exponential function may associate with some physical phenomenon such as the intensity of radiation or acceleration over time, see~\cite{udrescu2020ai}. Additionally, the SR models, if they are correct, may possess larger extrapolation power than other mathematical models, especially better from the neural network--based methods. SR models may maximize obtaining physically more reasonable equations that could serve as an insight towards establishing physical theory behind as the final goal.  Practical applications of SR in chemical and biological sciences are listed in~\cite{weng2020simple}. In particular,  the discovery of a series of new oxide perovskite catalysts with improved activities can be found there. The application of SR to discovering physical laws from a distorted video is studied in~\cite{udrescu2021symbolic} by means of an unsupervised learning method. Revealing complex ecological dynamics by SR is presented in~\cite{chen2019revealing}, tackled by a machine learning method. Application of SR to model the effects of the mutations on protein stability, in the domain of fundamental and applied biology,  is shown in~\cite{louis2021reviewing}. One of the recent work studies of auto-discovering conserved quantities using trajectory data from unknown dynamical systems, where SR is solved by a machine learning algorithm, see~\cite{liu2021machine}. Last but not least, we mention the paper~\cite{liang2019phillips} which discovers the application of SR to model analytic representations of the exciton binding energy. The use of solving the SR in material science is described in~\cite{wang2019symbolic,wang2022symbolic,burlacu2022symbolic,kabliman2021application}. Yet another application to wind speed forecasting is given in~\cite{abdellaoui2021symbolic}. 
 	
-	Powerful hybrid techniques to solve SR are also well studied; among them, we emphasize the Eplex solver from~\cite{la2019probabilistic,la2016epsilon} and AI Feynman algorithm from~\cite{udrescu2020ai}, a physics-inspired divide-and-conquer method that  combines neural network
-	fitting. The later one is one of the most efficient method for physically inspired models. We also mention the Fast Function Extraction (Ffx) algorithm developed by McConaghy~\cite{mcconaghy2011ffx},  a non-evolutionary method in combination with a machine learning technique---path-wise regularized learning--- which   quickly prune a huge set of candidate basis functions down to compact models.
-	
-	A short chronological overview of the most important  literature methods to solve SR are given in Table~\ref{tab:gp-based}. 
+	There are many different ways to tackle the SR by achieving the right analytic expressions, most of them are related to machine learning techniques or the technique of genetic programming (GP) and various approximate methods, such as meta-heuristics. Among the first GP methods to tackle SR is the one of Raidl~\cite{raidl1998hybrid} based on a hybrid variant of genetic programming. A differential evolution algorithm was proposed by Cerny et al.~\cite{cerny2008using}. Age-fitness Pareto Optimization approach is proposed by Smidt and Lipson~\cite{schmidt2010age}.  Application of the artificial bee colony programming to solve SR is proposed by Karaboga et al.~\cite{karaboga2012artificial}. 
+	The influence of local--based heuristics on solving SR is reported by Commenda in his PhD thesis~\cite{kommenda2018local}. A  GP-based approach, the gene-pool optimal mixing evolutionary algorithm (\textsc{Gomea}) is studied by Virgolin et al.~\cite{virgolin2021improving}.  Another evolutionary algorithm, the interaction-transformation EA (\textsc{Itea}) has been proposed by de Franca et al.~\cite{de2021interaction}. Simulated annealing to solve SR is proposed by Kantor~\cite{kantor2021simulated}. A Variable neighbourhood programming approach to solve SR  is proposed by Elleurich et al.~\cite{elleuch2020variable}; this technique is initially proposed in~\cite{elleuch2016variable}. 
+	Kommenda et al.~\cite{kommenda2020parameter} proposed a method called \textsc{Operon} algorithm, which uses nonlinear least squares for parameter identification of SR models further integrated into a local search mechanism in tree-based GP. The C++ implementation of \textsc{Operon} is discussed in~\cite{burlacu2020operon}. The method that utilizes the Taylor polynomials to approximate the symbolic equation that fits the dataset, called Taylor genetic programming, is proposed in~\cite{he2022taylor}. A GP approach that uses the idea of semantic back-propagation (Sbp-Gp) is proposed in~\cite{virgolin2019linear}.   Empirical analysis of variance between many GP--based methods for SR is discussed in~\cite{kammerer2021empirical}. It is also worth mentioning the GP--based Eurequa commercial solver~\cite{schmidt2009distilling, schmidt2011machine} that uses age-fitness pareto optimization with co-evolved fitness estimation. This solver is nowadays accepted as the gold standard of symbolic regression. 	  
 	
 	
-	 \begin{table}[!ht]
+	Machine learning--based method based on Bayesian symbolic regression (\textsc{Bsr}) is proposed in~\cite{jin2019bayesian},  belongs to the family of Markov Chain Monte Carlo algorithms. Deep Symbolic Regression (\textsc{Dsr}), an RNN approach, is proposed in~\cite{petersen2019deep} utilizing the policy gradient search. This mechanism of search is further investigated in~\cite{landajuela2021improving}. A fast neural network approach, called \textsc{OccamNet},  is proposed in~\cite{costa2020fast}.  A deep reinforcement learning approach enhanced with genetic programming is given in~\cite{mundhenk2021symbolic}. 
+	
+    Powerful hybrid techniques to solve SR are also well studied; among them, we emphasize the \textsc{Eplex} solver from~\cite{la2019probabilistic,la2016epsilon} and AI Feynman algorithm from~\cite{udrescu2020ai}, a physics-inspired divide-and-conquer method combined with the neural network fitting. The latter is one of the most efficient methods for physically inspired models. We also mention the Fast Function Extraction (\textsc{Ffx}) algorithm developed by McConaghy~\cite{mcconaghy2011ffx},  which is a non-evolutionary method   combined with a machine learning technique---path-wise regularized learning--- which prunes quickly a huge set of candidate basis functions down to compact models.
+	
+	A short overview of the most important literature methods to solve SR is given in Table~\ref{tab:gp-based} in the chronological order of their appearances.  
+	
+	
+	\begin{table}[!ht]
 		\centering
 		\scalebox{0.7}{
-		\begin{tabularx}{550pt}{l  l  X}  
-			Algorithm          &   Paper/year &   Short details   \\ \hline
-			\textsc{Gp}        &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
-	        \textsc{Hybrid-Gp}  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
-	        \textsc{Dfe}        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
-	        \textsc{Apf-Fe}                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
-        	APF            &      \cite{schmidt2010age} (2010)        &  Age-fitness pareto optimization approach                        \\
-        	\textsc{Ffx}  & \cite{mcconaghy2011ffx} (2011)  & The Fast Function Extraction algorithm --  non-evolutionary technique based on a machine learning technique called path-wise regularized learning \\
-             \textsc{Abcp} &  \cite{karaboga2012artificial} (2012)  & Artificial bee colony programming  approach \\
-			\textsc{Eplex}          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection  \\ 
-			\textsc{Mrgp} & \cite{arnaldo2014multiple} (2014) & It decouples and
-			linearly combines a program's subexpressions via multiple regression on the target variable  \\
-	       Local optimization NLS    & \cite{kommenda2018local} (2018)   & Constants Optimization in GP by Nonlinear Least Square \\
-	       \textsc{Feat} & \cite{la2018learning} (2018) & Features are represented as networks of multi-type expression trees  comprised of activation functions; Differentiable features are trained via gradient descent \\
-	       \textsc{Sbp-Gp} &  \cite{virgolin2019linear} (2019)  & The idea of semantic back-propagation utilized in GP \\
-	       \textsc{Bsr} & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
-	       \textsc{Dsr}  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
-	       \textsc{Operon} & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
-	       \textsc{Vnp}    & \cite{elleuch2020variable} (2020) & VNS based GP approach \\
-	       \textsc{OccamNet} & \cite{costa2020fast} (2020) &   A fast neural network approach; the model defines a probability distribution over a non-differentiable function space; it samples functions and updates the weights with back-propagation  based on cross-entropy matching in an EA strategy	 \\
-	       
-	       \textsc{AI-Feynman} & \cite{udrescu2020ai} (2020) & A physics-inspired divide-and-conquer method; it  combines neural network fitting \\
-	       \textsc{Gomea}  & \cite{virgolin2021improving} (2021)    & A model-based
-	       EA framework called Gene-pool optimal mixing evolutionary algorithm \\
-	       \textsc{Itea} & \cite{de2021interaction} (2021)   & EA based approach called the interaction-transformation EA   \\
-	       \textsc{Sa} & \cite{kantor2021simulated} (2021) &  Simulated annealing approach \\
-	       
-         \textsc{Drla} & \cite{mundhenk2021symbolic} (2021)  &    A deep reinforcement learning approach enhanced with genetic programming \\
-          \textsc{Taylor-Gp} &  \cite{he2022taylor} (2022)  &  Taylor polynomials approximations  \\ \hline
-         
-
-	\end{tabularx} }
+			\begin{tabularx}{550pt}{l  l  X}  
+				Algorithm          &   Paper/year &   Short details   \\ \hline
+				\textsc{Gp}        &    \cite{koza1994genetic} (1994)    & Application of GP to SR \\ 
+				\textsc{Hybrid-Gp}  &   \cite{raidl1998hybrid} (1998)   & GP--based method; solutions locally optimizes by method of least squares to find optimum coefficients for top-level terms \\ 
+				\textsc{Dfe}        & \cite{cerny2008using} (2008)   & Differential evolution algorithm \\
+				\textsc{Apf-Fe}                & \cite{schmidt2009distilling, schmidt2011machine} (2009, 2011) & Age-fitness pareto optimization approach using co-evolved fitness estimation   \\
+				APF            &      \cite{schmidt2010age} (2010)        &  Age-fitness pareto optimization approach                        \\
+				\textsc{Ffx}  & \cite{mcconaghy2011ffx} (2011)  & The Fast Function Extraction algorithm --  non-evolutionary technique based on a machine learning technique called path-wise regularized learning \\
+				\textsc{Abcp} &  \cite{karaboga2012artificial} (2012)  & Artificial bee colony programming  approach \\
+				\textsc{Eplex}          &      \cite{la2016epsilon} (2016)         &   A parent selection method called $\epsilon$--lexicase selection  \\ 
+				\textsc{Mrgp} & \cite{arnaldo2014multiple} (2014) & It decouples and
+				linearly combines a program's subexpressions via multiple regression on the target variable  \\
+				Local optimization NLS    & \cite{kommenda2018local} (2018)   & Constants Optimization in GP by Nonlinear Least Square \\
+				\textsc{Feat} & \cite{la2018learning} (2018) & Features are represented as networks of multi-type expression trees  comprised of activation functions; Differentiable features are trained via gradient descent \\
+				\textsc{Sbp-Gp} &  \cite{virgolin2019linear} (2019)  & The idea of semantic back-propagation utilized in GP \\
+				\textsc{Bsr} & \cite{jin2019bayesian} (2019) & ML--based approach; Bayesian symbolic regression  \\ 
+				\textsc{Dsr}  & \cite{petersen2019deep} (2019) & Deep Symbolic Regression based on a RNN approach further utilizing the policy gradient search \\
+				\textsc{Operon} & \cite{kommenda2020parameter} (2020) &  Utilizing nonlinear least squares for parameter identification of SR models with LS \\
+				\textsc{Vnp}    & \cite{elleuch2020variable} (2020) & VNS based GP approach \\
+				\textsc{OccamNet} & \cite{costa2020fast} (2020) &   A fast neural network approach; the model defines a probability distribution over a non-differentiable function space; it samples functions and updates the weights with back-propagation  based on cross-entropy matching in an EA strategy	 \\
+				
+				\textsc{AI-Feynman} & \cite{udrescu2020ai} (2020) & A physics-inspired divide-and-conquer method; it  combines neural network fitting \\
+				\textsc{Gomea}  & \cite{virgolin2021improving} (2021)    & A model-based
+				EA framework called Gene-pool optimal mixing evolutionary algorithm \\
+				\textsc{Itea} & \cite{de2021interaction} (2021)   & EA based approach called the interaction-transformation EA   \\
+				\textsc{Sa} & \cite{kantor2021simulated} (2021) &  Simulated annealing approach \\
+				
+				\textsc{Drla} & \cite{mundhenk2021symbolic} (2021)  &    A deep reinforcement learning approach enhanced with genetic programming \\
+				\textsc{Taylor-Gp} &  \cite{he2022taylor} (2022)  &  Taylor polynomials approximations  \\ \hline
+				
+				
+		\end{tabularx} }
 		\caption{Overview of methods to solve SR.}
 		\label{tab:gp-based}
 	\end{table}
- 
-  
-	The progress in the SR field suffered from a lack of uniform, robust, and transparent
-	benchmarking standards over the last two decade. Recently, La Cava et al.~\cite{la2021contemporary} proposed an
-	open-source, reproducible benchmarking platform for SR, called SRBench. The authors extended  PMLB~\cite{olson2017pmlb},  a repository of standardized regression, by 130 SR datasets for which model forms are known; see more in the aforementioned paper. In the extensive experimental evaluation  where 14
-	symbolic regression methods and 7 machine learning methods are compared on the  set of 252 diverse
-    regression problems. The general conclusions derived from there are: ($i$) when comes to real-world problem, the best performing algorithms are those which combine genetic algorithm with parameter estimation; ($ii$) when come to the instances with the presence of noise, the GP--based and deep learning techniques are performing similarly. 
-    
-    In this work we present a novel approach to solve SR, which combines the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2019iterated} with ordinary least squares method (OLS)~\cite{leng2007ordinary}. Briefly, ILS handles combinatorial (discrete) aspects of search space, while OLS helps in the process of coefficient determination, so it handles continuous parts of the search space. As will be shown later, the proposed method seems to be very robust w.r.t. introduced noise, therefore we called the method RILS-ROLS (with letters R corresponding to regression and robust).  \fxnote{TODO: maybe expand the core of the algorithm... }
- 
-The main contributions of this work may be summarized as follows:
-
-\begin{enumerate}
-	\item The proposed method outperforms all state-of-the-art methods for ground-truth problems from literature, considered in the SRBench benchmark. 
 	
-	\item It shows high robustness, which is proved by comparison to other algorithms under different levels of Gaussian white noise. 
 	
-	\item The method is very efficient, taking in average around xyz seconds to reach exact solution -- when exact solution is found. 
+   The progress in the SR field suffered from a lack of uniform, robust, and transparent
+	benchmarking standards over the last two decades. Recently, La Cava et al.~\cite{la2021contemporary} proposed an
+	open-source, reproducible benchmarking platform for SR, called SRBench. The authors extended  PMLB~\cite{olson2017pmlb},  a repository of standardized regression problems, by 130 SR datasets for which model forms are known; see more in the aforementioned paper. In the extensive experimental evaluation  where 14
+	symbolic regression methods and 7 machine learning methods are compared on the set of 252 diverse regression problems. The general conclusions derived from there are: ($i$) when comes to real-world problems, the best performing algorithms are those which combine genetic algorithm with a parameter estimation; ($ii$) when comes to the instances with a presence of noise, the GP--based and deep learning techniques are performing similarly.  
 	
-	\item The new set of unbiased instances is also introduced -- randomly generated formula of various sizes and number of input variables. This set was employed to understand the influence of formula size, number of input variables and noise on the solving difficulty. 
-\end{enumerate}
-
-
-\section{Problem definition and search space}
-\label{sec:search-space}
-In this section we formally define the SR problem, followed by defining the search space framework of the problem. 
-
-\begin{definition}
-  Given is a dataset $D = \{(x_i, y_i)\}_{i=1}^n$, where $\textbf{x} \in \mathbb{R}^d$ represents input variables (features), and $y$ target variable. Suppose that there exists an analytical model of the form $f(\textbf{x})= g^*(\textbf{x}, \theta^*) + \epsilon $ that is a generator of all observations from $D$.  
-   The goal of SR is to learn a mapping $\tilde{f}(\textbf{x})=  \tilde{g}(\textbf{x}, \tilde{\theta})  \colon \mathbb{R}^d \mapsto \mathbb{R}$  estimated by searching through the space of (mathematical) expressions  $\tilde{g}$ and parameters $\tilde{\theta}$ where  $\epsilon$ is the presented  white noise using given input data. 
-  
-\end{definition}
-
-Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants; as an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example} In essence, syntax trees are elements of the search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute in the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). Interestingly, the search space of SR consists of its discrete and continuous part. More precisely, the model we are seeking for might be obtained as a composition of some functions from a (finite) set of mathematical functions. It is common to use the set of the following elementary mathematical functions in the experiments: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, and $a^x$. It is allowed to link functions will all four operators: $+$, $-$, $\times$, and $/$. After fixing functions that build models, the set of optimal coefficients that  fits to this model must be provided. For the most physical models, these coefficients may receive any real value, that is they are continuous in its nature. 
-
-
-\fxnote{TODO: needs for extension...}
-
-\begin{figure}[!ht]
-	\centering
-\begin{tikzpicture}
-	[font=\small, edge from parent, 
-	every node/.style={top color=white, bottom color=blue!25, 
-		rectangle,rounded corners, minimum size=6mm, draw=blue!75,
-		very thick, drop shadow, align=center},
-	edge from parent/.style={draw=blue!50,thick},
-	level 1/.style={sibling distance=3cm},
-	level 2/.style={sibling distance=1.2cm}, 
-	level 3/.style={sibling distance=1cm}, 
-	level distance=2cm,
-	]
-	\node (A) {$\times$} 
-	child { node (B) {$\sin$}
-		%child { node {x} 
-			%edge from parent node[left=.5em,draw=none] {} }
-		child { node {$x$}}
-	}
-	child {node (C) {$\times$}
-		%child { node {x}
-		%	child { node {C1a}}
-		%}
-		child { node {$x$}}
-		child { node {$/$}
-			child { node {$x$}}
-			child { node {$y$} %edge from parent node[right=.5em,draw=none] {$\frac{a}{b}$}
+	In this work we present a novel approach to solve SR, which combines the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2019iterated} with the ordinary least square  method (OLS)~\cite{leng2007ordinary}. Briefly, ILS handles combinatorial (discrete) aspects of search space, while OLS helps in the process of a coefficient determination, so it handles continuous parts of the search space. As will be shown later, the proposed method has shown its robustness w.r.t. introduced noise, therefore we called the method \textsc{Rils}-\textsc{Rols}  (with letters R corresponding to regression and robust).    Additionally, in order to navigate the search towards not only accurate models, but increasing the chances to get the exact one, the algorithms is equipped with a carefully constructed fitness function that utilizes three important scores of a solution (model): RMSE and $R^2$ scores which participate into models accuracy, and a weighted solution size that will contribute penalizing large (mostly non-exact) solutions. 
+	
+	The main contributions of this work may be summarized as follows: 
+	
+	\begin{enumerate}
+		\item The proposed method outperforms all (14) state-of-the-art methods for ground-truth problems from literature, considered in the SRBench benchmark.  
+		
+		\item The method shows its high robustness, which is proved by comparison to other algorithms under different levels of Gaussian white noise. 
+		
+		\item The method is very efficient, taking in average around xyz seconds to reach exact solution -- when exact solution is found. \fxnote{Ovo treba dodati u eksp. sekciji...}
+		
+		\item New set of unbiased instances is   introduced that are randomly generated formula of various sizes and number of input variables in exact models. This set was employed to methodologically analyze the influence of formula size, number of input variables and noise on the solving difficulty. 
+	\end{enumerate}
+	
+	
+	\section{Problem definition and search space}
+	\label{sec:search-space}
+	In this section we formally define the SR problem, followed by defining the search space framework of the problem.  
+	
+	\begin{definition}
+		Given is a dataset $D = \{(x_i, y_i)\}_{i=1}^n$, where $\textbf{x} \in \mathbb{R}^d$ represents input variables (features), and $y$ target variable. Suppose that there exists an analytical model of the form $f(\textbf{x})= g^*(\textbf{x}, \theta^*) + \epsilon $ that is a generator of all observations from $D$.  
+		The goal of SR is to learn a mapping $\tilde{f}(\textbf{x})=  \tilde{g}(\textbf{x}, \tilde{\theta})  \colon \mathbb{R}^d \mapsto \mathbb{R}$  estimated by searching through the space of (mathematical) expressions  $\tilde{g}$ and parameters $\tilde{\theta}$ where  $\epsilon$ is the presented  white noise within the given input data. 
+		
+	\end{definition}
+	
+	Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP deals with the object called programs, which need to be optimized. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants; as an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example} In essence, syntax trees are elements of the search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. How accurate is this mapping, we compute on the basis of the historical data $D$ and the chosen error   measure (such as $MSE$, or $R^2$). Interestingly, the search space of SR consists of its discrete and continuous part. More precisely, the model we are seeking for might be obtained as a composition of some functions from a (finite) set of mathematical functions. It is common to use the set of the following elementary mathematical functions in the experiments: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, and $a^x$. It is allowed to link functions will all four operators: $+$, $-$, $\times$, and $/$. After fixing functions that build models, the set of optimal coefficients that  fits to this model must be provided. For the most physical models, these coefficients may receive any real value, that is they are continuous in its nature. 
+	
+	\begin{figure}[!ht]
+		\centering
+		\begin{tikzpicture}
+			[font=\small, edge from parent, 
+			every node/.style={top color=white, bottom color=blue!25, 
+				rectangle,rounded corners, minimum size=6mm, draw=blue!75,
+				very thick, drop shadow, align=center},
+			edge from parent/.style={draw=blue!50,thick},
+			level 1/.style={sibling distance=3cm},
+			level 2/.style={sibling distance=1.2cm}, 
+			level 3/.style={sibling distance=1cm}, 
+			level distance=2cm,
+			]
+			\node (A) {$\times$} 
+			child { node (B) {$\sin$}
+				%child { node {x} 
+					%edge from parent node[left=.5em,draw=none] {} }
+				child { node {$x$}}
 			}
-		}
-	};
-%	child { node {+} 
-	%	child { node {2}}
-	%	child { node {$x$}}
-	%};
+			child {node (C) {$\times$}
+				%child { node {x}
+					%	child { node {C1a}}
+					%}
+				child { node {$x$}}
+				child { node {$/$}
+					child { node {$x$}}
+					child { node {$y$} %edge from parent node[right=.5em,draw=none] {$\frac{a}{b}$}
+					}
+				}
+			};
+			%	child { node {+} 
+				%	child { node {2}}
+				%	child { node {$x$}}
+				%};
+			
+		\end{tikzpicture}
+		
+		\caption{Syntax tree representation for the expression $\sin x \times   ( x \times  x / y  )  = \frac{x^2 \sin x }{y}$}
+		\label{fig:syntax-tree-example}
+	\end{figure}
 	
-\end{tikzpicture}
-
-\caption{Syntax tree representation for the expression $\sin x \times   ( x \times  x / y  )  = \frac{x^2 \sin x }{y}$}
-\label{fig:syntax-tree-example}
-\end{figure}
-
-%\section{Literature review}\label{sec:lit-rev}
-
-
-\section{The proposed method}\label{sec:rils}
-   Before we give details on our RILS-ROLS method for solving SR, we will explain the basics of two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods. 
-   
-  \subsection{Iterated local search}
-    Iterated local search (ILS)~\cite{lourencco2003iterated} is an efficient meta-heuristics, whose essential idea is given as follow. Iteratively generate a sequence of solutions produced by the (embedded) heuristic, such as local search or randomized greedy heuristics. When the search gets \emph{stuck} in local optimum, a \emph{perturbation} is performed -- this step is usually non-deterministic. This simple idea appeared in the literature by Baxter~\cite{baxter1981local} in early 1980s, and, since then, has been  re-invented by many researches under different names; some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
-    Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases, combinations of these~\cite{applegate2003chained}. 
+	%\section{Literature review}\label{sec:lit-rev}
+	
+	
+	\section{The proposed method}\label{sec:rils}
+ 
+	Before we give details on our \textsc{Rils}-\textsc{Rols}  method for solving SR, we will explain the basics of two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods. 
+	
+	\subsection{Iterated local search}
+	Iterated local search (ILS)~\cite{lourencco2003iterated} is an efficient meta-heuristics, whose essential idea is given as follow. Iteratively generate a sequence of solutions produced by the (embedded) heuristic, such as local search or randomized greedy heuristics. When the search gets \emph{stuck} in local optimum, a \emph{perturbation} is performed -- this step is usually non-deterministic. This simple idea appeared in the literature by Baxter~\cite{baxter1981local} in early 1980s, and, since then, has been  re-invented by many researches under different names; some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
+	Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases, combinations of these~\cite{applegate2003chained}. 
+	
+	The most popular version of ILS is shown in Algorithm~\ref{alg:ils}. Note that we use this version of ILS as the backbone of our \textsc{Rils}-\textsc{Rols}  algorithm.
+	
+	\begin{algorithm}
+		\begin{algorithmic}[1] 
+			\State \textbf{Input}: problem instance
+			\State \textbf{Output}: an approximate (feasible) solution 
+			\State $s \gets$ \texttt{Initialize}$()$
+			\State  $s \gets$ \texttt{LocalSearch}($s$)
+			\While{\emph{stopping criteria is not met}}
+			\State  $s' \gets$ \texttt{Perturbation}($s$)
+			\State  $s' \gets$ \texttt{LocalSearch}($s'$)
+			\State  $ s \gets$ \texttt{AcceptanceCriterion}($s, s'$)
+			\EndWhile
+			\State \Return $s$
+		\end{algorithmic}
+		\caption{An ILS framework from   literature.}
+		\label{alg:ils}
+	\end{algorithm}  
+	
+	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed -- it is partially randomized. Next, the perturbed solution is improved by a LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions.  		 
+	
+	\subsection{Ordinary least square method}\label{sec:ols}
+	Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}=(X_1, \ldots, X_d)^T, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know as the sum of squared error (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account   partial derivation w.r.t. $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
+	
+	$$  \frac{\partial}{\partial k} \sum_{i} |\tilde{y}_i - y_i|^2 = \frac{\partial}{\partial k} \sum ( kX_i+b  - y_i)^2 =  \sum 2X_i(kX_i + b - y_i)  =  \sum -2X_i (y_i - \tilde{y}_i) . $$
   
-   The most popular version of ILS is shown in Algorithm~\ref{alg:ils}. Note that we use this version of ILS as the backbone of our RILS-ROLS algorithm.
-   
-   \begin{algorithm}
-  		\begin{algorithmic}[1] 
-  			 \State \textbf{Input}: problem instance
-  	 		\State \textbf{Output}: an approximate (feasible) solution 
-  	 		\State $s \gets$ \texttt{Initialize}$()$
-  	 		\State  $s \gets$ \texttt{LocalSearch}($s$)
-   	 		\While{\emph{stopping criteria is not met}}
-   	    		 \State  $s' \gets$ \texttt{Perturbation}($s$)
-   	    		 \State  $s' \gets$ \texttt{LocalSearch}($s'$)
-   	    		 \State  $ s \gets$ \texttt{AcceptanceCriterion}($s, s'$)
-   	 		\EndWhile
-   	 		\State \Return $s$
-   		\end{algorithmic}
-    	\caption{An ILS framework from   literature.}
-    	   	     \label{alg:ils}
-    \end{algorithm}  
-   
-An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed -- it is partially randomized. Next, the perturbed solution is improved with LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions. 
-   
- \subsection{Ordinary least square method}\label{sec:ols}
-   Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}=(X_1, \ldots, X_d)^T, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know as the sum of squared error (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account   partial derivation w.r.t. $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
-   
-   $$  \frac{\partial}{\partial k} \sum_{i} |\tilde{y}_i - y_i|^2 = \frac{\partial}{\partial k} \sum ( kX_i+b  - y_i)^2 =  \sum 2X_i(kX_i + b - y_i)  =  \sum -2X_i (y_i - \tilde{y}_i) . $$
-   
-   Taking into account   partial derivation w.r.t.  $b$, we have 
-    $$  \frac{\partial}{\partial b} \sum_{i} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum ( kX_i+b  - y_i)^2 = \sum -2  (y_i - \tilde{y}_i). $$
-    
-    Thus, we get the system of equations: 
-    \begin{align*}
-    	 % &\sum -2X_i (\tilde{y}_i - y_i )  = 0 \\
-    	  & -2X_1 (y_1 - \tilde{y}_1)  = 0 \\
-    	  & \vdots \\
-    	  & -2X_d (y_d - \tilde{y}_d)  = 0 \\
-    	  &\sum -2  (y_i - \tilde{y}_i) = 0.
-    \end{align*}
-     %The above system can be transformed to 
-     %\begin{align*}
-     %	 & \sum y_i \cdot x_i   = b\sum x_i \cdot x_i  +  k \cdot \sum x_i \\
-     %	 & \sum y_i  = k \sum x_i + b \cdot d. 
-     %  \end{align*}
-     By solving this system of $(d+1)$ equations, one can obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. %For example, in order to calculate coefficient $k_i$, the following system of equations is 
-     \fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
-   \subsection{RILS-ROLS method}
-   Now we will explain the proposed RILS-ROLS method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.  
-   
-    \begin{algorithm}
-    \footnotesize
-    \hspace*{\algorithmicindent} \textbf{Input}: input training dataset $D_{tr}$ \\
-     \hspace*{\algorithmicindent} \textbf{Control parameters}: size penalty $penalty_{size}$, error tolerance $tolerance_{error}$ \\
-    \hspace*{\algorithmicindent} \textbf{Output}: best symbolic formula solution $bs$
-   	\begin{algorithmic}[1] 
-   		\Procedure{RILS-ROLS}{$D_{tr}$}
-   		\State $n_{tr} \gets |D_{tr}|$
-   		\State $sample_{size} \gets $ \texttt{InitialSampleSize}($n_{tr}$)
-   		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
-   		\State $s \gets NodeConstant(0)$ 
-   		\State $s_{fit} \gets$ \texttt{Fitness}($s, D_{tr}'$)
-   		\State $bs, bs_{fit} \gets s, s_{fit}$ \label{line:solSet}
-   		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
-   		\While{\emph{stopping criteria is not met}}
-   			\State $start_{tried} \gets start_{tried} \cup \{s\}$
-   			\State $s_{perturbations} \gets $ \texttt{All1Perturbations}($s$) \label{line:sPert}
-   			\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$, $D_{tr}'$)
-   			\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$) \label{line:orderR2}
-   			\State $improved \gets false $
-   			\For{$p \in s_{perturbations}$}
-   				\If{$p \in perturbations_{tried}$}
-   					\State \textbf{continue}
-   				\EndIf
-  				\State $p \gets $ \texttt{Simplify}($p$) \label{line:simp}
-  				\State $p \gets $ \texttt{LocalSearch}($p$, $D_{tr}'$) \label{line:ls}
-  				\State $p_{fit} \gets$ \texttt{Fitness}($p$, $D_{tr}'$)
-  				\If{$p_{fit} < bs_{fit}$} \label{line:avoid1}
-  					\State $bs, bs_{fit}, improved \gets p, p_{fit}, true$ // new best solution
-  					\State \textbf{break}
-  				\EndIf \label{line:avoid2}
-  				\State $perturbations_{tried} \gets perturbations_{tried} \cup \{p\}$
-   			\EndFor
-   			\If{improved}
-   				\State $s \gets bs$ \label{line:improved}
-   			\Else
-   				\State $start_{candidates} \gets $ \texttt{All1Perturbations}($bs$)
-   				\If{$start_{candidates} \setminus start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
-   					\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)  \label{line:pert21}
-   					\State $start_{candidates} \gets $ \texttt{All1Perturbations}($s'$) \label{line:pert22}
-   				\EndIf
-   				\State $s \gets $ \texttt{RandomPick}($start_{candidates} \setminus start_{tried}$) \label{line:randPick}
-   				\If{not improved for too many iterations}
-   					\State $sample_{size} \gets$ \texttt{IncreaseSampleSize}($sample_{size}, n_{tr}$) \label{line:sampleAdj1}
-   					\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)\label{line:sampleAdj2}
-   				\EndIf
-   			\EndIf
-   			\If{$R^2$ almost 1 and RMSE almost 0 w.r.t. $tolerance_{error}$}
-   				\State \textbf{break} // early exit
-   			\EndIf
-   		\EndWhile
-   		\State $bs \gets $ \texttt{Simplify}($bs$)
-   		\State $bs \gets $ \texttt{RoundModelCoefficients}($bs$)
-   		\State \Return $bs$
-   		\EndProcedure
-   	\end{algorithmic}
-   	\caption{RILS-ROLS method.}
-   	\label{alg:rilsrols}
-   \end{algorithm}  
+	Taking into account   partial derivation w.r.t.  $b$, we have 
+	$$  \frac{\partial}{\partial b} \sum_{i} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum ( kX_i+b  - y_i)^2 = \sum -2  (y_i - \tilde{y}_i). $$
+	
+	Thus, we get the system of equations: 
+	\begin{align*}
+		% &\sum -2X_i (\tilde{y}_i - y_i )  = 0 \\
+		& -2X_1 (y_1 - \tilde{y}_1)  = 0 \\
+		& \vdots \\
+		& -2X_d (y_d - \tilde{y}_d)  = 0 \\
+		&\sum -2  (y_i - \tilde{y}_i) = 0.
+	\end{align*}
+	%The above system can be transformed to 
+	%\begin{align*}
+	%	 & \sum y_i \cdot x_i   = b\sum x_i \cdot x_i  +  k \cdot \sum x_i \\
+	%	 & \sum y_i  = k \sum x_i + b \cdot d. 
+	%  \end{align*}
+By solving the above system of $(d+1)$ equations, one can obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. %For example, in order to calculate coefficient $k_i$, the following system of equations is 
+%\fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
+\subsection{\textsc{Rils}-\textsc{Rols}  method}
+Now we will explain the proposed \textsc{Rils}-\textsc{Rols}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.   
 
-RILS-ROLS algorithms receives training dataset $D_{tr}$ as input. In addition, it has two control parameters: $penalty_{size}$ and $tolerance_{error}$. The first one quantifies the importance of solution expression complexity in the overall solution quality measure (more on this in Section~\ref{sec:fitness}). The second parameter is related to the expected noise level in data -- higher noise means that tolerance to errors should be higher.
- $D_{tr}$ can have very large number of records, so the first step of RILS-ROLS is to choose a random sample $D_{tr}' \subseteq D_{tr}$ of size $sample_{size}$. Initial the sample size is calculated as $\max(0.01 \cdot n_{tr}, 100)$. The size of sample is later dynamically adjusted through the algorithm's iterations -- when there are no solution improvements for some number of iterations, the sample size is doubled (lines~\ref{line:sampleAdj1}-\ref{line:sampleAdj2} of Algorithm~\ref{alg:rilsrols}).
+\begin{algorithm}
+	\footnotesize
+	\hspace*{\algorithmicindent} \textbf{Input}: input training dataset $D_{tr}$ \\
+	\hspace*{\algorithmicindent} \textbf{Control parameters}: size penalty $penalty_{size}$, error tolerance $tolerance_{error}$ \\
+	\hspace*{\algorithmicindent} \textbf{Output}: best symbolic formula solution $bs$
+	\begin{algorithmic}[1] 
+		\Procedure{\textsc{Rils}-\textsc{Rols} }{$D_{tr}$}
+		\State $n_{tr} \gets |D_{tr}|$
+		\State $sample_{size} \gets $ \texttt{InitialSampleSize}($n_{tr}$)
+		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)
+		\State $s \gets NodeConstant(0)$ 
+		\State $s_{fit} \gets$ \texttt{Fitness}($s, D_{tr}'$)
+		\State $bs, bs_{fit} \gets s, s_{fit}$ \label{line:solSet}
+		\State $start_{tried}, perturbations_{tried} \gets \emptyset, \emptyset$
+		\While{\emph{stopping criteria is not met}}
+		\State $start_{tried} \gets start_{tried} \cup \{s\}$
+		\State $s_{perturbations} \gets $ \texttt{All1Perturbations}($s$) \label{line:sPert}
+		\State $s_{perturbations} \gets $ \texttt{FitOLS}($s_{perturbations}$, $D_{tr}'$)
+		\State $s_{perturbations} \gets $ \texttt{OrderByR2}($s_{perturbations}$) \label{line:orderR2}
+		\State $improved \gets false $
+		\For{$p \in s_{perturbations}$}
+		\If{$p \in perturbations_{tried}$}
+		\State \textbf{continue}
+		\EndIf
+		\State $p \gets $ \texttt{Simplify}($p$) \label{line:simp}
+		\State $p \gets $ \texttt{LocalSearch}($p$, $D_{tr}'$) \label{line:ls}
+		\State $p_{fit} \gets$ \texttt{Fitness}($p$, $D_{tr}'$)
+		\If{$p_{fit} < bs_{fit}$} \label{line:avoid1}
+		\State $bs, bs_{fit}, improved \gets p, p_{fit}, true$ // new best solution
+		\State \textbf{break}
+		\EndIf \label{line:avoid2}
+		\State $perturbations_{tried} \gets perturbations_{tried} \cup \{p\}$
+		\EndFor
+		\If{improved}
+		\State $s \gets bs$ \label{line:improved}
+		\Else
+		\State $start_{candidates} \gets $ \texttt{All1Perturbations}($bs$)
+		\If{$start_{candidates} \setminus start_{tried} = \emptyset$} // all 1-perturbations around $bs$ tried
+		\State $s' \gets $ \texttt{RandomPick}($start_{candidates}$)  \label{line:pert21}
+		\State $start_{candidates} \gets $ \texttt{All1Perturbations}($s'$) \label{line:pert22} // 2-permutations of \textit{bs}
+		\EndIf
+		\State $s \gets $ \texttt{RandomPick}($start_{candidates} \setminus start_{tried}$) \label{line:randPick}
+		\If{not improved for too many iterations}
+		\State $sample_{size} \gets$ \texttt{IncreaseSampleSize}($sample_{size}, n_{tr}$) \label{line:sampleAdj1}
+		\State $D_{tr}' \gets$ \texttt{Sample}($D_{tr}, sample_{size}$)\label{line:sampleAdj2}
+		\EndIf
+		\EndIf
+		\If{$R^2$ almost 1 and RMSE almost 0 w.r.t. $tolerance_{error}$}
+		\State \textbf{break} // early exit
+		\EndIf
+		\EndWhile
+		\State $bs \gets $ \texttt{Simplify}($bs$)
+		\State $bs \gets $ \texttt{RoundModelCoefficients}($bs$)
+		\State \Return $bs$
+		\EndProcedure
+	\end{algorithmic}
+	\caption{\textsc{Rils}-\textsc{Rols}  method.}
+	\label{alg:rilsrols}
+\end{algorithm}  
 
+\textsc{Rils}-\textsc{Rols}  algorithms receives training dataset $D_{tr}$ as input. In addition, it has two control parameters: $penalty_{size}$ and $tolerance_{error}$. The first one quantifies the importance of solution expression complexity in the overall solution quality measure (more on this in Section~\ref{sec:fitness}). The second parameter is related to the expected noise level in data -- higher noise means that tolerance to errors should be higher.
+$D_{tr}$ can have very large number of records, so the first step of \textsc{Rils}-\textsc{Rols}  is to choose a random sample $D_{tr}' \subseteq D_{tr}$ of size $sample_{size}$. Initial the sample size is chosen as $\max(0.01 \cdot n_{tr}, 100)$. The size of sample is later dynamically adjusted through the algorithm's iterations -- when there are no solution improvements for some number of iterations, the sample size is doubled (lines~\ref{line:sampleAdj1}-\ref{line:sampleAdj2} of Algorithm~\ref{alg:rilsrols}).
 
-As previously stated, solution is usually represented by means of a tree. We use simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: ($i$) $s$ denotes starting (or working) solution and ($ii$) $bs$ stands for the best solution so far. Solution quality is measured by evaluating the fitness function (more about it in the subsequent Section~\ref{sec:fitness}). Before entering the main loop, the best solution \emph{bs} is set to the initial solution (line~\ref{line:solSet}).
+As previously stated, solution is usually represented by means of a tree. We use a simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: ($i$) $s$ denotes starting (or working) solution and ($ii$) $bs$ stands for the best solution so far. Solution quality is measured by evaluating the fitness function (more about it in the subsequent Section~\ref{sec:fitness}). Before entering the main loop, the best solution \emph{bs} is set to the initial solution (line~\ref{line:solSet}). 
 
 
 Main loop iterates as long as none of termination criteria is met: ($i$) maximal running time has been reached; ($ii$) maximal number of fitness calculations has been made; ($iii$) best solution is sufficiently good, 
-w.r.t. the $R^2$ and $RMSE$ of the best solution. More precisely, if $R^2$ is sufficiently close to 1 and, at the same time, $RMSE$ is sufficiently close to 0, the algorithm stops prematurely -- this significantly reduces the running times for the majority of tested instances.
+w.r.t. its $R^2$ and $RMSE$ scores. More precisely, if $R^2$ is sufficiently close to 1 and, at the same time, $RMSE$ is sufficiently close to 0, the algorithm stops prematurely -- this significantly reduces the running times for the majority of tested instances.
 The sufficiency is controlled with parameter $tolerance_{error}$ -- smaller value means that $R^2$ and $RMSE$ should be closer to 1 and 0, respectively. 
 
 
 One of the first steps in the main loop is to generate perturbations near the starting solution $s$ (line~\ref{line:sPert}). 
 As the name of this procedure (\texttt{All1Perturbations}) suggests, perturbation step is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described separately, in Section~\ref{sec:pertGen}. 
+ 
 
-
-Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by means of ordinary least squares method, described in Section~\ref{sec:ols}.   
+Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by applying  ordinary least square method, already described in Section~\ref{sec:ols}.   
 After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
 Further, these perturbations are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
 
-
 Now, the algorithm enters the internal loop -- it iterates over the ordered perturbations and aims to find the one which improves the best solution $bs$. But, before comparing candidate perturbation solution $p$ with $bs$, $p$ is first simplified (line~\ref{line:simp}) after which the local search is performed (line~\ref{line:ls}).
-Solution simplification is done in a symbolical fashion by popular Python library called SymPy~\cite{sympy}.
-Local search tries to find local optima expressions close to the given $p$ -- explained in details in Section~\ref{sec:ls}.  
-Finally, fitness function value of $p$ is compared to fitness function value of $bs$. If a new incumbent is found, $bs$ is updated correspondingly and internal loop that goes across ordered perturbations is immediately terminated (it works in a  \emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
-Note that the probed perturbations are stored in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}), i.e. this structure serves as a kind of tabu list, initially proposed in the famous Tablu search algorithm, see~\cite{glover1998tabu}.  
+Solution simplification is done in a symbolical fashion by popular \texttt{SymPy} Python package~\cite{sympy}.
+Local search tries to find local optima expressions close to the given $p$ -- explained in detail in Section~\ref{sec:ls}.  
+Finally, the fitness function value of $p$ is compared to the fitness function value of $bs$. If a new incumbent is found, $bs$ is updated correspondingly and the internal loop that goes across ordered perturbations is immediately terminated (it works in a  \emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
+Note that the probed perturbations are stored in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}), i.e. $perturbations_{tried}$ serves as a kind of tabu list, which is known from the Tablu search meta-heuristic, see~\cite{glover1998tabu}.    
 
 
 If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
-Otherwise, it makes no sense to set starting solution to $bs$, as nothing changed -- the search is being  \emph{trapped} in a local optimum. In order to avoid this undesired situation, a randomness needs to be triggered. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{All1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is a insignificant chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that the perturbations with distance 2 from $bs$ are used. Indeed, there is a minor chance that these 2-perturbations will have empty set difference with $start_{tried}$ set of starting solutions. Therefore, more expensive 3-perturbations are not considered in our algorithm. 
+Otherwise, it makes no sense to set starting solution to $bs$, as nothing changed -- the search is being  \emph{trapped} in a local optimum. In order to avoid this undesired situation, randomness needs to be triggered. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{All1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is a minor chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that the perturbations with distance 2 from $bs$ are used. Indeed, there is almost no chance that these 2-perturbations will have an empty set difference with $start_{tried}$ set of starting solutions. Therefore, more expensive 3-perturbations will not be considered in our algorithm. 
 
-
-Before returning the final symbolical model, RILS-ROLS peforms the final symbolical simplification and rounding of model coefficients. The later is sensitive to control parameter $tolerance_{error}$ -- smaller value means information loss during rounding is smaller, i.e. higher number of significant digits is preserved. Note that confidence in the symbolical model is reduced when expected noise in data is higher -- the rule of thumb is: for higher expected noise $tolerance_{error}$ should be higher. 
-
+Before returning the final symbolical model, \textsc{Rils}-\textsc{Rols}  performs the final symbolical simplification and rounding of model coefficients. The latter is sensitive to control parameter $tolerance_{error}$ -- a smaller value means the information loss during rounding is smaller, i.e. a higher number of significant digits is preserved. Note that confidence in the symbolical model is reduced when expected noise in data is higher -- the rule of thumb is: for higher expected noise $tolerance_{error}$ should be higher. 
 
 \fxnote{Dati neku smislenu procjenu kompleksnosti algoritma, ako to nije pretesko. }
 \subsubsection{Fitness function}\label{sec:fitness}
 
-Symbolic regression objective is to determine the expression governing available data. It is also allowed to obtain some equivalent expression, keeping in mind that there are multiple ways to express some symbolical equation. Although logically sound and intuitive, this objective is not quantifiable during the solution search/training phase, simply because the goal expression is not known at that point as only target values for some of the input features are known. Thus, different numerical metrics are being used in literature to guide the symbolic regression search process. The most popular are the coefficient of determination, also known as $R^2$ and mean squared error (MSE) or root mean squared error (RMSE). The important aspect of the solution quality might also be the solution expression complexity. This follows the Occam's razor principle~\cite{costa2020fast}~ that simpler solution  is more likely to be a correct one. 
-The search process of RILS-ROLS is guided by the non-linear combination of $R^2$, RMSE and solution expression size (complexity) presented in Equation~\ref{eq:fitness}. 
-
+Symbolic regression objective is to determine the expression fitting available data. It is also allowed to obtain some equivalent expression, keeping in mind that there are multiple ways to express some symbolical equation. Although logically sound and intuitive, this objective is not quantifiable during the solution search/training phase, simply because the goal expression is not known at that point as only target values for some of the input features are known. Thus, different numerical metrics are being used in literature to guide the symbolic regression search process. The most popular are the coefficient of determination, also known as $R^2$ and mean squared error (MSE) or root mean squared error (RMSE). The important aspect of the solution quality might also be the solution expression complexity, which may correspond to the model size of its tree representation. This follows the Occam's razor principle~\cite{costa2020fast}~ that simpler solution  is more likely to be a correct one. 
+The search process of \textsc{Rils}-\textsc{Rols}  is guided by the non-linear combination of $R^2$, RMSE and solution expression size (complexity) presented in Equation~\ref{eq:fitness}. 
+ 
 \begin{equation}
 	\label{eq:fitness}
 	fit(s) = (2-R^2(s)) \cdot (1+RMSE(s)) \cdot (1+penalty_{size} \cdot size(S))
@@ -419,7 +408,7 @@ Since the presented fitness function needs to be minimized, the following conclu
 \begin{itemize}
 	\item higher $R^2$ is preferred -- ideally, when $R^2(s)=1$, the effect of term $1+R^2(s)$ is neutralized; %since 1 is neutral for multiplication;
 	\item lower RMSE is preferred, ideally, when $RMSE(s)=0$, the whole term $(1+RMSE(s))$ becomes 1;
-	\item since $penalty_{size} > 0$, larger expressions tend to have higher fitness (which follows the Occam's razor principle); therefore, we award solutions that are more simple with its representation. 
+	\item since $penalty_{size} > 0$, larger expressions tend to have higher fitness (which follows the Occam's razor principle); therefore, we award those solutions with a more simple representation. 
 \end{itemize}
 
 The size of expression is calculated by simply counting all nodes in the expression tree -- this includes leaves (variables and constants) and internal nodes (operations). 
@@ -439,8 +428,8 @@ In both cases, the same Algorithm~\ref{alg:pert} is used.
 		\State $s \gets$ \texttt{Simplify}($s$)
 		\State $s_{subtrees} \gets$ \texttt{SubTrees}($s$)
 		\For{$n \in s_{subtrees}$} \label{line:forSSStart}
-			\State $n_{perturbations} \gets$ \texttt{All1PerturbationsAroundNode}($s$, $n$)
-			\State $s_{perturbations} \gets s_{perturbations} \cup n_{perturbations}$	
+		\State $n_{perturbations} \gets$ \texttt{All1PerturbationsAroundNode}($s$, $n$)
+		\State $s_{perturbations} \gets s_{perturbations} \cup n_{perturbations}$	
 		\EndFor \label{line:forSSEnd}
 		\State \Return $s_{perturbations}$
 		\EndProcedure
@@ -459,11 +448,11 @@ After performing the normalization process, the expression is simplified -- gett
 
 
 Perturbations are generated by making simple changes on the per-node level of $s$ expression tree.
-Depending on the structure of the expression tree (expression does not have to have unique tree representation), the set of subtrees of the previous expression $(x+y^3)\cdot x/\sqrt{y}$ might be $\{(x+y^3)\cdot x/\sqrt{y}, (x+y^3), x/\sqrt{y}, x, y^3, \sqrt{y}, y\}$. This set of subtrees is obtained if left subtree of the whole expression is $(x+y^3)$ while the right one is $x/\sqrt{y}$. 
-For each subtree $n$, the set of perturbations around $n$ is generated (lines \ref{line:forSSStart}-\ref{line:forSSEnd} of Algorithm~\ref{alg:pert}).   
+Depending on the structure of the expression tree (note that expression does not have to have unique tree representation), the set of subtrees of the previous expression $(x+y^3)\cdot x/\sqrt{y}$ might be $\{(x+y^3)\cdot x/\sqrt{y}, (x+y^3), x/\sqrt{y}, x, y^3, \sqrt{y}, y\}$. %This set of subtrees is obtained if left subtree of the whole expression is $(x+y^3)$ while the right one is $x/\sqrt{y}$.  
+For each subtree $n$, the set of perturbations around $n$ is generated (lines \ref{line:forSSStart}-\ref{line:forSSEnd} in Algorithm~\ref{alg:pert}).   
 
 
-Algorithm~\ref{alg:pertNode} shows how perturbations around given subtree (node) are generated.
+Algorithm~\ref{alg:pertNode} shows how perturbations around given subtree are generated.
 
 \begin{algorithm}	
 	\hspace*{\algorithmicindent} \textbf{Input}: solution $s$, node $n$\\
@@ -510,7 +499,7 @@ Another example would be the case of unary operation, e.g. when $n=\sqrt{y}$. In
 Subtree $ss$ is binary operation, meaning the right subtree must exist (Line ~\ref{alg:alg4-case-3} in Algorithm~\ref{alg:pertNode}). 
 The analogous idea is applied as in \emph{Case 2}. 
 
-The algorithm allows the following set of carefully chosen per-node changes:
+The algorithm allows the following set of carefully chosen per-node changes: 
 
 \begin{enumerate}
 	\item Any node to any of its subtrees (excluding itself). For example, if $(x+y^3)$ is changed to $x$, the perturbation is $(x+y^3)\cdot x/\sqrt{y} \rightarrow x\cdot x/\sqrt{y}$. 
@@ -537,20 +526,20 @@ Perturbations are further improved by means of local search procedure (Algorithm
 		\State $bp, bp_{fit} \gets p,\ $\texttt{Fitness}$(p,D_{tr}')$ 
 		\State $improved \gets true$
 		\While{$improved$}
-			\State $improved \gets false$
-			\State $bp_{candidates} \gets \emptyset$
-			\State $bp_{subtrees} \gets $\texttt{SubTrees}($bp$)
-			\For{$n \in bp_{subtrees}$}
-				\State $n_{candidates} \gets $ \texttt{All1PerturbationsAroundNode}($bp$, $n$)
-				\For{$new \in n_{candidates}$}
-					\State $new \gets$ \texttt{FitOLS}($new$, $D_{tr}'$)
-					\State $new_{fit} \gets$ \texttt{Fitness}($new$, $D_{tr}'$)
-					\If{$new_{fit} < bp_{fit}$}
-						\State $bp, bp_{fit} \gets new, new_{fit}$
-						\State $improved \gets true$
-					\EndIf
-				\EndFor
-			\EndFor
+		\State $improved \gets false$
+		\State $bp_{candidates} \gets \emptyset$
+		\State $bp_{subtrees} \gets $\texttt{SubTrees}($bp$)
+		\For{$n \in bp_{subtrees}$}
+		\State $n_{candidates} \gets $ \texttt{All1PerturbationsAroundNode}($bp$, $n$)
+		\For{$new \in n_{candidates}$}
+		\State $new \gets$ \texttt{FitOLS}($new$, $D_{tr}'$)
+		\State $new_{fit} \gets$ \texttt{Fitness}($new$, $D_{tr}'$)
+		\If{$new_{fit} < bp_{fit}$}
+		\State $bp, bp_{fit} \gets new, new_{fit}$
+		\State $improved \gets true$
+		\EndIf
+		\EndFor
+		\EndFor
 		\EndWhile
 		\State \Return $bp$
 		\EndProcedure
@@ -559,20 +548,22 @@ Perturbations are further improved by means of local search procedure (Algorithm
 	\label{alg:ls}
 \end{algorithm}  
 
-For a given perturbation $p$, local search systematically explores all 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better that the actual best $bp$, the OLS coefficient fitting (\texttt{FitOLS}) is performed. 
-   
+For a given perturbation $p$, local search systematically explores all 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better that the actual best $bp$, the OLS coefficient fitting (\texttt{FitOLS}) is performed.  
+
+ \fxnote{Marko: stigao do ovog dijela...}
+
 \section{Experimental evaluation}\label{sec:experiments}
 
 Our \textsc{Rils}--\textsc{Rols} algorithm is implemented in Python version 3.x. The experiments concerning our method are performed on a machine xx with xx GHz and a memory limit of xx GB in single-threaded mode.  
- The following 14 algorithms are compared to our approach: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon}, the \textsc{Gplearn} from python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp}. 
+The following 14 algorithms are compared to our approach: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon}, the \textsc{Gplearn} from python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp}. 
 
 For the (14) competitors, the results are exported from \url{https://cavalab.org/srbench/results/}, also reported in~\cite{la2021contemporary}. 
 The maximum computation time allowed for each run of \textsc{Rils}-\textsc{Rols} is set to 1h, i.e., 3600 seconds; note that the same runtime limit was used for all (14) competitors, see~\cite{la2021contemporary}. 
- 
+
 
 All (15) competitor algorithms were run ten times per each instance.  
 
- 
+
 \subsection{Datasets and SRBench}
 
 SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and an environment for analysis, see~\cite{la2021contemporary}. It brought researchers an easy handled environment to evaluation, comparisons, and analysis of their methods. Among all benchmark sets, we involve two real-world inspired benchmark sets, the ground-truth regression problems, into our computational evaluation: 
@@ -580,20 +571,20 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 	\item \textsc{Feynman} benchmark set, inspired from physics and formulas/models that correspond to various natural laws.  
 	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. Some exact models (equations) of problem instances from this benchmark are shown in Table~\ref{tab:Feynamn-Eq}.  Among them, 115 regression problem instances are chosen in the experimental evaluation, with accordance to~\cite{la2021contemporary}. 
 	
-   \begin{table}
+	\begin{table}[!ht]
 		\centering
 		\begin{tabular}{l}   \hline
-	       $x = \sqrt{x_1^2 + x_2^2 - 2 x_1 x_2 \cos(\theta_1 - \theta_2)}$ \\
-	       $ \theta_1 = \arcsin(n \sin \theta_2)$ \\
-	       $E =  \frac{m c^2 }{1 - \frac{v^2}{c^2}}$ \\
-	       $\omega = \frac{1 + \frac{v}{c}}{ \sqrt{1 - \frac{v^2}{c^2}}} \omega_0$ \\ \hline
-	       
-	    \end{tabular}
+			$x = \sqrt{x_1^2 + x_2^2 - 2 x_1 x_2 \cos(\theta_1 - \theta_2)}$ \\
+			$ \theta_1 = \arcsin(n \sin \theta_2)$ \\
+			$E =  \frac{m c^2 }{1 - \frac{v^2}{c^2}}$ \\
+			$\omega = \frac{1 + \frac{v}{c}}{ \sqrt{1 - \frac{v^2}{c^2}}} \omega_0$ \\ \hline
+			
+		\end{tabular}
 		\caption{Some Feynman equations.}
 		\label{tab:Feynamn-Eq}
 	\end{table}
-
-
+	
+	
 	\item \textsc{Strogatz} benchmark set from~\cite{la2016inference}. 
 	Each dataset is represented by a 2-state system of first-order, ordinary differential equations. 
 	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  the current two states on which it depends. These equations describes natural processes described by non-linear dynamics  exhibiting chaos.  The equations for some of the datasets that belong to this benchmark are shown in Table~\ref{table:strogatz-ODEs}. These problem instances are downloadable from \url{https://github.com/lacava/ode-strogatz}. In overall, 14 ground-truth models are used to generate the problem instances used in the comparison, see~\cite{la2021contemporary}. 
@@ -604,27 +595,27 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 		\centering
 		\begin{tabular}{ll} \\ \hline
 			Bacterial representation &   $x' = 20 - x - \frac{x \cdot y}{1 + 0.5 x^2 }$ \\ 
-			                         &   $y' = 10 - \frac{x \cdot y}{1 + 0.5 x^2  }$ \\ \hline
+			&   $y' = 10 - \frac{x \cdot y}{1 + 0.5 x^2  }$ \\ \hline
 			Shear Flow               &  $\theta' = \cot(\phi)\cos(\theta)$ \\
-			                         &  $ \phi'  = ( \cos^2(\phi) + 0.1 \cdot \sin^2 (\phi)) \sin(\theta) $ \\ \hline
+			&  $ \phi'  = ( \cos^2(\phi) + 0.1 \cdot \sin^2 (\phi)) \sin(\theta) $ \\ \hline
 		\end{tabular}
-	    \caption{Some Strogatz ODE problems.}
-	    \label{table:strogatz-ODEs}
+		\caption{Some Strogatz ODE problems.}
+		\label{table:strogatz-ODEs}
 	\end{table}
-	 
-
+	
+	
 \end{itemize}
 The above-mentioned benchmark sets may be biased as models which describe physical laws that usually impose   symmetries, periodicity w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be, in-advance, significantly reduced. Thus, some methods may get significant benefit with this regard, while some others may be in the subordinate situation. 
-  In order to permit any kind of favoritism in the input data, we generate a set of randomly generated (non-biased) instances, labelled by \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.}
+In order to permit any kind of favoritism in the input data, we generate a set of randomly generated (non-biased) instances, labelled by \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.}
 
 
 \subsection{Parameter tuning}
 The \textsc{Rils}-\textsc{Rols} algorithm employs just two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is fixed to 0.001(?), according to the preliminary experimental evaluation we conducted. The second parameter is tuned by monitoring the two errors the algorithm produced on a randomly chosen training set of xx problem instances; among the following values \{ x, xx, ... \} we chose $tolerance_{error}=?$ for which the largest average $R^2$ and the smallest average RMSE error over all problem instances from the training set are produced. %Note that the training set is chosen randomly with a cardinalty of xx instances. 
 
 \fxnote{ drugi parametar manje vise zavistan od ocekivanog 
-nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
+	nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
-\subsection{Comparison with other methods on real--world benchark sets}
+\subsection{Comparison with other methods on the   ground--truth benchmark sets}
 In this section, we evaluate the performance of \textsc{Rils-Rols} algorithm and compare it to the 14 other competitors from the literature. The numerical results are reported in terms of the three Tables~\ref{tab:comp_noise0}--\ref{tab:comp_noise001}. The results for the two ground-truth benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, are given w.r.t.\   the following values of the noise levels of 0.0 (no noise), 0.001 (a low-level noise), and 0.01 (a high-level noise), respectively. In details, the white Gaussian noise was added to the target ($y$-axis) values as a fraction of the signal RMS value, also applied in~\cite{la2021contemporary}, i.e. for target noise level $\alpha$, we have
 $$ y_{noise} = y + \epsilon, \epsilon \sim \mathcal{N}\left(0, \alpha \sqrt{\frac{1}{n} \sum {y_i^2}}\right),$$
 where $n$ relates to the number of items in the input data.
@@ -641,19 +632,19 @@ The following conclusions may be drawn from the numerical results:
 	\item Concerning the exact percentages in case no noise is utilized in the input data of the instance problems, the best performing algorithm is our \textsc{Rils}--\textsc{Rols}, able to find the solution that match to the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, being successful on 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% and just 27.14\% of all problem instances from benchmark set \textsc{Feynman} and \textsc{Strogatz}, respectively. All other approaches are performing significantly worse, and none of them is able to solve more than 30\% instances of any of the two considered ground-truth benchmark sets. 
 	\item   Concerning the exact results in presence of the target noise with a level of 0.001, our \textsc{Rils}--\textsc{Rols} is still performing reasonably well, having found an exact model for more than 42\% cases considering the problem instances from the both benchmark sets. Interestingly, \textsc{AI-Feynman} is quite sensible w.r.t.\ the increase of the target noise level, as its performances rapidly going down -- it is successful on just 2.81\% of the all problem instances. Better from \textsc{AI-Feynman} are in this case the \textsc{Dsr}, \textsc{Gplearn}, and \textsc{Afp-Fe} order decreasingly w.r.t.\ the exact percentages of success, ranging from $\approx$15--17\%. 
 	\item  Concerning the exact results when the presence of noise is large, that is with a level of 0.01,  our \textsc{Rils}--\textsc{Rols} is still performing reasonably well, having found an exact model for  34.77\% problem instances from the two benchmark sets. The second best performing is \textsc{Gplearn} which exact percentage of success is just 12.75\%, followed by \textsc{Dsr} which is successful for just 9.23\% problem instances. % over all problem instances. 
-
+	
 	\item When comparing performances of the algorithms in terms of number of instances for which the algorithm's termination led to an accurate model, that is $R^2 \geq 0.999$, in case when no noise is integrated, our \textsc{Rils}-\textsc{Rols} is successful with the rate of success of 83.38\%. However, in contrast with the exact model percentages comparisons from above, there are a few methods reaching even better percentages of success than our algorithm: \textsc{Mrgp}, and \textsc{Operon}, with 92.69\%, and 86.93\%, respectively. On the other hand, as the  exact model percentage rates of these two approaches are rather low (0\% and 16\%, respectively) these indicate the presence of a high level over-fitting  of the later two algorithms. Thus, they are able to obtain a model that is accurate enough on the training data, but most of the produced models are in essence wrong.
 	
-   \item  When comparing the performances of the competitors in terms of number of instances for which the  termination led to an accurate enough model, in the presence of the noise level of 0.001, our \textsc{Rils}--\textsc{Rols} method has 78.62\% of a success rate, concerning all considered instances.  The \textsc{Operon} solver is the only one that returns a better percentage of success among the competitors, which is 83.08\%. However, the over-fitting is conspicuous as this algorithm is rarely able to obtain the model which matches to the exact one (its exact percentage is equal to 0.31\%). 
-   
-   \item   When comparing performances of the competitors in terms of number of instances where the termination lead to obtaining an accurate model, in the presence of the high--level noise of 0.01, our \textsc{Rils}--\textsc{Rols} method is still highly accurate, delivering  62.92\% of a success rate. Interestingly, it is the best performing in terms of the percentage rate among other competitors. Just for  the information, the second best approach is \textsc{Dsr}, with 16.92\% of the success rate. It can be concluded that our \textsc{Rils}--\textsc{Rols} method does not pay a big price in presence of a higher noise, like the other methods which are very sensible w.r.t. the noise increase. Our \textsc{Rils}--\textsc{Rols} method still delivers high-accuracy models for the noisy input data, but also many of them fit to the exact solutions (models). 	  
-    
-   \item Following the above conclusions, our \textsc{Rils}-\textsc{Rols} algorithm is more robust than the other competitors, which is confirmed by the produced results w.r.t.\ different levels of noise in the input data. Moreover, it can be considered as new state-of-the-art algorithm when one solves the problem of SR. 
-   
+	\item  When comparing the performances of the competitors in terms of number of instances for which the  termination led to an accurate enough model, in the presence of the noise level of 0.001, our \textsc{Rils}--\textsc{Rols} method has 78.62\% of a success rate, concerning all considered instances.  The \textsc{Operon} solver is the only one that returns a better percentage of success among the competitors, which is 83.08\%. However, the over-fitting is conspicuous as this algorithm is rarely able to obtain the model which matches to the exact one (its exact percentage is equal to 0.31\%). 
+	
+	\item   When comparing performances of the competitors in terms of number of instances where the termination lead to obtaining an accurate model, in the presence of the high--level noise of 0.01, our \textsc{Rils}--\textsc{Rols} method is still highly accurate, delivering  62.92\% of a success rate. Interestingly, it is the best performing in terms of the percentage rate among other competitors. Just for  the information, the second best approach is \textsc{Dsr}, with 16.92\% of the success rate. It can be concluded that our \textsc{Rils}--\textsc{Rols} method does not pay a big price in presence of a higher noise, like the other methods which are very sensible w.r.t. the noise increase. Our \textsc{Rils}--\textsc{Rols} method still delivers high-accuracy models for the noisy input data, but also many of them fit to the exact solutions (models). 	  
+	
+	\item Following the above conclusions, our \textsc{Rils}-\textsc{Rols} algorithm is more robust than the other competitors, which is confirmed by the produced results w.r.t.\ different levels of noise in the input data. Moreover, it can be considered as new state-of-the-art algorithm when one solves the problem of SR. 
+	
 \end{itemize}
 
 
- 
+
 
 
 \begin{table}[!htb]
@@ -736,7 +727,7 @@ The following conclusions may be drawn from the numerical results:
 
 
 \subsection{Scalability of \textsc{Rils}-\textsc{Rols} algorithm}
- 
+
 In this section we study the scalability of our method in terms of the size of  instance problems and  the presence of different noise level in the input data. 
 
 First, we divide our benchmark sets into three parts as follows. 
@@ -755,52 +746,52 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 	
 	\item From the above, we can conclude that the size of exact models (solutions) and the increase of the noise level both contribute to overall performance of our \textsc{Rils}--\textsc{Rols} method. The exact percentage rate of the algorithm seems decreasing linearly  in the (exact) model size, regardless of the noise level values.
 	
-	 \item Concerning the high--accuracy percentages delivered by \textsc{Rils}--\textsc{Rols} algorithm -- that is the percentage of problem instances for which the algorithm's termination yielded a model with $R^2 \geq 0.999$ -- for the small--sized problem instances with no noise is recorded, it is almost at the perfect score (i.e. $\approx$100\%). In the presence of a low noise level (equals to 0.001), the percentages of instance problems with the high--accuracy is still high, at about 95\%. In case when the high level of noise (equals to 0.01) is presented in the input data, these percentages stagnate, but still are at a respectable 66\%. %small-sized instances it reaches a high--precision of $R^2=0.999$ upon termination.   
-	 As we pointed out already, a half of these math to the respectable exact models.
-	 
-	 \item Concerning the high--accuracy percentage of the \textsc{Rils}--\textsc{Rols} algorithm on the middle-sized instance problems when the input data are free of the noise, it is obtained on 65\% cases.    The noisy the data are, the accuracy percentages of the algorithm, as expected, drop off; however, not so dramatically. For the level of noise of 0.01, the high--accuracy of the final solution is reported on $\approx$30\% cases.
-	 
-	 \item Concerning the high--accuracy percentages of the \textsc{Rils}--\textsc{Rols} algorithm on the large-sized instance problems with no noise, it gets 60\%. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring $R^2\geq 0.999$ for the outcome  upon termination) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of the considered large--sized instance problems. 
-	 
+	\item Concerning the high--accuracy percentages delivered by \textsc{Rils}--\textsc{Rols} algorithm -- that is the percentage of problem instances for which the algorithm's termination yielded a model with $R^2 \geq 0.999$ -- for the small--sized problem instances with no noise is recorded, it is almost at the perfect score (i.e. $\approx$100\%). In the presence of a low noise level (equals to 0.001), the percentages of instance problems with the high--accuracy is still high, at about 95\%. In case when the high level of noise (equals to 0.01) is presented in the input data, these percentages stagnate, but still are at a respectable 66\%. %small-sized instances it reaches a high--precision of $R^2=0.999$ upon termination.   
+	As we pointed out already, a half of these math to the respectable exact models.
+	
+	\item Concerning the high--accuracy percentage of the \textsc{Rils}--\textsc{Rols} algorithm on the middle-sized instance problems when the input data are free of the noise, it is obtained on 65\% cases.    The noisy the data are, the accuracy percentages of the algorithm, as expected, drop off; however, not so dramatically. For the level of noise of 0.01, the high--accuracy of the final solution is reported on $\approx$30\% cases.
+	
+	\item Concerning the high--accuracy percentages of the \textsc{Rils}--\textsc{Rols} algorithm on the large-sized instance problems with no noise, it gets 60\%. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring $R^2\geq 0.999$ for the outcome  upon termination) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of the considered large--sized instance problems. 
+	
 \end{itemize}
 
 \begin{center}
- \begin{tikzpicture}
- 	\begin{axis}[
-		xlabel=\textbf{model size},
-		ylabel=\textbf{exact percentage},
-		xmin=0, xmax=4,
-		ymin=0, ymax=100,
-		xtick={1,2,3},
-		xticklabels={small,medium,large},   % <---
-		ytick={0,10,...,100}
-		]
-		\addplot[smooth,mark=*,blue] plot coordinates {
-			(1,85)
-			(2,42.5)
-			(3,21.05)
-		};
-		\addlegendentry{No noise}
-		
-		\addplot[smooth,color=red,mark=x]
-		plot coordinates {
-			(1,51.67)
-			(2,13.75)
-			(3,5.26)
-		};
-		\addlegendentry{Noise level 0.001}
-		
-		\addplot[smooth,color=green,mark=o]
-		plot coordinates {
-			(1,31.67)
-			(2,5)
-			(3,4.21)
-		};
-		\addlegendentry{Noise level 0.01}
-	\end{axis}
-\end{tikzpicture}
-\captionof{figure}{Exact solution percentages for varying levels of noise and formulae sizes}
-\label{fig:compExact_noise_size}
+	\begin{tikzpicture}
+		\begin{axis}[
+			xlabel=\textbf{model size},
+			ylabel=\textbf{exact percentage},
+			xmin=0, xmax=4,
+			ymin=0, ymax=100,
+			xtick={1,2,3},
+			xticklabels={small,medium,large},   % <---
+			ytick={0,10,...,100}
+			]
+			\addplot[smooth,mark=*,blue] plot coordinates {
+				(1,85)
+				(2,42.5)
+				(3,21.05)
+			};
+			\addlegendentry{No noise}
+			
+			\addplot[smooth,color=red,mark=x]
+			plot coordinates {
+				(1,51.67)
+				(2,13.75)
+				(3,5.26)
+			};
+			\addlegendentry{Noise level 0.001}
+			
+			\addplot[smooth,color=green,mark=o]
+			plot coordinates {
+				(1,31.67)
+				(2,5)
+				(3,4.21)
+			};
+			\addlegendentry{Noise level 0.01}
+		\end{axis}
+	\end{tikzpicture}
+	\captionof{figure}{Exact solution percentages for varying levels of noise and formulae sizes}
+	\label{fig:compExact_noise_size}
 \end{center}
 
 \begin{center}
@@ -844,12 +835,12 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 
 In this paragraph we investigate the  scalability of our \textsc{Rils}--\textsc{Rols} algorithm in terms of the number of variables and sizes of corresponding exact models of the problem instances varying levels of noise. There is three bar plots shown per each level of noise.  These are shown by Figures~\ref{fig:compExact_noise_varcnt} and~\ref{fig:compExact_noise_varsizes}. The instances are grouped according to the different variable count/size of respective exact models ($x$-axis). For each group, the exact percentages of success rate of \textsc{Rils}--\textsc{Rols} algorithm on the instance group is shown ($y$-axis).
 
- The following conclusions can be drawn from Figure~\ref{fig:compExact_noise_varcnt}. 
+The following conclusions can be drawn from Figure~\ref{fig:compExact_noise_varcnt}. 
 
 \begin{itemize}
-    \item The exact percentage rate of \textsc{Rils}--\textsc{Rols} algorithm  slightly decrease as the expected number of variables gets larger when no noise is presented in the data.
-    \item The exact percentages drop off with the presence of a larger noise level. Thus, the higher the noise level, the smaller the exact percentages are.
-    \item Interestingly, in the presence of noise, the highest exact percentages are not obtained on the problem instances whose exact models consists of a single variable, but two or three. We argue it by the fact that the early phase of the algorithm will more likely try to include additional variables in the solution at the cost of increasing the model accuracy to ensure improving the fitness value over iterations. In the presence of the zero noise, OLS method will more likely find a smaller model (on $\approx$ 50\% cases) with a high accuracy that fits to the (no-noisy) input data than the case of noisy data. When the data is noisy, the decision of adding more variables at the beginning is likely to be forced than just dealing with short-size solutions. By the algorithm's progression, it gets harder improving the best fitness value by adding variables, and other operations are more frequently involved than in previous iterations. %This conclusion also correlates to the shape of fitness function given by Equation~(\ref{eq:fitness}) where the first two product terms there are already small (close to 1).      \fxnote{TODO: need to be further expanded...}
+	\item The exact percentage rate of \textsc{Rils}--\textsc{Rols} algorithm  slightly decrease as the expected number of variables gets larger when no noise is presented in the data.
+	\item The exact percentages drop off with the presence of a larger noise level. Thus, the higher the noise level, the smaller the exact percentages are.
+	\item Interestingly, in the presence of noise, the highest exact percentages are not obtained on the problem instances whose exact models consists of a single variable, but two or three. We argue it by the fact that the early phase of the algorithm will more likely try to include additional variables in the solution at the cost of increasing the model accuracy to ensure improving the fitness value over iterations. In the presence of the zero noise, OLS method will more likely find a smaller model (on $\approx$ 50\% cases) with a high accuracy that fits to the (no-noisy) input data than the case of noisy data. When the data is noisy, the decision of adding more variables at the beginning is likely to be forced than just dealing with short-size solutions. By the algorithm's progression, it gets harder improving the best fitness value by adding variables, and other operations are more frequently involved than in previous iterations. %This conclusion also correlates to the shape of fitness function given by Equation~(\ref{eq:fitness}) where the first two product terms there are already small (close to 1).      \fxnote{TODO: need to be further expanded...}
 	%Obtaining an accurate model with a few variables in the presence of a high level of nose in the data 
 \end{itemize}
 
@@ -940,87 +931,87 @@ When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algori
 	\label{fig:runtime_rils_rols}
 \end{figure}
 
- \begin{comment}
-\begin{center}
-	\begin{tikzpicture}
-		\begin{axis}[
-			xlabel=$variable\;count\;in\;exact\;models$,
-			ylabel=$exact\;percentage$,
-			xmin=0, xmax=5,
-			ymin=0, ymax=100,
-			xtick={1,2,3,4},
-			xticklabels={1,2,3,4},   % <---
-			ytick={0,10,...,100}
-			]
-			\addplot[smooth,mark=*,blue] plot coordinates {
-				(1,43.33)
-				(2,43.33)
-				(3,46.67)
-				(4,46.67)
-			};
-			\addlegendentry{No noise}
-			
-			\addplot[smooth,color=red,mark=x]
-			plot coordinates {
-				(1,3.33)
-				(2,3.33)
-				(3,26.67)
-				(4,26.67)
-			};
-			\addlegendentry{Noise level 0.001}
-			
-			\addplot[smooth,color=green,mark=o]
-			plot coordinates {
-				(1,3.33)
-				(2,3.33)
-				(3,3.33)
-				(4,16.67)
-			};
-			\addlegendentry{Noise level 0.01}
-		\end{axis}
-	\end{tikzpicture}
-	\captionof{figure}{Exact solution percentages for varying levels of noise and variable counts (only sizes ranging from 7 to 12)}
-	\label{fig:compExact_noise_varcnt}
-\end{center}
+\begin{comment}
+	\begin{center}
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel=$variable\;count\;in\;exact\;models$,
+				ylabel=$exact\;percentage$,
+				xmin=0, xmax=5,
+				ymin=0, ymax=100,
+				xtick={1,2,3,4},
+				xticklabels={1,2,3,4},   % <---
+				ytick={0,10,...,100}
+				]
+				\addplot[smooth,mark=*,blue] plot coordinates {
+					(1,43.33)
+					(2,43.33)
+					(3,46.67)
+					(4,46.67)
+				};
+				\addlegendentry{No noise}
+				
+				\addplot[smooth,color=red,mark=x]
+				plot coordinates {
+					(1,3.33)
+					(2,3.33)
+					(3,26.67)
+					(4,26.67)
+				};
+				\addlegendentry{Noise level 0.001}
+				
+				\addplot[smooth,color=green,mark=o]
+				plot coordinates {
+					(1,3.33)
+					(2,3.33)
+					(3,3.33)
+					(4,16.67)
+				};
+				\addlegendentry{Noise level 0.01}
+			\end{axis}
+		\end{tikzpicture}
+		\captionof{figure}{Exact solution percentages for varying levels of noise and variable counts (only sizes ranging from 7 to 12)}
+		\label{fig:compExact_noise_varcnt}
+	\end{center}
 \end{comment}
 %\begin{center}
 %	\begin{tikzpicture}
-%		\begin{axis}[
-%			xlabel=$variable\;count$,
-%			ylabel=$exact\;percentage$,
-%			xmin=0, xmax=5,
-%			ymin=0, ymax=100,
-%			xtick={1,2,3,4},
-%			xticklabels={1,2,3,4},   % <---
-%			ytick={0,10,...,100}
-%			]
-%			\addplot[smooth,mark=*,blue] plot coordinates {
-%				(1,83.33)
-%				(2,66.67)
-%				(3,73.33)
-%				(4,46.67)
-%			};
-%			\addlegendentry{No noise}
-%			
-%			\addplot[smooth,color=red,mark=x]
-%			plot coordinates {
-%				(1,56.67)
-%				(2,63.33)
-%				(3,66.67)
-%				(4,46.67)
-%			};
-%			\addlegendentry{Noise level 0.001}
-%			
-%			\addplot[smooth,color=green,mark=o]
-%			plot coordinates {
-%				(1,23.33)
-%				(2,43.33)
-%				(3,53.33)
-%				(4,26.67)
-%			};
-%			\addlegendentry{Noise level 0.01}
-%		\end{axis}
-%	\end{tikzpicture}
+	%		\begin{axis}[
+		%			xlabel=$variable\;count$,
+		%			ylabel=$exact\;percentage$,
+		%			xmin=0, xmax=5,
+		%			ymin=0, ymax=100,
+		%			xtick={1,2,3,4},
+		%			xticklabels={1,2,3,4},   % <---
+		%			ytick={0,10,...,100}
+		%			]
+		%			\addplot[smooth,mark=*,blue] plot coordinates {
+			%				(1,83.33)
+			%				(2,66.67)
+			%				(3,73.33)
+			%				(4,46.67)
+			%			};
+		%			\addlegendentry{No noise}
+		%			
+		%			\addplot[smooth,color=red,mark=x]
+		%			plot coordinates {
+			%				(1,56.67)
+			%				(2,63.33)
+			%				(3,66.67)
+			%				(4,46.67)
+			%			};
+		%			\addlegendentry{Noise level 0.001}
+		%			
+		%			\addplot[smooth,color=green,mark=o]
+		%			plot coordinates {
+			%				(1,23.33)
+			%				(2,43.33)
+			%				(3,53.33)
+			%				(4,26.67)
+			%			};
+		%			\addlegendentry{Noise level 0.01}
+		%		\end{axis}
+	%	\end{tikzpicture}
 %	\captionof{figure}{Percentages of solutions having $R^2 > 0.999$ for varying levels of noise and variable counts (only sizes ranging from 7 to 12)}
 %	\label{fig:compR2_noise_varcnt}
 %\end{center}
@@ -1030,7 +1021,7 @@ When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algori
 
 In order to check the statistical significance of the obtained exact percentages and their differences between the competitor approaches, we employed the statistical methodology comparing the results of  the 15 approaches on all problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that in this case the exact percentage of each problem instance is given w.r.t.\  10 separately executed runs on that instance. 
 
- Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained exact percentages of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there.
+Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained exact percentages of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there.
 
 \begin{itemize}
 	\item  Concerning the instance problems where no noise is included, \textsc{Rils}-\textsc{Rols} method has the best average ranking in terms of   exact percentage rate.  The second best ranking is achieved by \textsc{AI-Feynman} algorithm. There is no statistically significant difference between these two approaches. However, these two approaches perform statistically significantly better than the third best (according the the average raking), that is with \textsc{Apf-Fe}. This conclusion also holds for the remaining approaches, which are performing statistically significantly weaker than  \textsc{Rils}-\textsc{Rols} method. 
@@ -1067,51 +1058,51 @@ In order to check the statistical significance of the obtained exact percentages
 
 \section{Conclusions and future work}\label{sec:conclusions}
 
-  In this paper we dealt with solving the well--known Symbolic regression (SR)  problem. SR problem is a generalization of more interdisciplinary appearing  linear and logistic regression problems. %SR problem have been intensively studied in the literature over the last 15 years, where a few dozens of algorithms were constructed, mainly based on Genetic programming and on the application of different kinds of neural networks. 
-   We proposed a meta-heuristic approach, called \textsc{Rils}-\textsc{Rols}. Our approach is built upon   the Iterated local search (ILS) scheme. The first crucial concept within this scheme is utilizing the ordinary least square method to efficiently determine internal coefficients that fit the candidate solution,  thus in this way  the search process is focused on considering more promising solutions. Another key aspect is the utilization of a carefully constructed fitness function, which appears as  a combination of three important scores: RMSE, $R^2$  scores and the size of model (solution).  Last but not least, a carefully constructed local search is applied systematically exploring solutions obtained as 1--perturbations of the considered solution.  1--perturbations of a solution are based on applying the six per-node change operations on the solution's tree representation. 
-    
-    \textsc{Rils-Rols} method is compared to the 14 other competitor algorithms from literature on the two ground truth benchmark sets from literature, namely \textsc{Feynman} and \textsc{Strogatz}.  Additionally, we introduced a non-biased benchmark set of randomly generated instances, labelled by \textsc{Random}.  The experimental evaluation confirmed efficiently of our method which produced the best average ranking results in terms of exact percentage when compared to all other competitors on the two ground-truth benchmark sets, in presence of all three different levels of noise in the input data. In all cases, new best exact percentages are obtained by means of \textsc{Rils-Rols} method. In some cases, these differences are  statistically significant in favor of our \textsc{Rils-Rols} method. Moreover, scalability and robustness of this method is  checked and confirmed on the unbiased \textsc{Random} benchmark set in terms of a few different criteria such as the size of model, the number of variables in exact models, and average runtimes. 
-  
-  In the future work, one could think of constructing a hybrid of \textsc{Rils-Rols} method with some other meta-heuristics to further boost quality of the  obtained results. For example, replacing ILS scheme of \textsc{Rils-Rils} with  a more general Variable neighborhood search (VNS) scheme is a reasonable option to try out. VNS   utilizes more stronger and systematic system of solutions diversification  and thus   escaping from local optima could be much easier.  Additionally, as a proof of efficiency and benefits of our algorithm, this tool could  be applied to solving problems from various problem domains out of the areas of computer science, for example from physics or chemistry, to help for setting up hypotheses or to obtain valuable insights on   experimental evaluations.  
-  
- \newpage
- \appendix
- 
- \section{Overview of RILS-ROLS python package}\label{sec:appendix-1}
-  \fxnote{TODO}
-  
-  \section{Additional statistical analysis}\label{sec:appendix-2}
-  
-  
-  
-  \begin{figure}[H]
-  	\begin{subfigure}[b]{0.40\textwidth}
-  		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_0acc.pdf}
-  		\caption{No noise}
-  		\label{fig:CDplotsR2-no-noise}
-  	\end{subfigure}
-  	\hfill
-  	\begin{subfigure}[b]{0.4\textwidth}
-  		
-  		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_001acc.pdf}
-  		\caption{Level of noise equal to 0.001}
-  		\label{fig:CDplotsR2-noise0.001}
-  	\end{subfigure}
-  	\centering
-  	\begin{subfigure}[b]{0.40\textwidth}
-  		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_01acc.pdf}
-  		\caption{Level of noise equal to 0.01.}
-  		\label{fig:CDplotsR2-noise0.01}
-  	\end{subfigure}
-  	\caption{CD plots comparisons in terms of obtained $R^2$ score over all problem instances from both ground-truth benchmark sets,  varying levels of noise.}
-  	\label{fig:cd-plotsR2-varying_noise}
-  \end{figure}
-  
- 
+In this paper we dealt with solving the well--known Symbolic regression (SR)  problem. SR problem is a generalization of more interdisciplinary appearing  linear and logistic regression problems. %SR problem have been intensively studied in the literature over the last 15 years, where a few dozens of algorithms were constructed, mainly based on Genetic programming and on the application of different kinds of neural networks. 
+We proposed a meta-heuristic approach, called \textsc{Rils}-\textsc{Rols}. Our approach is built upon   the Iterated local search (ILS) scheme. The first crucial concept within this scheme is utilizing the ordinary least square method to efficiently determine internal coefficients that fit the candidate solution,  thus in this way  the search process is focused on considering more promising solutions. Another key aspect is the utilization of a carefully constructed fitness function, which appears as  a combination of three important scores: RMSE, $R^2$  scores and the size of model (solution).  Last but not least, a carefully constructed local search is applied systematically exploring solutions obtained as 1--perturbations of the considered solution.  1--perturbations of a solution are based on applying the six per-node change operations on the solution's tree representation. 
+
+\textsc{Rils-Rols} method is compared to the 14 other competitor algorithms from literature on the two ground truth benchmark sets from literature, namely \textsc{Feynman} and \textsc{Strogatz}.  Additionally, we introduced a non-biased benchmark set of randomly generated instances, labelled by \textsc{Random}.  The experimental evaluation confirmed efficiently of our method which produced the best average ranking results in terms of exact percentage when compared to all other competitors on the two ground-truth benchmark sets, in presence of all three different levels of noise in the input data. In all cases, new best exact percentages are obtained by means of \textsc{Rils-Rols} method. In some cases, these differences are  statistically significant in favor of our \textsc{Rils-Rols} method. Moreover, scalability and robustness of this method is  checked and confirmed on the unbiased \textsc{Random} benchmark set in terms of a few different criteria such as the size of model, the number of variables in exact models, and average runtimes. 
+
+In the future work, one could think of constructing a hybrid of \textsc{Rils-Rols} method with some other meta-heuristics to further boost quality of the  obtained results. For example, replacing ILS scheme of \textsc{Rils-Rils} with  a more general Variable neighborhood search (VNS) scheme is a reasonable option to try out. VNS   utilizes more stronger and systematic system of solutions diversification  and thus   escaping from local optima could be much easier.  Additionally, as a proof of efficiency and benefits of our algorithm, this tool could  be applied to solving problems from various problem domains out of the areas of computer science, for example from physics or chemistry, to help for setting up hypotheses or to obtain valuable insights on   experimental evaluations.  
+
+\newpage
+\appendix
+
+\section{Overview of \textsc{Rils}-\textsc{Rols}  python package}\label{sec:appendix-1}
+\fxnote{TODO}
+
+\section{Additional statistical analysis}\label{sec:appendix-2}
+
+
+
+\begin{figure}[H]
+	\begin{subfigure}[b]{0.40\textwidth}
+		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_0acc.pdf}
+		\caption{No noise}
+		\label{fig:CDplotsR2-no-noise}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.4\textwidth}
+		
+		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_001acc.pdf}
+		\caption{Level of noise equal to 0.001}
+		\label{fig:CDplotsR2-noise0.001}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}[b]{0.40\textwidth}
+		\includegraphics[  width=220pt,height=140pt]{plots/Feynman__strogatz_noise_0_01acc.pdf}
+		\caption{Level of noise equal to 0.01.}
+		\label{fig:CDplotsR2-noise0.01}
+	\end{subfigure}
+	\caption{CD plots comparisons in terms of obtained $R^2$ score over all problem instances from both ground-truth benchmark sets,  varying levels of noise.}
+	\label{fig:cd-plotsR2-varying_noise}
+\end{figure}
+
+
 \newpage
 %\section*{References}
 \bibliographystyle{abbrv}	
 \bibliography{bib}	
 
-	
+
 \end{document}
