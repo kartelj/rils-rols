@@ -569,7 +569,7 @@ All (15) competitor algorithms were run ten times per each instance.
 SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and an environment for analysis, see~\cite{la2021contemporary}. It brought researchers an easy handled environment to evaluation, comparisons, and analysis of their methods. Among all benchmark sets, we involve two real-world inspired benchmark sets, the ground-truth regression problems, into our computational evaluation: 
 \begin{itemize}
 	\item \textsc{Feynman} benchmark set, inspired from physics and formulas/models that correspond to various natural laws.  
-	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. Some exact models (equations) of problem instances from this benchmark are shown in Table~\ref{tab:Feynamn-Eq}.  Among them, 115 regression problem instances are chosen in the experimental evaluation, with accordance to~\cite{la2021contemporary}. 
+	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. Some exact models (equations) of problem instances from this benchmark are shown in Table~\ref{tab:Feynamn-Eq}.  Among them, 116 regression problem instances are chosen in the experimental evaluation, with accordance to~\cite{la2021contemporary}. 
 	
 	\begin{table}[!ht]
 		\centering
@@ -629,23 +629,19 @@ In short, the exact results, thus the number of instances (in percentages) for w
 The following conclusions may be drawn from the numerical results: 
 
 \begin{itemize}
-	\item Concerning the exact percentages in case no noise is utilized in the input data of the instance problems, the best performing algorithm is our \textsc{Rils}--\textsc{Rols}, able to find the solution that match to the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, being successful on 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% and just 27.14\% of all problem instances from benchmark set \textsc{Feynman} and \textsc{Strogatz}, respectively. All other approaches are performing significantly worse, and none of them is able to solve more than 30\% instances of any of the two considered ground-truth benchmark sets. 
-	\item   Concerning the exact results in presence of the target noise with a level of 0.001, our \textsc{Rils}--\textsc{Rols} is still performing reasonably well, having found an exact model for more than 42\% cases considering the problem instances from the both benchmark sets. Interestingly, \textsc{AI-Feynman} is quite sensible w.r.t.\ the increase of the target noise level, as its performances rapidly going down -- it is successful on just 2.81\% of the all problem instances. Better from \textsc{AI-Feynman} are in this case the \textsc{Dsr}, \textsc{Gplearn}, and \textsc{Afp-Fe} order decreasingly w.r.t.\ the exact percentages of success, ranging from $\approx$15--17\%. 
-	\item  Concerning the exact results when the presence of noise is large, that is with a level of 0.01,  our \textsc{Rils}--\textsc{Rols} is still performing reasonably well, having found an exact model for  34.77\% problem instances from the two benchmark sets. The second best performing is \textsc{Gplearn} which exact percentage of success is just 12.75\%, followed by \textsc{Dsr} which is successful for just 9.23\% problem instances. % over all problem instances. 
+	\item Concerning the exact percentages in case no noise is utilized in the input data of the instance problems, the best performing algorithm is our \textsc{Rils-Rols}, able to find the solution that match to the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, being successful on 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% and just 27.14\% of all problem instances from benchmark set \textsc{Feynman} and \textsc{Strogatz}, respectively. All other approaches are performing significantly worse, and none of them is able to solve more than 30\% instances of any of the two considered ground-truth benchmark sets. 
+	\item   Concerning the exact results in presence of the target noise with a level of 0.001, our \textsc{Rils-Rols} is still performing very-well, having found an exact model for 42.08\% cases considering the problem instances from the both benchmark sets. The second best approach is \textsc{AI-Feynman} solving in total 31.89\% cases, as before, being better when used on \textsc{Feynman} instances than on \textsc{Strogatz}. Approache \textsc{AFP\_FE} shows to be robust w.r.t. noise so its performances only slightly deteriorate in comparison to the no-noise scenario. This puts it on the third place with overall accuracy of 21.23\%. Other approaches reach accuracy bellow 20\%. 
+	\item  Concerning the exact results when the presence of noise is large, that is with a level of 0.01,  our \textsc{Rils-Rols} is still performing robustly, having found an exact model for  34.77\% problem instances from the two benchmark sets. The second best is now \textsc{AFT\_FE} reaching 20\% correct solutions. \textsc{AI-Feynman} performances are degraded significantly under this level of noise, so it is ranked only 6th overall.  
 	
-	\item When comparing performances of the algorithms in terms of number of instances for which the algorithm's termination led to an accurate model, that is $R^2 \geq 0.999$, in case when no noise is integrated, our \textsc{Rils}-\textsc{Rols} is successful with the rate of success of 83.38\%. However, in contrast with the exact model percentages comparisons from above, there are a few methods reaching even better percentages of success than our algorithm: \textsc{Mrgp}, and \textsc{Operon}, with 92.69\%, and 86.93\%, respectively. On the other hand, as the  exact model percentage rates of these two approaches are rather low (0\% and 16\%, respectively) these indicate the presence of a high level over-fitting  of the later two algorithms. Thus, they are able to obtain a model that is accurate enough on the training data, but most of the produced models are in essence wrong.
+	\item When comparing performances of the algorithms in terms of number of instances for which the model has $R^2 \geq 0.999$, in case when no noise is integrated, our \textsc{Rils}-\textsc{Rols} is successful with the rate of success of 83.38\% (third place). However, in contrast with the exact model percentages comparisons from above, there are a few methods reaching even better percentages of success than our algorithm: \textsc{MRGP}, and \textsc{Operon}, with 92.69\%, and 86.92\%, respectively. On the other hand, the exact model percentages of these two approaches are rather low (0\% and 16\%, respectively). These two algorithms are therefore more appropriate in scenarios when the underlying (ground-truth) model is unknown, so-called black-box regression. 
 	
-	\item  When comparing the performances of the competitors in terms of number of instances for which the  termination led to an accurate enough model, in the presence of the noise level of 0.001, our \textsc{Rils}--\textsc{Rols} method has 78.62\% of a success rate, concerning all considered instances.  The \textsc{Operon} solver is the only one that returns a better percentage of success among the competitors, which is 83.08\%. However, the over-fitting is conspicuous as this algorithm is rarely able to obtain the model which matches to the exact one (its exact percentage is equal to 0.31\%). 
+	\item  In the presence of the noise level of 0.001, our \textsc{Rils-Rols} method has 78.62\% of a success rate (third place).  As before, \textsc{MRGP} and \textsc{Operon} are showing good performances. 
 	
-	\item   When comparing performances of the competitors in terms of number of instances where the termination lead to obtaining an accurate model, in the presence of the high--level noise of 0.01, our \textsc{Rils}--\textsc{Rols} method is still highly accurate, delivering  62.92\% of a success rate. Interestingly, it is the best performing in terms of the percentage rate among other competitors. Just for  the information, the second best approach is \textsc{Dsr}, with 16.92\% of the success rate. It can be concluded that our \textsc{Rils}--\textsc{Rols} method does not pay a big price in presence of a higher noise, like the other methods which are very sensible w.r.t. the noise increase. Our \textsc{Rils}--\textsc{Rols} method still delivers high-accuracy models for the noisy input data, but also many of them fit to the exact solutions (models). 	  
+	\item   When noise is 0.01 the situation is almost the same, \textsc{MRGP} and \textsc{Operon} are the best and second best with 88.46\% and 86.54\% accuracy, respectively. \textsc{GP-GOMEA} now reaches third place with 73.46\%, while the proposed \textsc{RILS-ROLS} is fifth with 62.92\% $R^2$ accuracy.
 	
-	\item Following the above conclusions, our \textsc{Rils}-\textsc{Rols} algorithm is more robust than the other competitors, which is confirmed by the produced results w.r.t.\ different levels of noise in the input data. Moreover, it can be considered as new state-of-the-art algorithm when one solves the problem of SR. 
+	\item Following the above conclusions, our \textsc{Rils}-\textsc{Rols} algorithm is more robust than the other competitors, which is confirmed by the produced results w.r.t.\ different levels of noise in the input data. Moreover, it can be considered as new state-of-the-art algorithm when one solves the problems of SR with known ground-truth models. 
 	
 \end{itemize}
-
-
-
-
 
 \begin{table}[!htb]
 	\caption{Comparison without noise}\label{tab:comp_noise0}
@@ -653,21 +649,21 @@ The following conclusions may be drawn from the numerical results:
 	\begin{tabular}{l|rrr|rrr} \hline
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
-		RILS-ROLS&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
-		AIFeynman&55.78&27.14&52.65&78.51&35.71&73.83\\
-		GP-GOMEA&26.83&29.46&27.12&71.55&71.43&71.54\\
-		AFP\_FE&26.98&20&26.23&59.05&28.57&55.77\\
-		ITEA&22.41&7.14&20.77&27.59&21.43&26.92\\
-		AFP&21.12&15.18&20.48&44.83&25&42.69\\
-		DSR&19.72&19.64&19.71&25&14.29&23.85\\
-		Operon&16.55&11.43&16&86.21&\bf{92.86}&86.92\\
-		gplearn&16.27&8.93&15.48&32.76&7.14&30\\
-		SBP-GP&12.72&11.61&12.6&73.71&78.57&74.23\\
-		EPLEX&12.39&8.93&12.02&46.98&21.43&44.23\\
-		BSR&2.48&0.89&2.31&10.78&21.43&11.92\\
-		FEAT&0&0.89&0.1&39.66&42.86&40\\
-		FFX&0&0&0&0&0&0\\
-		MRGP&0&0&0&\bf{93.1}&89.29&\bf{92.69}\\
+		\textsc{RILS-ROLS}&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
+		\textsc{AIFeynman}&55.78&27.14&52.65&78.51&35.71&73.83\\
+		\textsc{GP-GOMEA}&26.83&29.46&27.12&71.55&71.43&71.54\\
+		\textsc{AFP\_FE}&26.98&20&26.23&59.05&28.57&55.77\\
+		\textsc{ITEA}&22.41&7.14&20.77&27.59&21.43&26.92\\
+		\textsc{AFP}&21.12&15.18&20.48&44.83&25&42.69\\
+		\textsc{DSR}&19.72&19.64&19.71&25&14.29&23.85\\
+		\textsc{Operon}&16.55&11.43&16&86.21&\bf{92.86}&86.92\\
+		\textsc{gplearn}&16.27&8.93&15.48&32.76&7.14&30\\
+		\textsc{SBP-GP}&12.72&11.61&12.6&73.71&78.57&74.23\\
+		\textsc{EPLEX}&12.39&8.93&12.02&46.98&21.43&44.23\\
+		\textsc{BSR}&2.48&0.89&2.31&10.78&21.43&11.92\\
+		\textsc{FEAT}&0&0.89&0.1&39.66&42.86&40\\
+		\textsc{FFX}&0&0&0&0&0&0\\
+		\textsc{MRGP}&0&0&0&\bf{93.1}&89.29&\bf{92.69}\\
 		\hline
 	\end{tabular}
 \end{table}
@@ -679,21 +675,21 @@ The following conclusions may be drawn from the numerical results:
 	\begin{tabular}{l|rrr|rrr} \hline
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
-		RILS-ROLS&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
-		AIFeynman&33.08&22.14&31.89&77.39&42.86&73.64\\
-		AFP\_FE&21.9&15.71&21.23&52.16&35.71&50.38\\
-		DSR&19.14&19.29&19.15&25.86&14.29&24.62\\
-		AFP&19.66&13.57&19&44.4&21.43&41.92\\
-		gplearn&16.99&9.29&16.16&31.9&7.14&29.23\\
-		ITEA&14.57&7.14&13.77&27.59&21.43&26.92\\
-		Operon&13.19&5&12.31&85.78&\bf{92.86}&86.54\\
-		GP-GOMEA&11.03&7.14&10.62&70.26&71.43&70.38\\
-		EPLEX&9.57&9.29&9.54&47.84&25&45.38\\
-		SBP-GP&0.78&0&0.69&75.43&64.29&74.23\\
-		BSR&0.6&0.71&0.62&10.34&14.29&10.77\\
-		FFX&0&0&0&0&0&0\\
-		FEAT&0&0&0&42.24&50&43.08\\
-		MRGP&0&0&0&\bf{92.24}&85.71&\bf{91.54}\\
+		\textsc{RILS-ROLS}&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
+		\textsc{AIFeynman}&33.08&22.14&31.89&77.39&42.86&73.64\\
+		\textsc{AFP\_FE}&21.9&15.71&21.23&52.16&35.71&50.38\\
+		\textsc{DSR}&19.14&19.29&19.15&25.86&14.29&24.62\\
+		\textsc{AFP}&19.66&13.57&19&44.4&21.43&41.92\\
+		\textsc{gplearn}&16.99&9.29&16.16&31.9&7.14&29.23\\
+		\textsc{ITEA}&14.57&7.14&13.77&27.59&21.43&26.92\\
+		\textsc{Operon}&13.19&5&12.31&85.78&\bf{92.86}&86.54\\
+		\textsc{GP-GOMEA}&11.03&7.14&10.62&70.26&71.43&70.38\\
+		\textsc{EPLEX}&9.57&9.29&9.54&47.84&25&45.38\\
+		\textsc{SBP-GP}&0.78&0&0.69&75.43&64.29&74.23\\
+		\textsc{BSR}&0.6&0.71&0.62&10.34&14.29&10.77\\
+		\textsc{FFX}&0&0&0&0&0&0\\
+		\textsc{FEAT}&0&0&0&42.24&50&43.08\\
+		\textsc{MRGP}&0&0&0&\bf{92.24}&85.71&\bf{91.54}\\
 		\hline
 	\end{tabular}
 \end{table}
@@ -705,21 +701,21 @@ The following conclusions may be drawn from the numerical results:
 	\begin{tabular}{l|rrr|rrr} \hline
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
-		RILS-ROLS&\bf{36.29}&\bf{22.14}&\bf{34.77}&64.91&46.43&62.92\\
-		AFP\_FE&20.78&13.57&20&52.59&32.14&50.38\\
-		DSR&18.97&18.57&18.92&26.29&14.29&25\\
-		AFP&16.9&11.43&16.31&42.67&21.43&40.38\\
-		gplearn&16.87&9.29&16.05&29.13&10.71&27.13\\
-		AIFeynman&13.03&9.29&12.61&71.43&39.29&67.86\\
-		EPLEX&8.71&4.29&8.23&56.03&21.43&52.31\\
-		ITEA&7.84&6.43&7.69&27.59&21.43&26.92\\
-		GP-GOMEA&5.09&1.43&4.69&73.71&71.43&73.46\\
-		Operon&2.07&0.71&1.92&85.78&\bf{92.86}&86.54\\
-		BSR&0.09&0&0.08&12.07&10.71&11.92\\
-		SBP-GP&0&0&0&75&75&75\\
-		FEAT&0&0&0&40.52&42.86&40.77\\
-		FFX&0&0&0&2.59&3.57&2.69\\
-		MRGP&0&0&0&\bf{91.81}&60.71&\bf{88.46}\\
+		\textsc{RILS-ROLS}&\bf{36.29}&\bf{22.14}&\bf{34.77}&64.91&46.43&62.92\\
+		\textsc{AFP\_FE}&20.78&13.57&20&52.59&32.14&50.38\\
+		\textsc{DSR}&18.97&18.57&18.92&26.29&14.29&25\\
+		\textsc{AFP}&16.9&11.43&16.31&42.67&21.43&40.38\\
+		\textsc{gplearn}&16.87&9.29&16.05&29.13&10.71&27.13\\
+		\textsc{AIFeynman}&13.03&9.29&12.61&71.43&39.29&67.86\\
+		\textsc{EPLEX}&8.71&4.29&8.23&56.03&21.43&52.31\\
+		\textsc{ITEA}&7.84&6.43&7.69&27.59&21.43&26.92\\
+		\textsc{GP-GOMEA}&5.09&1.43&4.69&73.71&71.43&73.46\\
+		\textsc{Operon}&2.07&0.71&1.92&85.78&\bf{92.86}&86.54\\
+		\textsc{BSR}&0.09&0&0.08&12.07&10.71&11.92\\
+		\textsc{SBP-GP}&0&0&0&75&75&75\\
+		\textsc{FEAT}&0&0&0&40.52&42.86&40.77\\
+		\textsc{FFX}&0&0&0&2.59&3.57&2.69\\
+		\textsc{MRGP}&0&0&0&\bf{91.81}&60.71&\bf{88.46}\\
 		\hline
 	\end{tabular}
 \end{table}
