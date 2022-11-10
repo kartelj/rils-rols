@@ -747,10 +747,12 @@ The following conclusions may be drawn from the numerical results:
 	\label{fig:time-avg-exact-noise}
 \end{figure}
 
-In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on those instance problems from the both ground-truth benchmarks for which the exact model has  been found are compared. Those algorithms which obtained an exact percentage of at least 5\% (considering all 1300 runs) are considered as relevant here and therefore included into comparisons.  The results are grouped varying different (three) levels of noise, each presented by a plot, where the algorithms are labelled on $x$-axis, while their average runtimes are shown on $y$-axis. The following conclusions are drawn from here.
+In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on those instance problems from the both ground-truth benchmarks for which the exact model has  been found are compared. Those algorithms which obtained an exact percentage of at least 5\% (considering all 1300 runs) are considered as relevant here and therefore included into comparisons.  The results are grouped varying different (three) levels of noise, each presented by a plot, where the algorithms are labelled on $x$-axis, while respective average runtimes are shown on $y$-axis. Note that $y$-axis is logarithmically scaled. The following conclusions are drawn from here.
 
 \begin{itemize}
-	\item \fxnote{TODO...}
+	\item When considering the instance problems where no noise is detected, the lowest average runtime  is reported for \textsc{Rils}-\textsc{Rols} algorithm (228$s$). A slightly worse runtime is obtained by \textsc{Dsr} algorithm (232$s$).  However, note that the exact percentage of \textsc{Rils}--\textsc{Rols} is far better from \textsc{Dsr} (60.62\% vs. 19.71\%). 	All remaining approaches deliver an order of magnitude larger average runtimes that that of the \textsc{Rils}--\textsc{Rols} method. 
+	\item  When considering the instance problems where a noise level of 0.001 is included,    the lowest average runtime  is again obtained by \textsc{Rils}-\textsc{Rols} algorithm (108$s$). The second best average runtime is obtained by \textsc{Dsr}, but this time significantly worse (622$s$) from the former algorithm. 
+	\item When considering the instance problems with a noise level of 0.01, a similar conclusion may be drawn as that from the previous point. 
 \end{itemize}
 
 \subsection{Scalability of \textsc{Rils}-\textsc{Rols} algorithm}
