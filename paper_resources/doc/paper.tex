@@ -720,7 +720,38 @@ The following conclusions may be drawn from the numerical results:
 	\end{tabular}
 \end{table}
 
+%time-avg-noise0.0.eps
 
+\begin{figure}[!ht]
+	
+	
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[  width=220pt,height=150pt]{plots/time-avg-noise0.0.eps}
+		\caption{No noise}
+		\label{fig:noNoise-time}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.45\textwidth}
+		
+		\includegraphics[  width=220pt,height=150pt]{plots/time-avg-noise0.001.eps}
+		\caption{Level of noise equal to 0.001}
+		\label{fig:noise0.001-time}
+	\end{subfigure}
+	\centering
+	\begin{subfigure}[b]{0.45\textwidth}
+		\includegraphics[  width=220pt,height=150pt]{plots/time-avg-noise0.01.eps}
+		\caption{Level of noise equal to 0.01.}
+		\label{fig:noise0.01-time}
+	\end{subfigure}
+	\caption{Average runtimes on the instance problems where the exact solution has  been reached (considered only those algorithms whose the exact percentage is at least 5\% of all runs).}
+	\label{fig:time-avg-exact-noise}
+\end{figure}
+
+In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on those instance problems from the both ground-truth benchmarks for which the exact model has  been found are compared. Those algorithms which obtained an exact percentage of at least 5\% (considering all 1300 runs) are considered as relevant here and therefore included into comparisons.  The results are grouped varying different (three) levels of noise, each presented by a plot, where the algorithms are labelled on $x$-axis, while their average runtimes are shown on $y$-axis. The following conclusions are drawn from here.
+
+\begin{itemize}
+	\item \fxnote{TODO...}
+\end{itemize}
 
 \subsection{Scalability of \textsc{Rils}-\textsc{Rols} algorithm}
 
@@ -1017,7 +1048,7 @@ When one concerns of runtime analysis of the \textsc{Rils}--\textsc{Rols} algori
 
 In order to check the statistical significance of the obtained exact percentages and their differences between the competitor approaches, we employed the statistical methodology comparing the results of  the 15 approaches on all problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that in this case the exact percentage of each problem instance is given w.r.t.\  10 separately executed runs on that instance. 
 
-Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained exact percentages of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there.
+Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained exact percentages of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In a CD plot, the competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is displayed.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there. \fxnote{Marko: update of the content needed.}
 
 \begin{itemize}
 	\item  Concerning the instance problems where no noise is included, \textsc{Rils}-\textsc{Rols} method has the best average ranking in terms of   exact percentage rate.  The second best ranking is achieved by \textsc{AI-Feynman} algorithm. There is no statistically significant difference between these two approaches. However, these two approaches perform statistically significantly better than the third best (according the the average raking), that is with \textsc{Apf-Fe}. This conclusion also holds for the remaining approaches, which are performing statistically significantly weaker than  \textsc{Rils}-\textsc{Rols} method. 
