@@ -759,9 +759,9 @@ In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on 
 
 \subsection{Statistical evaluation}
 
-In order to check the statistical significance of the obtained exact percentages and their differences between the competitor approaches, we employed the statistical methodology comparing the results of \textsc{Rils}--\textsc{Rols} to 14 other approaches on all problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that the exact percentage of each problem instance that comes into the statistical observation is given as the average of  10 separately executed runs for that instance. 
+In order to check the statistical significance of the obtained exact percentages and their differences between the competitor approaches, we employed the statistical methodology comparing the results of \textsc{Rils}--\textsc{Rols} to 14 other approaches on all problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that an indicator random variable is involved per each run of the algorithms. Thus, the score that comes into the statistical observation is an indicator (0 or 1) indicating weather or not an algorithm was able to return the exact model within  considered run. Thus, we involved 1300 results into our statistical evaluation per each algorithm. Note that at some cases some of the 14 competitors are not known from \url{https://cavalab.org/srbench/results/} due to some reasons. For these cases, we simply count a 0 as the score.   
 
-Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained exact percentages of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In each CD plot, the (15) competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is drawn.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there.
+Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained results of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In each CD plot, the (15) competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is drawn.   The corresponding three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts}. The following conclusions may be drawn from there. \fxnote{Marko: update text}
 
 \begin{itemize}
 	\item  Concerning the instance problems where no noise is included, \textsc{Rils}-\textsc{Rols} method returns the best average ranking in terms of   exact percentage rate.  The second best ranking is achieved by \textsc{AI-Feynman} algorithm. There is no statistically significant difference between these two approaches w.r.t.\ obtained exact percentages. However, these two approaches perform statistically significantly better than the third best approach according the the average raking, \textsc{Apf-Fe}. This conclusion also holds for the remaining approaches, which are performing statistically significantly worse than  \textsc{Rils}-\textsc{Rols} method. 
@@ -775,20 +775,20 @@ Initially, Friedman’s test was separately executed for all competitor approach
 \begin{figure}[!ht]
 	\centering
 	\begin{subfigure}[b]{0.40\textwidth}
-		\includegraphics[  width=320pt,height=180pt]{plots/Feynman__strogatz_noise_0_0.pdf}
+		\includegraphics[  width=320pt,height=180pt]{plots/Feynman_strogatz_noise_0_0-expanded.pdf}
 		\caption{No noise}
 		\label{fig:CDplots-no-noise}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.4\textwidth}
 		
-		\includegraphics[  width=290pt,height=180pt]{plots/Feynman__strogatz_noise_0_001.pdf}
+		\includegraphics[  width=290pt,height=180pt]{plots/Feynman_strogatz_noise_0_001-expanded.pdf}
 		\caption{Level of noise equal to 0.001}
 		\label{fig:CDplots-noise0.001}
 	\end{subfigure}
 	
 	\begin{subfigure}[b]{0.40\textwidth}
-		\includegraphics[  width=290pt,height=180pt]{plots/Feynman__strogatz_noise_0_01.pdf}
+		\includegraphics[  width=290pt,height=180pt]{plots/Feynman_strogatz_noise_0_01-expanded.pdf}
 		\caption{Level of noise equal to 0.01.\fxnote{polish labels}}
 		\label{fig:CDplots-noise0.01}
 	\end{subfigure}
