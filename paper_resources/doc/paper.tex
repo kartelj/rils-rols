@@ -278,22 +278,22 @@
 		\label{alg:ils}
 	\end{algorithm}  
 	
-	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution $s$ is perturbed -- it is partially randomized, yielding new solution $s'$. Next, the solution $s'$ is potentially improved by a LS procedure. Thirdly, the newly obtained solution $s'$  possibly becomes new incumbent -- this is decided upon the acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions.  		 
+	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution $s$ is perturbed -- it is partially randomized, yielding new solution $s'$. Next, the solution $s'$ is potentially improved by a LS procedure. Thirdly, the newly obtained solution $s'$  possibly becomes new incumbent -- this is decided upon the acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back into already visited solutions.  		 
 	
 	\subsection{Ordinary least square method}\label{sec:ols}
 	Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given previously introduced dataset $D$ of $n$ points $(\mathbf{x_i}, y_i)$ where each $\mathbf{x_i}$ is $d$-dimensional, the task is to determine linear mapping $\tilde{y} = \mathbf{k} \mathbf{x} + b$, that is coefficients (line slope) $\mathbf{k} = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i}^{n} (\tilde{y}_i - y_i)^2 $ is minimized. This sum is also know as the sum of squared errors (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account partial derivatives of SSE w.r.t. $k_j,\; j \in \{1, ..., d\}$: 
 	
-	$$  \frac{\partial}{\partial k_j} \sum_{i}^{n} (\tilde{y}_i - y_i)^2 = \frac{\partial}{\partial k_j} \sum_{i}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 =  \sum_{i}^{n} 2x_{ij}(\mathbf{k}\mathbf{x_i} + b - y_i)  =   . $$
+	$$  \frac{\partial}{\partial k_j} \sum_{i}^{n} (\tilde{y}_i - y_i)^2 = \frac{\partial}{\partial k_j} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 =  \sum_{i=1}^{n} 2x_{ij}(\mathbf{k}\mathbf{x_i} + b - y_i).$$
   
 	Similarly, by taking into account  partial derivation w.r.t. $b$, we have: 
-	$$  \frac{\partial}{\partial b} \sum_{i}^{n} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum_{i}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 = \sum_{i}^{n} -2  (y_i - \tilde{y}_i). $$
+	$$  \frac{\partial}{\partial b} \sum_{i=1}^{n} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 = \sum_{i=1}^{n} -2  (y_i - \tilde{y}_i). $$
 	
 	Finally, by setting each partial derivative to zero, we get the system of $d+1$ equations with $d+1$ unknowns ($\mathbf{k}=(k_1, ..., k_d)$ and $b$): 
 	\begin{align*}
-		& \sum_{i}^{n} -2x_{i1} (y_i - \tilde{y}_i) = 0 \\
+		& \sum_{i=1}^{n} -2x_{i1} (y_i - \tilde{y}_i) = 0 \\
 		& \vdots \\
-		& \sum_{i}^{n} -2x_{id} (y_i - \tilde{y}_i) = 0 \\
-		&\sum_{i}^{n} -2  (y_i - \tilde{y}_i) = 0.
+		& \sum_{i=1}^{n} -2x_{id} (y_i - \tilde{y}_i) = 0 \\
+		&\sum_{i=1}^{n} -2  (y_i - \tilde{y}_i) = 0.
 	\end{align*}
 	%The above system can be transformed to 
 	%\begin{align*}
@@ -301,7 +301,13 @@
 	%	 & \sum y_i  = k \sum x_i + b \cdot d. 
 	%  \end{align*}
 
-\fxnote{TODO: ACA: dodati vremensku slozenost za OLS. }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
+%https://www.thekerneltrip.com/machine/learning/computational-complexity-learning-algorithms/
+%https://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation %https://levelup.gitconnected.com/train-test-complexity-and-space-complexity-of-linear-regression-26b604dcdfa3
+To solve a linear system of $(d+1)$ unknowns and $d+1$ linear equations involved,  Cholesky  factorization, Winograd or Strassen algorithm, just to name a few, may be used  depending on solver of linear equations used as well as the sparsity of the matrix associated to the linear system~\cite{krishnamoorthy2013matrix}. For example, Cholesky decomposition, widely used in solving the problem of linear regression, requires a matrix inversions and matrix multiplications, needs $d^3$ computation cost to find an inverse of the matrix associated to the linear system, where $d$ stands for the number of input features. It is worth to mention that when the number of input features becomes large, these closed-form matrix techniques are usually replaced by iterative ones, such as gradient descent. Using Gradient Descent (GD),  the above complexity reduces to $O(n^2d )$. The learning rate in GD has to be carefully chosen, as it dictates how quick the algorithm is and how fast it converges. Therefore, when comes to input data with large number of features, GS is preferred over OLS.
+
+ 
+ 
+%%\fxnote{TODO: ACA: dodati vremensku slozenost za OLS. }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
 \subsection{\textsc{RILS}-\textsc{ROLS}  method}
 Now we will explain the proposed \textsc{RILS}-\textsc{ROLS}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.   
 
