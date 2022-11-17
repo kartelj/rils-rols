@@ -207,7 +207,7 @@
 		
 	\end{definition}
 	
-	Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP can be used to optimize nonlinear structures such as computer programs. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants. As an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example}. In essence, all valid syntax trees form the solution search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. The solution accuracy can be computed on the basis of historical data $D$ and the chosen error measure such as $MSE$, $RMSE$, $R^2$, some combination of them, etc. Interestingly, the SR search space nature is twofold: discrete and continuous. It is primarily modeled as a problem of discrete (combinatorial) optimization, since the number of possible solution functional forms is countable. However, it may also include elements solved by means of continuous (global) optimization, e.g., constants (coefficients) fitting. It is common to use the set of the following elementary mathematical functions: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, $a^x$, and a set of standard arithmetic operators: $+$, $-$, $\times$, and $/$. 
+	Koza~\cite{koza1994genetic} introduced the problem of SR as a specific application of genetic programming. GP can be used to optimize nonlinear structures such as computer programs. In particular, the programs are represented by syntax trees consisting of functions/operations over input features and constants. As an example of a function represented by a syntax tree, see Figure~\ref{fig:syntax-tree-example}. In essence, all valid syntax trees form the solution search space of SR. That is, each sample model $\tilde{f}$ may be seen as a point in the search space, represented by respective syntax tree. The solution accuracy can be computed on the basis of historical data $D$ and the chosen error measure such as $MSE$, $RMSE$, $R^2$, some combination of them, etc. Interestingly, the SR search space nature is twofold: discrete and continuous. It is primarily modeled as a problem of discrete (combinatorial) optimization, since the number of possible solution functional forms is countable. However, it may also include elements solved by means of continuous (global) optimization, e.g., constants (coefficients) fitting. It is common to use the set of the following elementary mathematical functions: $\sqrt{x}, x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $\arcsin$, $\arccos$, $a^x$, and a set of standard arithmetic operators: $+$, $-$, $\cdot$, and $/$. 
 	
 	\begin{figure}[!ht]
 		\centering
@@ -222,13 +222,13 @@
 			level 3/.style={sibling distance=1cm}, 
 			level distance=2cm,
 			]
-			\node (A) {$\times$} 
+			\node (A) {$\cdot$} 
 			child { node (B) {$\sin$}
 				%child { node {x} 
 					%edge from parent node[left=.5em,draw=none] {} }
 				child { node {$x$}}
 			}
-			child {node (C) {$\times$}
+			child {node (C) {$\cdot$}
 				%child { node {x}
 					%	child { node {C1a}}
 					%}
@@ -246,7 +246,7 @@
 			
 		\end{tikzpicture}
 		
-		\caption{Syntax tree representation for the expression $\sin{x} \times   ( x \times  x / y  )  = \frac{x^2 \sin x }{y}$}
+		\caption{Syntax tree representation for the expression $\sin{x} \cdot   ( x \cdot  x / y  )  = \frac{x^2 \sin x }{y}$}
 		\label{fig:syntax-tree-example}
 	\end{figure}
 	
@@ -255,56 +255,53 @@
 	
 	\section{The proposed method}\label{sec:rils}
  
-	Before we give details on our \textsc{RILS}-\textsc{ROLS}  method for solving SR, we will explain the basics of two main techniques incorporated into our algorithm. These are ILS meta-heuristic and OLS methods. 
+	Before we give details on our \textsc{RILS}-\textsc{ROLS}  method for solving SR, we will explain two building blocks of \textsc{RILS-ROLS}: 1) iterated local search (ILS) and 2) ordinary least squares (OLS). 
 	
 	\subsection{Iterated local search}
-	Iterated local search (ILS)~\cite{lourencco2003iterated} is an efficient meta-heuristics, whose essential idea is given as follow. Iteratively generate a sequence of solutions produced by the (embedded) heuristic, such as local search or randomized greedy heuristics. When the search gets \emph{stuck} in local optimum, a \emph{perturbation} is performed -- this step is usually non-deterministic. This simple idea appeared in the literature by Baxter~\cite{baxter1981local} in early 1980s, and, since then, has been  re-invented by many researches under different names; some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
-	Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases, combinations of these~\cite{applegate2003chained}. 
-	
-	The most popular version of ILS is shown in Algorithm~\ref{alg:ils}. Note that we use this version of ILS as the backbone of our \textsc{RILS}-\textsc{ROLS}  algorithm.
+	ILS~\cite{lourencco2003iterated} is an efficient meta-heuristics that iteratively generates a sequence of solutions produced by the (embedded) heuristic, such as local search (LS) or randomized greedy heuristics. When the search gets \emph{stuck} in local optimum, a \emph{perturbation} is performed -- this step is usually non-deterministic. This simple idea was proposed by Baxter~\cite{baxter1981local} in early 1980s, and, since then, has been  re-invented by many researches under different names. Some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
+	Markov chains~\cite{martin1991large}, chained local optimization~\cite{martin1996combining}, or, in some cases, combinations of previous~\cite{applegate2003chained}. The most popular version of ILS is shown in Algorithm~\ref{alg:ils}. (Note that we use this version of ILS as the backbone of our \textsc{RILS}-\textsc{ROLS} algorithm.)
 	
 	\begin{algorithm}
 		\begin{algorithmic}[1] 
 			\State \textbf{Input}: problem instance
-			\State \textbf{Output}: an approximate (feasible) solution 
+			\State \textbf{Output}: feasible solution 
 			\State $s \gets$ \texttt{Initialize}$()$
 			\State  $s \gets$ \texttt{LocalSearch}($s$)
-			\While{\emph{stopping criteria is not met}}
+			\While{\emph{stopping criteria are not met}}
 			\State  $s' \gets$ \texttt{Perturbation}($s$)
 			\State  $s' \gets$ \texttt{LocalSearch}($s'$)
 			\State  $ s \gets$ \texttt{AcceptanceCriterion}($s, s'$)
 			\EndWhile
 			\State \Return $s$
 		\end{algorithmic}
-		\caption{An ILS framework from   literature.}
+		\caption{General ILS method.}
 		\label{alg:ils}
 	\end{algorithm}  
 	
-	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution is perturbed -- it is partially randomized. Next, the perturbed solution is improved by a LS procedure. Thirdly, the LS outcome is thereafter compared to the incumbent solution and the search us possibly moved to the new solution, with accordance to the chosen acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions.  		 
+	An initial solution may be generated randomly or by using a greedy heuristic, which is afterwards, improved by local search. At each iteration, ILS applies three steps. First, the current incumbent solution $s$ is perturbed -- it is partially randomized, yielding new solution $s'$. Next, the solution $s'$ is potentially improved by a LS procedure. Thirdly, the newly obtained solution $s'$  possibly becomes new incumbent -- this is decided upon the acceptance criterion. Sometimes, ILS incorporates a mechanism of tabu list, which prevents the search getting back to already visited solutions.  		 
 	
 	\subsection{Ordinary least square method}\label{sec:ols}
-	Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given data $({X}=(X_1, \ldots, X_d)^T, y)$, the task is to determine linear mapping $\tilde{y} = k \textbf{x} + b$, that is coefficients (line slope) $k = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i} |\tilde{y}_i - y_i|^2 $ is minimized. This sum is also know as the sum of squared error (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account   partial derivation w.r.t. $k$ of the cost function $ \sum_{i} |\tilde{y}_i - y_i|^2 $, getting 
+	Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given previously introduced dataset $D$ of $n$ points $(\mathbf{x_i}, y_i)$ where each $\mathbf{x_i}$ is $d$-dimensional, the task is to determine linear mapping $\tilde{y} = \mathbf{k} \mathbf{x} + b$, that is coefficients (line slope) $\mathbf{k} = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i}^{n} (\tilde{y}_i - y_i)^2 $ is minimized. This sum is also know as the sum of squared errors (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account partial derivatives of SSE w.r.t. $k_j,\; j \in \{1, ..., d\}$: 
 	
-	$$  \frac{\partial}{\partial k} \sum_{i} |\tilde{y}_i - y_i|^2 = \frac{\partial}{\partial k} \sum ( kX_i+b  - y_i)^2 =  \sum 2X_i(kX_i + b - y_i)  =  \sum -2X_i (y_i - \tilde{y}_i) . $$
+	$$  \frac{\partial}{\partial k_j} \sum_{i}^{n} (\tilde{y}_i - y_i)^2 = \frac{\partial}{\partial k_j} \sum_{i}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 =  \sum_{i}^{n} 2x_{ij}(\mathbf{k}\mathbf{x_i} + b - y_i)  =   . $$
   
-	Taking into account   partial derivation w.r.t.  $b$, we have 
-	$$  \frac{\partial}{\partial b} \sum_{i} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum ( kX_i+b  - y_i)^2 = \sum -2  (y_i - \tilde{y}_i). $$
+	Similarly, by taking into account  partial derivation w.r.t. $b$, we have: 
+	$$  \frac{\partial}{\partial b} \sum_{i}^{n} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum_{i}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 = \sum_{i}^{n} -2  (y_i - \tilde{y}_i). $$
 	
-	Thus, we get the system of equations: 
+	Finally, by setting each partial derivative to zero, we get the system of $d+1$ equations with $d+1$ unknowns ($\mathbf{k}=(k_1, ..., k_d)$ and $b$): 
 	\begin{align*}
-		% &\sum -2X_i (\tilde{y}_i - y_i )  = 0 \\
-		& -2X_1 (y_1 - \tilde{y}_1)  = 0 \\
+		& \sum_{i}^{n} -2x_{i1} (y_i - \tilde{y}_i) = 0 \\
 		& \vdots \\
-		& -2X_d (y_d - \tilde{y}_d)  = 0 \\
-		&\sum -2  (y_i - \tilde{y}_i) = 0.
+		& \sum_{i}^{n} -2x_{id} (y_i - \tilde{y}_i) = 0 \\
+		&\sum_{i}^{n} -2  (y_i - \tilde{y}_i) = 0.
 	\end{align*}
 	%The above system can be transformed to 
 	%\begin{align*}
 	%	 & \sum y_i \cdot x_i   = b\sum x_i \cdot x_i  +  k \cdot \sum x_i \\
 	%	 & \sum y_i  = k \sum x_i + b \cdot d. 
 	%  \end{align*}
-By solving the above system of $(d+1)$ equations, one can obtain vector of coefficients $k=(k_1, ..., k_d)$ and intercept $b$. %For example, in order to calculate coefficient $k_i$, the following system of equations is 
-%\fxnote{TODO: Aca -- ovde je pisalo da je to sistem sa dve jednacine i dve nepoznate k i b -- medjutim, k je vektor. Ako mozes dopisi jos nesto, tipa koliko je podataka potrebno i slicno -- mozda veremenska slozenost.) }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
+
+\fxnote{TODO: ACA: dodati vremensku slozenost za OLS. }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
 \subsection{\textsc{RILS}-\textsc{ROLS}  method}
 Now we will explain the proposed \textsc{RILS}-\textsc{ROLS}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.   
 
