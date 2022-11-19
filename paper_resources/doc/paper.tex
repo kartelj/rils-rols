@@ -639,15 +639,15 @@ In short, the exact results, thus the number of instances (in percentages) for w
 The following conclusions may be drawn from the numerical results: 
 
 \begin{itemize}
-	\item Concerning the exact percentages in case no noise is utilized in the input data of the instance problems, the best performing algorithm is our \textsc{RILS-ROLS}, able to find the solution that match to the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, being successful on 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% and just 27.14\% of all problem instances from benchmark set \textsc{Feynman} and \textsc{Strogatz}, respectively. All other approaches are performing significantly worse, and none of them is able to solve more than 30\% instances of any of the two considered ground-truth benchmark sets. 
-	\item   Concerning the exact results in presence of the target noise with a level of 0.001, our \textsc{RILS-ROLS} is still performing very-well, having found an exact model for 42.08\% cases considering the problem instances from the both benchmark sets. The second best approach is \textsc{AI-Feynman} solving in total 31.89\% cases, as before, being better when used on \textsc{Feynman} instances than on \textsc{Strogatz}. Approach  \textsc{AFP-FE} shows to be robust w.r.t. noise so its performances only slightly deteriorate in comparison to the no-noise scenario. This puts it on the third place with overall accuracy of 21.23\%. Other approaches reach accuracy bellow 20\%. 
-	\item  Concerning the exact results when the presence of noise is large, that is with a level of 0.01,  our \textsc{RILS-ROLS} is still performing robustly, having found an exact model for  34.77\% problem instances from the two benchmark sets. The second best is now \textsc{AFT\_FE} reaching 20\% correct solutions. \textsc{AI-Feynman} performances are degraded significantly under this level of noise, so it is ranked only 6th overall.  
+	\item Concerning the exact percentages in case no noise is utilized in the input data of the instance problems, the best performing algorithm is our \textsc{RILS-ROLS}, able to find the solution that match to the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, being successful on 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% problem instances from \textsc{Feynman} set, and just 27.14\%  problem instances from benchmark set   \textsc{Strogatz}, respectively. All other approaches are performing much worse, and none of them is able to solve more than 30\% instances of any of the two considered ground-truth benchmark sets. 
+	\item   Concerning the exact results in presence of the   noise  level of 0.001, our \textsc{RILS-ROLS} is still performing very well, having found an exact model for 42.08\% cases considering all problem instances from the both ground-truth benchmark sets. The second best approach is \textsc{AI-Feynman} which solved in total 31.89\% problem instances; as  already noticed, this algorithm performs better when applied on the instances from \textsc{Feynman} benchmark set than it is the case of \textsc{Strogatz} benchmark set. Approach  \textsc{AFP-FE} shows to be robust w.r.t. noise so its performances only slightly deteriorate in comparison to the no-noise scenario. This puts it on the third place with overall accuracy of 21.23\%. Other approaches reach   accuracy bellow 20\%. 
+	\item  Concerning the exact results when the presence of noise is large, that is the noise level of 0.01,  our \textsc{RILS-ROLS} is still performing robustly, having found an exact model for  34.77\% problem instances considering the both ground-truth benchmark sets. The second best is   \textsc{AFP-FE} reaching 20\% correct solutions. \textsc{AI-Feynman} performances are degraded significantly under this level of noise, so it is ranked only 6th overall, reaching the accuracy of 12.61\%.    
 	
-	\item When comparing performances of the algorithms in terms of number of instances for which the model has $R^2 \geq 0.999$, in case when no noise is integrated, our \textsc{RILS}-\textsc{ROLS} is successful with the rate of success of 83.38\% (third place). However, in contrast with the exact model percentages comparisons from above, there are a few methods reaching even better percentages of success than our algorithm: \textsc{MRGP}, and \textsc{Operon}, with 92.69\%, and 86.92\%, respectively. On the other hand, the exact model percentages of these two approaches are rather low (0\% and 16\%, respectively). These two algorithms are therefore more appropriate in scenarios when the underlying (ground-truth) model is unknown, so-called black-box regression. 
+	\item When comparing performances of the algorithms in terms of number of instances for which the obtained final model reaches $R^2 \geq 0.999$, in case when no noise is integrated, our \textsc{RILS}-\textsc{ROLS} is successful with the rate of success of 83.38\% (third place). However, in contrast with the exact model percentages comparisons from above, there are a few methods reaching   better percentages of success than our algorithm: \textsc{MRGP}, and \textsc{Operon}, with 92.69\%, and 86.92\%, respectively. On the other hand, the exact model percentages of these two approaches are rather low (0\% and 16\%, respectively). These two algorithms are therefore more appropriate in scenarios when the underlying (ground-truth) model is unknown, so-called black-box regression. 
 	
-	\item  In the presence of the noise level of 0.001, our \textsc{RILS-ROLS} method has 78.62\% of a success rate (third place).  As before, \textsc{MRGP} and \textsc{Operon} are showing good performances. 
+	\item  In the presence of the noise level of 0.001, our \textsc{RILS-ROLS} method has 78.62\% of a success rate (ranked on the third place).  As before, \textsc{MRGP} and \textsc{Operon} are showing good performances. 
 	
-	\item   When noise is 0.01 the situation is almost the same, \textsc{MRGP} and \textsc{Operon} are the best and second best with 88.46\% and 86.54\% accuracy, respectively. \textsc{GP-GOMEA} now reaches third place with 73.46\%, while the proposed \textsc{RILS-ROLS} is fifth with 62.92\% $R^2$ accuracy.
+	\item   When noise level is 0.01, the situation is almost the same, \textsc{MRGP} and \textsc{Operon} are the best and second best with 88.46\% and 86.54\% accuracy, respectively. \textsc{GP-GOMEA} now reaches third place with 73.46\%, while the proposed \textsc{RILS-ROLS} is fifth with 62.92\% $R^2$ accuracy.
 	
 	\item Following the above conclusions, our \textsc{RILS}-\textsc{ROLS} algorithm is more robust than the other competitors, which is confirmed by the produced results w.r.t.\ different levels of noise in the input data. Moreover, it can be considered as new state-of-the-art algorithm when one solves the problems of SR with known ground-truth models. 
 	
@@ -757,12 +757,12 @@ The following conclusions may be drawn from the numerical results:
 	\label{fig:time-avg-exact-noise}
 \end{figure}
 
-In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on those instance problems from the both ground-truth benchmarks for which the exact model has  been found are compared. Those algorithms which obtained an exact percentage of at least 5\% (considering all 1300 runs) are considered as relevant here and therefore included into comparisons.  The results are grouped varying different (three) levels of noise, each presented by a plot, where the algorithms are labelled on $x$-axis, while respective average runtimes are shown on $y$-axis. Note that $y$-axis is logarithmically scaled. The following conclusions are drawn from here.
+In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on those instance problems from the both ground-truth benchmark sets for which respective exact model has  been found, are compared. The algorithms which obtained an exact percentage of at least 5\% (considering all 1300 runs) are considered as relevant  and therefore included here, while others are omitted.  The runtimes of each algorithm  are averaged w.r.t\  different levels of noise, and presented by a bar plot. Algorithms are labeled on $x$-axis, while respective average runtimes are shown on $y$-axis. Note that $y$-axis is logarithmically scaled. The following conclusions are drawn from here.
 
 \begin{itemize}
-	\item When considering the instance problems where no noise is detected, the lowest average runtime  is reported for \textsc{RILS}-\textsc{ROLS} algorithm (228$s$). A slightly worse runtime is obtained by \textsc{Dsr} algorithm (232$s$).  However, note that the exact percentage of \textsc{RILS}--\textsc{ROLS} is far better from \textsc{Dsr} (60.62\% vs. 19.71\%). 	All remaining approaches deliver an order of magnitude larger average runtimes that that of the \textsc{RILS}--\textsc{ROLS} method. 
-	\item  When considering the instance problems where a noise level of 0.001 is included,    the lowest average runtime  is again obtained by \textsc{RILS}-\textsc{ROLS} algorithm (108$s$). The second best average runtime is obtained by \textsc{Dsr}, but this time significantly worse (622$s$) from the former algorithm. 
-	\item When considering the instance problems with a noise level of 0.01, a similar conclusion may be drawn as that from the previous point. 
+	\item When considering the instance problems with no noise is included, the lowest average runtime  is reported for \textsc{RILS}-\textsc{ROLS} algorithm (228$s$). A slightly worse runtime is obtained by \textsc{Dsr} algorithm (232$s$).  However, note that the exact percentage of \textsc{RILS}--\textsc{ROLS} is far better from \textsc{Dsr} (60.62\% vs. 19.71\%). 	All remaining approaches deliver an order of magnitude larger average runtimes than that of the \textsc{RILS}--\textsc{ROLS} method. 
+	\item  When considering the instance problems with the noise level of 0.001,    the lowest average runtime  is again delivered by \textsc{RILS}-\textsc{ROLS} algorithm (108$s$). The second best average runtime is produced by \textsc{Dsr}, but this time significantly larger (622$s$) from the former algorithm. 
+	\item When considering the instance problems with the noise level of 0.01, a similar conclusion may be drawn as that from the previous point. 
 \end{itemize}
 
 
@@ -782,22 +782,22 @@ Initially, Friedman’s test was separately executed for all competitor approach
 
 
 \begin{figure}[!ht]
-	\centering
-	\begin{subfigure}[b]{0.40\textwidth}
-		\includegraphics[  width=320pt,height=180pt]{plots/Feynman_strogatz_noise_0_0-expanded.pdf}
+	 	\centering
+	\begin{subfigure}[b]{0.6\textwidth} 
+		\includegraphics[  width=340pt,height=180pt]{plots/Feynman_strogatz_noise_0_0-expanded.pdf}
 		\caption{No noise}
 		\label{fig:CDplots-no-noise}
 	\end{subfigure}
 	
-	\begin{subfigure}[b]{0.4\textwidth}
+	\begin{subfigure}[b]{0.6\textwidth}
 		
-		\includegraphics[  width=290pt,height=180pt]{plots/Feynman_strogatz_noise_0_001-expanded.pdf}
+		\includegraphics[  width=340pt,height=180pt]{plots/Feynman_strogatz_noise_0_001-expanded.pdf}
 		\caption{Level of noise equal to 0.001}
 		\label{fig:CDplots-noise0.001}
 	\end{subfigure}
 	
-	\begin{subfigure}[b]{0.40\textwidth}
-		\includegraphics[  width=290pt,height=180pt]{plots/Feynman_strogatz_noise_0_01-expanded.pdf}
+	\begin{subfigure}[b]{0.6\textwidth}
+		\includegraphics[  width=340pt,height=180pt]{plots/Feynman_strogatz_noise_0_01-expanded.pdf}
 		\caption{Level of noise equal to 0.01. }
 		\label{fig:CDplots-noise0.01}
 	\end{subfigure}
