@@ -640,7 +640,7 @@ The following conclusions may be drawn from the numerical results:
 
 \begin{itemize}
 	\item Concerning the exact percentages in case no noise is utilized in the input data of the instance problems, the best performing algorithm is our \textsc{RILS-ROLS}, able to find the solution that match to the right model on 57.84\% problems instances of the benchmark set \textsc{Feynman}; the same algorithm was even more impressive in solving problem instances from benchmark set \textsc{Strogatz}, being successful on 83.57\% cases. The second best performing  approach is \textsc{AI-Feynman}, successful in solving 55.78\% and just 27.14\% of all problem instances from benchmark set \textsc{Feynman} and \textsc{Strogatz}, respectively. All other approaches are performing significantly worse, and none of them is able to solve more than 30\% instances of any of the two considered ground-truth benchmark sets. 
-	\item   Concerning the exact results in presence of the target noise with a level of 0.001, our \textsc{RILS-ROLS} is still performing very-well, having found an exact model for 42.08\% cases considering the problem instances from the both benchmark sets. The second best approach is \textsc{AI-Feynman} solving in total 31.89\% cases, as before, being better when used on \textsc{Feynman} instances than on \textsc{Strogatz}. Approache \textsc{AFP\_FE} shows to be robust w.r.t. noise so its performances only slightly deteriorate in comparison to the no-noise scenario. This puts it on the third place with overall accuracy of 21.23\%. Other approaches reach accuracy bellow 20\%. 
+	\item   Concerning the exact results in presence of the target noise with a level of 0.001, our \textsc{RILS-ROLS} is still performing very-well, having found an exact model for 42.08\% cases considering the problem instances from the both benchmark sets. The second best approach is \textsc{AI-Feynman} solving in total 31.89\% cases, as before, being better when used on \textsc{Feynman} instances than on \textsc{Strogatz}. Approach  \textsc{AFP-FE} shows to be robust w.r.t. noise so its performances only slightly deteriorate in comparison to the no-noise scenario. This puts it on the third place with overall accuracy of 21.23\%. Other approaches reach accuracy bellow 20\%. 
 	\item  Concerning the exact results when the presence of noise is large, that is with a level of 0.01,  our \textsc{RILS-ROLS} is still performing robustly, having found an exact model for  34.77\% problem instances from the two benchmark sets. The second best is now \textsc{AFT\_FE} reaching 20\% correct solutions. \textsc{AI-Feynman} performances are degraded significantly under this level of noise, so it is ranked only 6th overall.  
 	
 	\item When comparing performances of the algorithms in terms of number of instances for which the model has $R^2 \geq 0.999$, in case when no noise is integrated, our \textsc{RILS}-\textsc{ROLS} is successful with the rate of success of 83.38\% (third place). However, in contrast with the exact model percentages comparisons from above, there are a few methods reaching even better percentages of success than our algorithm: \textsc{MRGP}, and \textsc{Operon}, with 92.69\%, and 86.92\%, respectively. On the other hand, the exact model percentages of these two approaches are rather low (0\% and 16\%, respectively). These two algorithms are therefore more appropriate in scenarios when the underlying (ground-truth) model is unknown, so-called black-box regression. 
@@ -660,9 +660,9 @@ The following conclusions may be drawn from the numerical results:
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
 		\textsc{RILS-ROLS}&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
-		\textsc{AIFeynman}&55.78&27.14&52.65&78.51&35.71&73.83\\
+		\textsc{AI-Feynman}&55.78&27.14&52.65&78.51&35.71&73.83\\
 		\textsc{GP-GOMEA}&26.83&29.46&27.12&71.55&71.43&71.54\\
-		\textsc{AFP\_FE}&26.98&20&26.23&59.05&28.57&55.77\\
+		\textsc{AFP-FE}&26.98&20&26.23&59.05&28.57&55.77\\
 		\textsc{ITEA}&22.41&7.14&20.77&27.59&21.43&26.92\\
 		\textsc{AFP}&21.12&15.18&20.48&44.83&25&42.69\\
 		\textsc{DSR}&19.72&19.64&19.71&25&14.29&23.85\\
@@ -686,8 +686,8 @@ The following conclusions may be drawn from the numerical results:
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
 		\textsc{RILS-ROLS}&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
-		\textsc{AIFeynman}&33.08&22.14&31.89&77.39&42.86&73.64\\
-		\textsc{AFP\_FE}&21.9&15.71&21.23&52.16&35.71&50.38\\
+		\textsc{AI-Feynman}&33.08&22.14&31.89&77.39&42.86&73.64\\
+		\textsc{AFP-FE}&21.9&15.71&21.23&52.16&35.71&50.38\\
 		\textsc{DSR}&19.14&19.29&19.15&25.86&14.29&24.62\\
 		\textsc{AFP}&19.66&13.57&19&44.4&21.43&41.92\\
 		\textsc{gplearn}&16.99&9.29&16.16&31.9&7.14&29.23\\
@@ -712,11 +712,11 @@ The following conclusions may be drawn from the numerical results:
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
 		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
 		\textsc{RILS-ROLS}&\bf{36.29}&\bf{22.14}&\bf{34.77}&64.91&46.43&62.92\\
-		\textsc{AFP\_FE}&20.78&13.57&20&52.59&32.14&50.38\\
+		\textsc{AFP-FE}&20.78&13.57&20&52.59&32.14&50.38\\
 		\textsc{DSR}&18.97&18.57&18.92&26.29&14.29&25\\
 		\textsc{AFP}&16.9&11.43&16.31&42.67&21.43&40.38\\
 		\textsc{gplearn}&16.87&9.29&16.05&29.13&10.71&27.13\\
-		\textsc{AIFeynman}&13.03&9.29&12.61&71.43&39.29&67.86\\
+		\textsc{AI-Feynman}&13.03&9.29&12.61&71.43&39.29&67.86\\
 		\textsc{EPLEX}&8.71&4.29&8.23&56.03&21.43&52.31\\
 		\textsc{ITEA}&7.84&6.43&7.69&27.59&21.43&26.92\\
 		\textsc{GP-GOMEA}&5.09&1.43&4.69&73.71&71.43&73.46\\
@@ -798,10 +798,10 @@ Initially, Friedman’s test was separately executed for all competitor approach
 	
 	\begin{subfigure}[b]{0.40\textwidth}
 		\includegraphics[  width=290pt,height=180pt]{plots/Feynman_strogatz_noise_0_01-expanded.pdf}
-		\caption{Level of noise equal to 0.01.\fxnote{polish labels}}
+		\caption{Level of noise equal to 0.01. }
 		\label{fig:CDplots-noise0.01}
 	\end{subfigure}
-	\caption{CD plots comparisons in terms of exact percentages over all problem instances from the both ground-truth benchmark sets,  varying levels of noise. \fxnote{Polish labels}}
+	\caption{CD plots comparisons in terms of exact percentages over all problem instances from the both ground-truth benchmark sets,  varying levels of noise.  }
 	\label{fig:cd-plots-exact-pcts}
 \end{figure}
 
