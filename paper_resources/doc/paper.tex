@@ -385,7 +385,7 @@ One of the first steps in the main loop is to generate perturbations near the st
 As the name of this procedure (\texttt{All1Perturbations}) suggests, perturbation step is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described separately, in Section~\ref{sec:pertGen}. 
  
 
-Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by applying  ordinary least square method, already described in Section~\ref{sec:ols}.   
+Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by applying  ordinary least square method, already described in Section~\ref{sec:ols}.    \fxnote{Marko: Aco, dodaj ono oko  nelinearnog dijela i pordešavanja koeficijenata koji se traže u predefinisanom skupu vrijednosti...}
 After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
 Further, these perturbations are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
 
@@ -424,12 +424,12 @@ The size of expression is calculated by counting all nodes in the expression tre
 
 \subsubsection{Expression caching}
 
-In order to speed-up the fitness evaluation, we employ \emph{expression caching}. This means that values attached to expression trees or subtrees are persisted in key-value structure, such that the key is tree (subtree) textual representation, while the value is the $|D_{tr}'|$-sized vector of corresponding expression values on the sample training dataset $D_{tr}'$. (Of course, once the $D_{tr}'$ changes, which happens relatively rarely, the whole cache is cleared.) 
+In order to speed-up the fitness evaluation, we employ \emph{expression caching}. This means that values attached to expression trees or subtrees are persisted in key-value structure, such that the key is tree (subtree) textual representation, while the value is the $|D_{tr}'|$-size  vector of corresponding expression values on the sample training dataset $D_{tr}'$. (Of course, once the $D_{tr}'$ changes, which happens not that frequently, the whole cache is cleared.) 
 Caching is performed in a partial way -- when determining the value of a given expression $T$, it is not required to find the exact \emph{hit} inside the cache. So, if some subexpression (subtree) of $T$ is present in the cache, its value will be reused and further combined to calculate the whole fitness function value. 
 
-For example, let us have an expression $T = y^2 \cdot (x+y)/z - sin(x+y)$, sample training dataset $D_{tr}'=\{([1, 2, 5], 7), ([3, 4, 3], 5), ([4, 5, 3], 6), ([6, 7, 4], 3), ([3, 3, 6], 2)\}$ (here, input feature vector is labeled by $[x, y, z]$), and expression cache consisting of the following key-value entries $cache=\{(x+y, [3, 7, 9, 13, 6]), (y^2, [4, 16, 25, 49, 9])\}$. 
-Expression $T$ does not need to be fully evaluated since some of its parts are inside the cache: $y^2$ and $x+y$. (Note that variables alone do not need to enter the cache, since they are already available as columns of  $D_{tr}'$.)
-Each newly evaluated (sub)expression (except constant or variable alone) enters the cache. In this example, the new entries will correspond to keys $(x+y)/z$, $y^2 \cdot (x+y)/z$, $sin(x+y)$ and $y^2 \cdot (x+y)/z - sin(x+y)$.  
+For example, let  $T = y^2 \cdot (x+y)/z - \sin(x+y)$ be an expression, and $D_{tr}'=\{([1, 2, 5], 7), ([3, 4, 3], 5), ([4, 5, 3], 6), ([6, 7, 4], 3), ([3, 3, 6], 2)\}$ be a sample training dataset (here, input feature vector is labeled by $[x, y, z]$); let expression cache consisting of the following key-value entries $cache=\{(x+y, [3, 7, 9, 13, 6]), (y^2, [4, 16, 25, 49, 9])\}$.  
+Expression $T$ does not need to be fully evaluated since some of its parts are inside the cache: $y^2$ and $x+y$. (Note that single variables do not need to enter the cache, since they are already available as columns of  $D_{tr}'$.)
+Each newly evaluated (sub)expression (except constant or variable alone) enters the cache. In this example, the new entries will correspond to keys $(x+y)/z$, $y^2 \cdot (x+y)/z$, $\sin(x+y)$ and $y^2 \cdot (x+y)/z - \sin(x+y)$.  
 The maximal number of cache entries is set to 5000. Once this number is reached, the cache is cleared. 
 
 \subsubsection{Perturbations}\label{sec:pertGen}
@@ -568,8 +568,6 @@ Perturbations are further improved by means of local search procedure (Algorithm
 \end{algorithm}  
 
 For a given perturbation $p$, local search systematically explores all 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better that the actual best $bp$, the OLS coefficient fitting (\texttt{FitOLS}) is performed.  
-
- \fxnote{Marko: stigao do ovog dijela...}
 
 \section{Experimental evaluation}\label{sec:experiments}
 
