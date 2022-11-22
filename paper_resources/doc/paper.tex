@@ -288,7 +288,7 @@
 	Similarly, by taking into account  partial derivation w.r.t. $b$, we have: 
 	$$  \frac{\partial}{\partial b} \sum_{i=1}^{n} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 = \sum_{i=1}^{n} -2  (y_i - \tilde{y}_i). $$
 	
-	Finally, by setting each partial derivative to zero, we get the system of $d+1$ equations with $d+1$ unknowns ($\mathbf{k}=(k_1, ..., k_d)$ and $b$): 
+	Finally, by setting each partial derivative to zero, we get the system of $d+1$ linear equations with $d+1$ unknowns ($\mathbf{k}=(k_1, ..., k_d)$ and $b$): 
 	\begin{align*}
 		& \sum_{i=1}^{n} -2x_{i1} (y_i - \tilde{y}_i) = 0 \\
 		& \vdots \\
@@ -303,14 +303,12 @@
 
 %https://www.thekerneltrip.com/machine/learning/computational-complexity-learning-algorithms/
 %https://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation %https://levelup.gitconnected.com/train-test-complexity-and-space-complexity-of-linear-regression-26b604dcdfa3
-To solve a linear system of $(d+1)$ unknowns and $d+1$ linear equations involved,  Cholesky  factorization or LU decomposition for matrix inversion, and Winograd or Strassen algorithm for matrix multiplication depending on a solver of linear equations chosen as well as the sparsity of the matrix associated to the linear system~\cite{krishnamoorthy2013matrix}. For example, by using Cholesky decomposition, solving the system requires a matrix inversions and matrix multiplications;  computation cost of $d^3$ is required to find an inverse of the matrix associated to the linear system, which is the most consuming part of the algorithm. Thus, OLS using close-form matrix techniques performs in $O(d^3)$ time complexity.  %, where $d$ stands for the number of input features. 
-It is worth mentioning that when the number of input features becomes large, these closed-form matrix techniques are usually replaced by iterative ones, such as gradient descent (GD)~\cite{andrychowicz2016learning}. Using GD,  the above complexity reduces to $O(n^2d )$. The learning rate in GD has to be carefully chosen, as it dictates how quick the algorithm is and how fast it converges. Therefore, when comes to input data with large number of features, GS is preferred over OLS.
+To solve this system one can use Cholesky  factorization or LU decomposition for matrix inversion, and Winograd or Strassen algorithm for matrix multiplication, depending on a solver of linear equations chosen as well as the sparsity of the matrix associated to the linear system~\cite{krishnamoorthy2013matrix}. For example, by using Cholesky decomposition, solving the system requires a matrix inversions and matrix multiplications. In that case the computation cost of $O(d^3)$ is required to find an inverse of the matrix associated to the linear system, which is the most consuming part of the algorithm. Thus, OLS using close-form matrix techniques performs in $O(d^3)$ time complexity.  %, where $d$ stands for the number of input features. 
+It is worth mentioning that when the number of input features becomes large, these closed-form matrix techniques are usually replaced by iterative ones, such as gradient descent (GD)~\cite{andrychowicz2016learning}. When using GD the complexity becomes $O(n^2d )$.
+% The learning rate in GD has to be carefully chosen, as it dictates how quick the algorithm is and how fast it converges. 
 
- 
- 
-%%\fxnote{TODO: ACA: dodati vremensku slozenost za OLS. }%https://towardsdatascience.com/understanding-the-ols-method-for-simple-linear-regression-e0a4e8f692cc
 \subsection{\textsc{RILS}-\textsc{ROLS}  method}
-Now we will explain the proposed \textsc{RILS}-\textsc{ROLS}  method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.   
+Now we will explain the proposed \textsc{RILS}-\textsc{ROLS} method in detail. The overall method scheme is given in Algorithm~\ref{alg:rilsrols}.   
 
 \begin{algorithm}
 	\footnotesize
@@ -375,7 +373,7 @@ Now we will explain the proposed \textsc{RILS}-\textsc{ROLS}  method in detail. 
 \textsc{RILS}-\textsc{ROLS}  algorithms receives training dataset $D_{tr}$ as input. In addition, it has two control parameters: $penalty_{size}$ and $tolerance_{error}$. The first one quantifies the importance of solution expression complexity in the overall solution quality measure (more on this in Section~\ref{sec:fitness}). The second parameter is related to the expected noise level in data -- higher noise means that tolerance to errors should be higher.
 $D_{tr}$ can have very large number of records, so the first step of \textsc{RILS}-\textsc{ROLS}  is to choose a random sample $D_{tr}' \subseteq D_{tr}$ of size $sample_{size}$. Initial the sample size is chosen as $\max(0.01 \cdot n_{tr}, 100)$. The size of sample is later dynamically adjusted through the algorithm's iterations -- when there are no solution improvements for some number of iterations, the sample size is doubled (lines~\ref{line:sampleAdj1}-\ref{line:sampleAdj2} of Algorithm~\ref{alg:rilsrols}).
 
-As previously stated, solution is usually represented by means of a tree. We use a simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: ($i$) $s$ denotes starting (or working) solution and ($ii$) $bs$ stands for the best solution so far. Solution quality is measured by evaluating the fitness function (more about it in the subsequent Section~\ref{sec:fitness}). Before entering the main loop, the best solution \emph{bs} is set to the initial solution (line~\ref{line:solSet}). 
+As previously stated, solution is usually represented by means of a tree. We use a simple solution initialization -- tree root node is set to zero constant. We interchangeably use two solution variables: ($i$) $s$ denotes starting (or working) solution and ($ii$) $bs$ stands for the best solution so far, also known as the incumbent solution. Solution quality is measured by evaluating the fitness function (more about it in the subsequent Section~\ref{sec:fitness}). Before entering the main loop, the best solution \emph{bs} is set to the initial solution (line~\ref{line:solSet}). 
 
 
 Main loop iterates as long as none of termination criteria is met: ($i$) maximal running time has been reached; ($ii$) maximal number of fitness calculations has been made; ($iii$) best solution is sufficiently good, 
@@ -391,22 +389,22 @@ Candidate perturbations are being improved by performing OLS coefficient fitting
 After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
 Further, these perturbations are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
 
-Now, the algorithm enters the internal loop -- it iterates over the ordered perturbations and aims to find the one which improves the best solution $bs$. But, before comparing candidate perturbation solution $p$ with $bs$, $p$ is first simplified (line~\ref{line:simp}) after which the local search is performed (line~\ref{line:ls}).
+Now, the algorithm enters the internal loop -- it iterates over the ordered perturbations and aims to find the one which improves the best solution $bs$. But, before comparing candidate perturbation solution $p$ with $bs$, $p$ is first simplified (line~\ref{line:simp}), after which the local search is performed (line~\ref{line:ls}).
 Solution simplification is done in a symbolical fashion by popular \texttt{SymPy} Python package~\cite{sympy}.
 Local search tries to find local optima expressions close to the given $p$ -- explained in detail in Section~\ref{sec:ls}.  
-Finally, the fitness function value of $p$ is compared to the fitness function value of $bs$. If a new incumbent is found, $bs$ is updated correspondingly and the internal loop that goes across ordered perturbations is immediately terminated (it works in a  \emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
+Finally, the fitness function value of $p$ is compared to the fitness function value of $bs$. If fitness of $p$ is better, $bs$ is updated correspondingly and the internal loop, that goes across ordered perturbations, is immediately terminated (it works in a  \emph{first-improvement} strategy). Otherwise, the next perturbation is probed. 
 Note that the probed perturbations are stored in a set denoted by $perturbations_{tried}$. The goal is to avoid checking the same perturbation multiple times (lines \ref{line:avoid1}-\ref{line:avoid2}), i.e. $perturbations_{tried}$ serves as a kind of tabu list, which is known from the Tablu search meta-heuristic, see~\cite{glover1998tabu}.    
 
 
 If some of $s_{perturbations}$ around starting solution $s$ yielded an improvement, $bs$ becomes the starting solution $s$ in the next iteration of the main loop (line~\ref{line:improved}). 
-Otherwise, it makes no sense to set starting solution to $bs$, as nothing changed -- the search is being  \emph{trapped} in a local optimum. In order to avoid this undesired situation, randomness needs to be triggered. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{All1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is a minor chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that the perturbations with distance 2 from $bs$ are used. Indeed, there is almost no chance that these 2-perturbations will have an empty set difference with $start_{tried}$ set of starting solutions. Therefore, more expensive 3-perturbations will not be considered in our algorithm. 
+Otherwise, it makes no sense to set starting solution to $bs$, as nothing changed -- the search is being  \emph{trapped} in a local optimum. Randomness is introduced in order to avoid this undesired situation. First, a set of local perturbations around $bs$ is generated ($start_{candidates}$) in the same manner as before (procedure \texttt{All1Perturbations}). If at least one of these was not previously used as a starting solution ($start_{tried}$), a single perturbation from the $start_{candidates} \setminus start_{tried}$ is randomly picked (line~\ref{line:randPick}). There is a minor chance that $start_{candidates} \setminus start_{tried} = \emptyset$. When that happens, the set of starting solution candidates is equal to perturbations of some randomly selected perturbation of $bs$ (lines \ref{line:pert21}-\ref{line:pert22}) -- which effectively means that the perturbations with distance 2 from $bs$ are used. There is a very small chance that these 2-perturbations will have an empty set difference with $start_{tried}$ set of starting solutions. Therefore, 3-perturbations are not considered in our algorithm. 
 
 Before returning the final symbolical model, \textsc{RILS}-\textsc{ROLS}  performs the final symbolical simplification and rounding of model coefficients. The latter is sensitive to control parameter $tolerance_{error}$ -- a smaller value means the information loss during rounding is smaller, i.e. a higher number of significant digits is preserved. Note that confidence in the symbolical model is reduced when expected noise in data is higher -- the rule of thumb is: for higher expected noise $tolerance_{error}$ should be higher. 
 
 \fxnote{Dati neku smislenu procjenu kompleksnosti algoritma, ako to nije pretesko. }
 \subsubsection{Fitness function}\label{sec:fitness}
 
-Symbolic regression objective is to determine the expression fitting available data. It is also allowed to obtain some equivalent expression, keeping in mind that there are multiple ways to express some symbolical equation. Although logically sound and intuitive, this objective is not quantifiable during the solution search/training phase, simply because the goal expression is not known at that point as only target values for some of the input features are known. Thus, different numerical metrics are being used in literature to guide the symbolic regression search process. The most popular are the coefficient of determination, also known as $R^2$ and mean squared error (MSE) or root mean squared error (RMSE). The important aspect of the solution quality might also be the solution expression complexity, which may correspond to the model size of its tree representation. This follows the Occam's razor principle~\cite{costa2020fast}~ that simpler solution  is more likely to be a correct one. 
+Symbolic regression objective is to determine the expression fitting available data. It is also allowed to obtain some equivalent expression, since there are multiple ways to express some symbolical equation. Although logically sound and intuitive, this objective is not quantifiable during the solution search/training phase, because the goal expression is not known at that point -- only target values for some of the input data are known. Thus, various numerical metrics are being used in literature to guide the symbolic regression search process. The most popular are the coefficient of determination, also known as $R^2$, and the mean squared error (MSE) or root mean squared error (RMSE). Also, the important aspect of the solution quality is the solution expression complexity, which may correspond to the model size of its tree representation. This follows the Occam's razor principle~\cite{costa2020fast}~ that simpler solution  is more likely to be a correct one. 
 The search process of \textsc{RILS}-\textsc{ROLS}  is guided by the non-linear combination of $R^2$, RMSE and solution expression size (complexity) presented in Equation~\ref{eq:fitness}. 
  
 \begin{equation}
@@ -416,12 +414,22 @@ The search process of \textsc{RILS}-\textsc{ROLS}  is guided by the non-linear c
 
 Since the presented fitness function needs to be minimized, the following conclusions may be drawn:
 \begin{itemize}
-	\item higher $R^2$ is preferred -- ideally, when $R^2(s)=1$, the effect of term $1+R^2(s)$ is neutralized; %since 1 is neutral for multiplication;
-	\item lower RMSE is preferred, ideally, when $RMSE(s)=0$, the whole term $(1+RMSE(s))$ becomes 1;
-	\item since $penalty_{size} > 0$, larger expressions tend to have higher fitness (which follows the Occam's razor principle); therefore, we award those solutions with a more simple representation. 
+	\item higher $R^2$ is preferred -- ideally, when $R^2(s)=1$, the effect of term $2-R^2(s)$ is neutralized; %since 1 is neutral for multiplication;
+	\item lower RMSE is preferred -- ideally, when $RMSE(s)=0$, the whole term $(1+RMSE(s))$ becomes 1;
+	\item since $penalty_{size} > 0$, larger expressions tend to have higher fitness (which follows the Occam's razor principle); therefore, simpler solutions are favorable. 
 \end{itemize}
 
-The size of expression is calculated by simply counting all nodes in the expression tree -- this includes leaves (variables and constants) and internal nodes (operations). 
+The size of expression is calculated by counting all nodes in the expression tree -- this includes leaves (variables and constants) and internal nodes (operations). 
+
+\subsubsection{Expression caching}
+
+In order to speed-up the fitness evaluation, we employ \emph{expression caching}. This means that values attached to expression trees or subtrees are persisted in key-value structure, such that the key is tree (subtree) textual representation, while the value is the $|D_{tr}'|$-sized vector of corresponding expression values on the sample training dataset $D_{tr}'$. (Of course, once the $D_{tr}'$ changes, which happens relatively rarely, the whole cache is cleared.) 
+Caching is performed in a partial way -- when determining the value of a given expression $T$, it is not required to find the exact \emph{hit} inside the cache. So, if some subexpression (subtree) of $T$ is present in the cache, its value will be reused and further combined to calculate the whole fitness function value. 
+
+For example, let us have an expression $T = y^2 \cdot (x+y)/z - sin(x+y)$, sample training dataset $D_{tr}'=\{([1, 2, 5], 7), ([3, 4, 3], 5), ([4, 5, 3], 6), ([6, 7, 4], 3), ([3, 3, 6], 2)\}$ (here, input feature vector is labeled by $[x, y, z]$), and expression cache consisting of the following key-value entries $cache=\{(x+y, [3, 7, 9, 13, 6]), (y^2, [4, 16, 25, 49, 9])\}$. 
+Expression $T$ does not need to be fully evaluated since some of its parts are inside the cache: $y^2$ and $x+y$. (Note that variables alone do not need to enter the cache, since they are already available as columns of  $D_{tr}'$.)
+Each newly evaluated (sub)expression (except constant or variable alone) enters the cache. In this example, the new entries will correspond to keys $(x+y)/z$, $y^2 \cdot (x+y)/z$, $sin(x+y)$ and $y^2 \cdot (x+y)/z - sin(x+y)$.  
+The maximal number of cache entries is set to 5000. Once this number is reached, the cache is cleared. 
 
 \subsubsection{Perturbations}\label{sec:pertGen}
 
