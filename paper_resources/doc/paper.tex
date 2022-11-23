@@ -506,19 +506,19 @@ Algorithm~\ref{alg:pertNode} shows how perturbations around given subtree are ge
 It can be seen that there are three possibly overlapping cases when performing perturbations on the per-node level. 
 
 \emph{Case 1}. 
-Observed node $n$ is the whole tree $s$ (see line ~\ref{alg:alg4-case-1} in Algorithm~\ref{alg:pertNode}). Following on   the previous exemplary expression tree, this means that multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a 1-perturbation expression (tree) $(x+y^3)+ x/\sqrt{y}$. 
+Observed node $n$ is the whole tree $s$ (see line ~\ref{alg:alg4-case-1} in Algorithm~\ref{alg:pertNode}). Following on  the previous exemplary expression tree, this means that multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a 1-perturbation expression (tree) $(x+y^3)+ x/\sqrt{y}$. 
 
 
 \emph{Case 2}. 
 Node $n$ has arity of at least 1 (see line ~\ref{alg:alg4-case-2} in Algorithm~\ref{alg:pertNode}). This means that the left subtree exists, so the left subtree node is to be changed. 
-For example, if $n=x+y^3$ the overall perturbation might be $(x/y^3)+x/\sqrt{y}$ (addition is replaced by division). 
-Another example would be the case of unary operation, e.g. when $n=\sqrt{y}$. In that case, some of the possible perturbations could be $(x+y^3)\cdot x/\sqrt{\ln{y}}$ (application of logarithm to left subtree $y$) or $(x+y^3)\cdot x/\sqrt{x}$ (changing variable $y$ to $x$), etc.
+For example, if $n=x+y^3$, the overall perturbation might be $(x/y^3)+x/\sqrt{y}$ (addition is replaced by division). 
+Another example would be the case of unary operation, e.g., when $n=\sqrt{y}$. In that case, some of possible perturbations could be $(x+y^3)\cdot x/\sqrt{\ln{y}}$ (application of logarithm to left subtree $y$) or $(x+y^3)\cdot x/\sqrt{x}$ (changing variable $y$ to $x$), etc.
 
 \emph{Case 3}. 
-Subtree $ss$ is binary operation, meaning the right subtree must exist (Line ~\ref{alg:alg4-case-3} in Algorithm~\ref{alg:pertNode}). 
+Node $n$ is binary operation, meaning the right subtree must exist (Line ~\ref{alg:alg4-case-3} in Algorithm~\ref{alg:pertNode}). 
 The analogous idea is applied as in \emph{Case 2}. 
 
-The algorithm allows the following set of carefully chosen per-node changes: 
+The algorithm allows the following set of carefully chosen per-node changes (method named \texttt{NodeChanges} in Algorithm~\ref{alg:pertNode}): 
 
 \begin{enumerate}
 	\item Any node to any of its subtrees (excluding itself). For example, if $(x+y^3)$ is changed to $x$, the perturbation is $(x+y^3)\cdot x/\sqrt{y} \rightarrow x\cdot x/\sqrt{y}$. 
@@ -527,11 +527,13 @@ The algorithm allows the following set of carefully chosen per-node changes:
 	\item Unary operation to another unary operation. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot x/\sin{y}$.
 	\item Binary operation to another binary operation. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot (x + \sqrt{y})$. 
 	\item Variable or constant enter the binary operation with arbitrary variable. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+x/y^3)\cdot x/\sqrt{y}$. 
-\end{enumerate} 
-\fxnote{Nekako zbunjuje u Algoritmu 4, pojava NodeChanges)() i Replace(). Mislim, razumijem iz opisa sta one rade, ali nisam siguran da treba imenovati metode, ako ih barem u kontekstu opisa ne pomenemo direktno po nazivu. }
+\end{enumerate}
+
+Method named \texttt{Replace}$(s, n, nc)$ inside Algorithm~\ref{alg:pertNode} is simply used to replace the node $n$ with node $nc$ inside the given expression tree $s$.    
+%\fxnote{Nekako zbunjuje u Algoritmu 4, pojava NodeChanges)() i Replace(). Mislim, razumijem iz opisa sta one rade, ali nisam siguran da treba imenovati metode, ako ih barem u kontekstu opisa ne pomenemo direktno po nazivu. ACA: za NodeChanges stoji opis operacija iznad, sad sam ubacio i u tekst da je to sustina metode NodeChanges. Za replace sam takodje dao objasnjenje.}
 
 
-\fxnote{Dati kompleksnost velicine skupa perturbacija u odnosu na velicinu drveta i dopustene promjene}
+\fxnote{Dati kompleksnost velicine skupa perturbacija u odnosu na velicinu drveta i dopustene promjene. ACA: tesko je ovo izracunati, u principu za svaki cvor, dakle, celo drvo ili bilo koje pod-drvo ide ovaj spisak gore, dakle, neki red velicine d*C(T), gde je C(T) broj poddrveca iz datog drveta T, a d je neka konstanta, tj. broj mogucih perturbacija jednog poddrveta. Sad koliko ima poddrveca, moze se izracunati ovako nekako, ali ne bih to ukljucivao osim ako nam ne zatraze. Dakle, za drvo T broj poddrveca $C(T) = C(T.left)+C(T.right)+1$ (ovo jedan za bas to celo drvo u datom rekurzivnom koraku), sad kad je drvo T od N cvorova balansirano, dobija se diferencna jednacina $C(N)=2*C(N/2)+1$, a njeno resenje je O(N) mislim. Kad se raspise dobija se $C(N) = 2*2*C(N/4)+2 = 2*2*2*C(N/8)+3 = ... = 2^(\log_2(N))*C(1)+\log_2(N) = N + \log_2(N) = O(N)$ posto je $C(1)=1$, to je list drveta}
 
 \subsubsection{Local search}\label{sec:ls}
 
