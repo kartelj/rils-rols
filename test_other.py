@@ -13,8 +13,6 @@ time = 3600
 max_fit = 10000000
 noise_level = 0
 complexity_penalty = 0.01 # 0.001 default
-trigonometry = True
-sample_share = 0.05
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 #instance_files = ["random_04_01_0010000_04.data"]
@@ -51,9 +49,9 @@ for fpath in instance_files:
         y_train = utils.noisefy(y_train, noise_level, random_state)
 
     if noise_level == 0:
-        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, trigonometry=trigonometry, sample_share=sample_share)
+        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty)
     else:
-        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, error_tolerance=noise_level, complexity_penalty=complexity_penalty, trigonometry=trigonometry, sample_share=sample_share)
+        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, error_tolerance=noise_level, complexity_penalty=complexity_penalty)
     rils.fit(X_train, y_train)
     report_string = rils.fit_report_string(X_train, y_train)
     rils_R2 = -1

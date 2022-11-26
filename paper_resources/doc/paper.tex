@@ -253,9 +253,10 @@
 	%\section{Literature review}\label{sec:lit-rev}
 	
 	
-	\section{The proposed method}\label{sec:rils}
+	\section{The proposed RILS-ROLS method}\label{sec:rils}
  
-	Before we give details on our \textsc{RILS}-\textsc{ROLS}  method for solving SR, we will explain two building blocks of \textsc{RILS-ROLS}: 1) iterated local search (ILS) and 2) ordinary least squares (OLS). 
+ 	Our method relies on the following operations: $+$, $-$, $\cdot$, $/$, $\sqrt{x}$, $x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $a^x$, where $a^x$ is only consequently used -- it is never explicitly introduced in the search space. Beside this, the following set of constants enters the search space explicitly: $-1$, $0$, $1$, $2$, $\pi$ and $10$. 
+	Before we give details on our   method for solving SR, we will explain two building blocks of \textsc{RILS-ROLS}: 1) iterated local search (ILS) and 2) ordinary least squares (OLS). 
 	
 	\subsection{Iterated local search}
 	ILS~\cite{lourencco2003iterated} is an efficient meta-heuristics that iteratively generates a sequence of solutions produced by the (embedded) heuristic, such as local search (LS) or randomized greedy heuristics. When the search gets \emph{stuck} in local optimum, a \emph{perturbation} is performed -- this step is usually non-deterministic. This simple idea was proposed by Baxter~\cite{baxter1981local} in early 1980s, and, since then, has been  re-invented by many researches under different names. Some of the following names were used: iterated descent search~\cite{baum1998iterated}, large-step
@@ -385,7 +386,7 @@ One of the first steps in the main loop is to generate perturbations near the st
 As the name of this procedure (\texttt{All1Perturbations}) suggests, perturbation step is local -- meaning the closeness of starting solution $s$ and any of perturbations is 1 (we call it 1-perturbation sometimes). The precise way of generating perturbation is described separately, in Section~\ref{sec:pertGen}. 
  
 
-Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by applying  ordinary least square method, already described in Section~\ref{sec:ols}.    \fxnote{Marko: Aco, dodaj ono oko  nelinearnog dijela i pordešavanja koeficijenata koji se traže u predefinisanom skupu vrijednosti...}
+Candidate perturbations are being improved by performing OLS coefficient fitting (procedure \texttt{FitOLS}). This means that coefficients in any of linear combinations of current solution are being set by applying  ordinary least square method, already described in Section~\ref{sec:ols}. 
 After this step, perturbations are usually better suited to given sample data $D_{tr}'$. 
 Further, these perturbations are sorted w.r.t. $R^2$ metric in the descending order (line~\ref{line:orderR2}). 
 
@@ -522,7 +523,7 @@ The algorithm allows the following set of carefully chosen per-node changes (met
 
 \begin{enumerate}
 	\item Any node to any of its subtrees (excluding itself). For example, if $(x+y^3)$ is changed to $x$, the perturbation is $(x+y^3)\cdot x/\sqrt{y} \rightarrow x\cdot x/\sqrt{y}$. 
-	\item Variable to another variable or constant to variable. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (y+y^3)\cdot x/\sqrt{y}$.
+	\item Constant to variable. For example,  $(1+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot x/\sqrt{y}$.
 	\item Variable to unary operation applied to that variable. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot \ln{x}/\sqrt{y}$.
 	\item Unary operation to another unary operation. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot x/\sin{y}$.
 	\item Binary operation to another binary operation. For example,  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot (x + \sqrt{y})$. 
@@ -551,7 +552,7 @@ Perturbations are further improved by means of local search procedure (Algorithm
 		\State $bp_{candidates} \gets \emptyset$
 		\State $bp_{subtrees} \gets $\texttt{SubTrees}($bp$)
 		\For{$n \in bp_{subtrees}$}
-		\State $n_{candidates} \gets $ \texttt{All1PerturbationsAroundNode}($bp$, $n$)
+		\State $n_{candidates} \gets $ \texttt{All1PerturbationsAroundNodeExtended}($bp$, $n$)
 		\For{$new \in n_{candidates}$}
 		\State $new \gets$ \texttt{FitOLS}($new$, $D_{tr}'$)
 		\State $new_{fit} \gets$ \texttt{Fitness}($new$, $D_{tr}'$)
@@ -569,19 +570,30 @@ Perturbations are further improved by means of local search procedure (Algorithm
 	\label{alg:ls}
 \end{algorithm}  
 
-For a given perturbation $p$, local search systematically explores all 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better that the actual best $bp$, the OLS coefficient fitting (\texttt{FitOLS}) is performed.  
+For a given perturbation $p$, local search systematically explores extended set of 1-perturbations around $p$. It relies on the \emph{best-improvement} strategy, meaning that all 1-perturbations (for all subtrees) are considered. Before checking if the candidate solution ($new$) is better than the actual best $bp$, the OLS coefficient fitting (\texttt{FitOLS}) takes place.  
+The set of used 1-perturbations is increased in comparison to those used previously. Namely, in addition to those six possible types of node changes, the following four are added:
+
+\begin{enumerate}
+	\setcounter{enumi}{6}
+	\item Any node to any constant or variable. For example, $(x+y^3)\cdot x/\sqrt{y} \rightarrow y \cdot x / \sqrt{y}$ or  $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+\pi) \cdot x / \sqrt{y}$.
+	\item Any node to unary operation applied to it. For example, $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot x/\ln{\sqrt{y}}$.
+	\item Any node to binary operation applied to that node and some variable or constant. For example, $(x+y^3)\cdot x/\sqrt{y} \rightarrow (x+y^3)\cdot x/\sqrt{y} - x$.
+	\item Constant to its multiple, where possible multipliers are $\{$0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 1.1, 1.2, 2, 5, 10, 20, 50, 100$\}$. For example, $(1+y^3)\cdot x/\sqrt{y} \rightarrow (1.2+y^3)\cdot x/\sqrt{y}$.
+\end{enumerate}
+
+Change under number 10 is very important -- it performs the general coefficient tuning, unlike OLS that considers only coefficients in linear combinations.  
 
 \section{Experimental evaluation}\label{sec:experiments}
 
-Our \textsc{RILS}--\textsc{ROLS} algorithm is implemented in Python version 3.x. The experiments concerning our method are performed on a machine xx with xx GHz and a memory limit of xx GB in single-threaded mode.  
+Our \textsc{RILS}--\textsc{ROLS} algorithm is implemented in Python 3.9.0. All experiments concerning our method are conducted in the single-core mode, on a PC with Intel i9-9900KF CPU @3.6GHz, 64GB RAM, under Windows 10 Pro OS. The RAM consumption was very small (up to few hundred megabytes) -- beside memory space needed to load input dataset, the only considerable amount is reserved for expression cache. 
+
+
 The following 13 algorithms are compared to our approach: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon}, the \textsc{Gplearn} from python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp}. 
 
-For the (13) competitors, the results are exported from \url{https://cavalab.org/srbench/results/}, reported in~\cite{la2021contemporary}. 
-The maximum computation time allowed for each run of \textsc{RILS}-\textsc{ROLS} is set to 1h, i.e., 3600 seconds; note that the same runtime limit was used in case of all (13) competitors, see~\cite{la2021contemporary}. 
+For the (13) competitors, the results are exported from SRBench \url{https://cavalab.org/srbench/results/}, reported in~\cite{la2021contemporary}. 
+The maximum computation time allowed for each run of \textsc{RILS}-\textsc{ROLS} is set to 1 hour, while the maximal number of fitness function evaluations is set to 1 million. All other algorithms from SRBench used the time limit that was equal or bellow 8 hours runtime and the same fitness evaluation limit of 1 million (see~\cite{la2021contemporary}). We did not use the full time limit of 8 hours because it was not necessary -- we empirically concluded that there were no improvements after 1 hour \textsc{RILS}-\textsc{ROLS} runtime.
 
-
-All    algorithms were run ten times per each problem instance.  
-
+All non-deterministic algorithms (including \textsc{RILS}-\textsc{ROLS}) were run ten times per each problem instance, where each run used different setting of random number generator seed. 
 
 \subsection{Datasets and SRBench}
 
