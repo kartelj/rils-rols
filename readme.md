@@ -14,12 +14,27 @@ from rils_rols.rils_rols import RILSROLSRegressor
 from math import sin, log
 
 regr = RILSROLSRegressor()
+''' regressor parameters:
+    1. max_fit_calls=100000         -- maximal number of fitness function calls
+    2. max_seconds=100              -- maximal running time in seconds
+    3. complexity_penalty=0.001     -- expression complexity (size) penalty -- larger value means size is more important
+    4. error_tolerance=1e-16        -- correlated with the level of expected noise in data -- higher value means higher expected noise
+    5. random_state=0               -- random seed -- when 0 (default), the algorithm might produce different results in different runs
+'''
 
+# toy dataset 
 X = [[3, 4], [1, 2], [-10, 20], [10, 10], [100, 100], [22, 23]]
 y = [sin(x1)+2.3*log(x2) for x1, x2 in X]
 
+# RILSROLSRegressor inherits BaseEstimator (sklearn), so we have well-known fit method
 regr.fit(X, y)
 
+# this prints out the learned model
 print("Final model is "+str(regr.model))
+
+# applies the model to a list of input vectors, also well-known predict method
+X_test = [[4, 4], [3, 3]]
+y_test = regr.predict(X_test)
+print(y_test)
 ```
 

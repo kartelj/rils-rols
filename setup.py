@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='rils-rols',
-    version='0.2',
+    version='0.4',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",
