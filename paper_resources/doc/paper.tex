@@ -46,6 +46,8 @@
 \usepackage{numprint}
 \npdecimalsign{.}
 \npthousandsep{}
+\usepackage{pythonhighlight}
+
 
 \usepackage[draft,nomargin,inline]{fixme}
 \fxsetface{inline}{\itshape}
@@ -1147,12 +1149,12 @@ In future work, one could think of constructing a hybrid of \textsc{RILS-ROLS} m
 \section{Overview of \textsc{RILS}-\textsc{ROLS} python package}\label{sec:appendix-1}
 
 \textsc{RILS-ROLS} algorithm is available for install on the well-known Python package repository \url{https://pypi.org}, so it can be easily installed by typing commands:
-\begin{verbatim}
+\begin{python} 
 	pip install rils-rols
-\end{verbatim}
+\end{python}
 \textsc{RILS-ROLS} project page is at \url{https://pypi.org/project/rils-rols}. Here, one can find a minimal working example on how-to-use \textsc{RILS-ROLS}:
 
-\begin{verbatim}
+\begin{python}
 from rils_rols.rils_rols import RILSROLSRegressor
 from math import sin, log
 
@@ -1172,9 +1174,9 @@ print("Final model is "+str(regr.model))
 X_test = [[4, 4], [3, 3]]
 y_test = regr.predict(X_test)
 print(y_test) 
-\end{verbatim}
+\end{python}
 
-Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found at the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
+Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found under the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
 
 %\section{Additional statistical analysis}\label{sec:appendix-2}
 
