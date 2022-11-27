@@ -5,7 +5,7 @@ All of its aspects (method description, empirical results, etc.) are explained i
 This paper is currently under review in the Journal of Big Data, Springer. 
 
 Minimal working example can be seen bellow:
----------------------------------------------------------------
+```python
 from rils_rols.rils_rols import RILSROLSRegressor
 from math import sin, log
 
@@ -17,5 +17,5 @@ y = [sin(x1)+2.3*log(x2) for x1, x2 in X]
 regr.fit(X, y)
 
 print("Final model is "+str(regr.model))
----------------------------------------------------------------
+```
 
