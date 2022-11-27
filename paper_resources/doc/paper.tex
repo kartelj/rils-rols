@@ -591,16 +591,16 @@ Our \textsc{RILS}--\textsc{ROLS} algorithm is implemented in Python 3.9.0. All e
 The following 13 algorithms are compared to our approach: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon}, the \textsc{Gplearn} from python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp}. 
 
 For the (13) competitors, the results are exported from SRBench \url{https://cavalab.org/srbench/results/}, reported in~\cite{la2021contemporary}. 
-The maximum computation time allowed for each run of \textsc{RILS}-\textsc{ROLS} is set to 1 hour, while the maximal number of fitness function evaluations is set to 1 million. All other algorithms from SRBench used the time limit that was equal or bellow 8 hours runtime and the same fitness evaluation limit of 1 million (see~\cite{la2021contemporary}). We did not use the full time limit of 8 hours because it was not necessary -- we empirically concluded that there almost no improvements after 1 hour \textsc{RILS}-\textsc{ROLS} runtime.
+The maximum computation time allowed for each run of \textsc{RILS}-\textsc{ROLS} is set to 1 hour, while the maximal number of fitness function evaluations is set to 1 million. All other algorithms from SRBench used the time limit that was equal or bellow 8 hours runtime and the same fitness evaluation limit of 1 million (see~\cite{la2021contemporary}). We did not use the full time limit of 8 hours because we empirically concluded that there were almost no improvements after 1 hour \textsc{RILS}-\textsc{ROLS} runtime.
 
 All non-deterministic algorithms (including \textsc{RILS}-\textsc{ROLS}) were run ten times per each problem instance, where each run used different setting of random number generator seed. 
 
 \subsection{Datasets and SRBench}
 
-SRBench is an open-source benchmarking project which merge a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and an environment for analysis, see~\cite{la2021contemporary}. It brings researchers an easy handled environment to evaluate, compare, and analyze their methods.  We involve two real-world inspired ground-truth benchmark sets from SRBench, that represent various types of regression problems, into our computational evaluation: 
+SRBench (\url{https://cavalab.org/srbench/}) is an open-source benchmarking project which merges a large set of diverse benchmark datasets, contemporary SR methods as well as ML methods around a shared model evaluation and an environment for analysis, see~\cite{la2021contemporary}. SRBench considers two types of symbolic regression problems: 1) \emph{ground-truth} problems, for which the exact model is known, and 2) \emph{black-box} problems, for which the exact model is not known. In our work, we consider only the former one, since \textsc{RILS-ROLS} was not designed to solve \emph{black-box} problems. There are two groups of instances in SRBench \emph{ground-truth} problem set:
 \begin{itemize}
-	\item \textsc{Feynman} benchmark set, inspired from physics and formulas/models that describes   various natural laws.  
-	It consists of $10^5$  samples, each described in~\cite{udrescu2020ai}. Some exact models (equations) of problem instances from this benchmark are listed in Table~\ref{tab:Feynamn-Eq}.  Among them, 116 regression problem instances are chosen in the experimental evaluation, with accordance to the results reported in~\cite{la2021contemporary} that used the same problem instances. 
+	\item \textsc{Feynman} instances are inspired by physics and formulas/models that describes various natural laws.  
+	There are 116 instances, where each one consists of $10^5$  samples (see \cite{udrescu2020ai} for more details). Some exact models (equations) of \textsc{Feynman} instances are listed in Table~\ref{tab:Feynamn-Eq}.  
 	
 	\begin{table}[!ht]
 		\centering
@@ -616,9 +616,9 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 	\end{table}
 	
 	
-	\item \textsc{Strogatz} benchmark set from~\cite{la2016inference}. 
-	Each dataset is represented by a 2-state system of first-order, ordinary differential equations. 
-	The aim of each problem is to predict rate of change of the subsequent state w.r.t\  in dependence of the current two states. These equations describes natural processes modelled by non-linear dynamics  exhibiting chaos.  The equations for some of the datasets that belong to this benchmark are shown in Table~\ref{table:strogatz-ODEs}. These problem instances are downloadable from \url{https://github.com/lacava/ode-strogatz}. In overall, 14 ground-truth models are used to generate the problem instances used in the comparison, also in accordance with~\cite{la2021contemporary}. 
+	\item \textsc{Strogatz} instances are introduced in \cite{la2016inference}. 
+	Each instance represents a 2-state system of first-order, ordinary differential equations. 
+	The aim of each problem is to predict the rate of change of the subsequent state. These equations describe natural processes modeled by non-linear dynamics exhibiting chaos.  The equations for some of the datasets that belong \textsc{Strogatz} are shown in Table~\ref{table:strogatz-ODEs}. In overall, there are 14 \textsc{Strogatz} instances. 
 	
 	%table, an instance -- example
 	
@@ -634,8 +634,9 @@ SRBench is an open-source benchmarking project which merge a large set of divers
 		\label{table:strogatz-ODEs}
 	\end{table}
 	
-	
 \end{itemize}
+
+\fxnote{ACA: do ovde sam pregledao}
 The above-mentioned benchmark sets may be biased since the models which describe physical laws usually impose   various symmetries, periodicity w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be pre-defined and thus significantly reduced. Thereby, some methods may get significant benefit with this regard, while some others may be in a subordinate situation. 
 In order to permit any kind of favoritism caused by physical lows behind the input data, we generate a set of randomly generated (non-biased) SR problem instances; this benchmark set is therefore labelled by \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.} 
 
@@ -1134,11 +1135,46 @@ our algorithm was able to obtain the right model on 60.62\%, 42.08\%, and 34.77\
 
 In future work, one could think of constructing a hybrid of \textsc{RILS-ROLS} method with some other meta-heuristics to further boost the quality of the obtained results. For example, replacing ILS scheme of \textsc{RILS-RILS} with a more general Variable neighbourhood search (VNS) scheme is a reasonable option to give it a try. VNS   utilizes a more stronger and systematic system of solutions diversification and thus escaping from local optima could be much easier and the convergence much faster.  Additionally, as proof of the efficiency and benefits of our algorithm, this tool could be applied to solving problems from various problem domains out of the area of computer science, for example from physics or chemistry, to help for setting up reasonable hypotheses or to obtain valuable insights on experimental evaluations.  
 
+
+\newpage
+%\section*{References}
+\bibliographystyle{abbrv}	
+\bibliography{bib}	
+
 \newpage
 \appendix
 
-\section{Overview of \textsc{RILS}-\textsc{ROLS}  python package}\label{sec:appendix-1}
-\fxnote{TODO}
+\section{Overview of \textsc{RILS}-\textsc{ROLS} python package}\label{sec:appendix-1}
+
+\textsc{RILS-ROLS} algorithm is available for install on the well-known Python package repository \url{https://pypi.org}, so it can be easily installed by typing commands:
+\begin{verbatim}
+	pip install rils-rols
+\end{verbatim}
+\textsc{RILS-ROLS} project page is at \url{https://pypi.org/project/rils-rols}. Here, one can find a minimal working example on how-to-use \textsc{RILS-ROLS}:
+
+\begin{verbatim}
+from rils_rols.rils_rols import RILSROLSRegressor
+from math import sin, log
+
+regr = RILSROLSRegressor()
+
+# toy dataset 
+X = [[3, 4], [1, 2], [-10, 20], [10, 10], [100, 100], [22, 23]]
+y = [sin(x1)+2.3*log(x2) for x1, x2 in X]
+
+# RILSROLSRegressor inherits BaseEstimator (sklearn)
+regr.fit(X, y)
+
+# this prints out the learned model
+print("Final model is "+str(regr.model))
+
+# applies the model to a list of input vectors
+X_test = [[4, 4], [3, 3]]
+y_test = regr.predict(X_test)
+print(y_test) 
+\end{verbatim}
+
+Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found at the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
 
 %\section{Additional statistical analysis}\label{sec:appendix-2}
 
@@ -1166,12 +1202,5 @@ In future work, one could think of constructing a hybrid of \textsc{RILS-ROLS} m
 %	\caption{CD plots comparisons in terms of obtained $R^2$ score over all problem instances from both ground-truth benchmark sets,  varying levels of noise.}
 %	\label{fig:cd-plotsR2-varying_noise}
 %\end{figure}
-
-
-\newpage
-%\section*{References}
-\bibliographystyle{abbrv}	
-\bibliography{bib}	
-
 
 \end{document}
