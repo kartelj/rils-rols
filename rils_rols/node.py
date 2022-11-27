@@ -30,12 +30,12 @@ class Node:
         if self.arity==0:
             return self.evaluate_inner(X, None, None)
         elif self.arity == 1:
-            leftVal = self.left.evaluate(X)
-            return self.evaluate_inner(X,leftVal, None)
+            left_val = self.left.evaluate(X)
+            return self.evaluate_inner(X,left_val, None)
         elif self.arity==2:
-            leftVal = self.left.evaluate(X)
-            rightVal = self.right.evaluate(X)
-            return self.evaluate_inner(X,leftVal,rightVal)
+            left_val = self.left.evaluate(X)
+            right_val = self.right.evaluate(X)
+            return self.evaluate_inner(X,left_val,right_val)
         else:
             raise Exception("Arity > 2 is not allowed.")
 
@@ -71,14 +71,14 @@ class Node:
 
     def expand_fast(self):
         if type(self)==type(NodePlus()) or type(self)==type(NodeMinus()): # TODO: check if minus is happening
-            leftFact = self.left.expand_fast()
+            left_fact = self.left.expand_fast()
             right = self.right
             if type(self)==type(NodeMinus()):
                 right = NodeMultiply()
                 right.left = NodeConstant(-1)
                 right.right = copy.deepcopy(self.right)
-            rightFact = right.expand_fast()
-            return leftFact+rightFact
+            right_fact = right.expand_fast()
+            return left_fact+right_fact
         return [copy.deepcopy(self)]
 
     def is_allowed_left_argument(self, node_arg):
@@ -96,40 +96,31 @@ class Node:
         return hash(str(self))
 
     def all_nodes_exact(self):
-        thisList = [self]
+        this_list = [self]
         if self.arity==0:
-            return thisList
+            return this_list
         elif self.arity==1:
-            return thisList+self.left.all_nodes_exact()
+            return this_list+self.left.all_nodes_exact()
         elif self.arity==2:
-            return thisList+self.left.all_nodes_exact()+self.right.all_nodes_exact()
+            return this_list+self.left.all_nodes_exact()+self.right.all_nodes_exact()
         else:
             raise Exception("Arity greater than 2 is not allowed.")
 
     def size(self):
-        leftSize = 0
+        left_size = 0
         if self.left!=None:
-            leftSize = self.left.size()
-        rightSize = 0
+            left_size = self.left.size()
+        right_size = 0
         if self.right!=None:
-            rightSize = self.right.size()
-        return 1+leftSize+rightSize
+            right_size = self.right.size()
+        return 1+left_size+right_size
 
-    def contains_type(self, searchType):
-        if type(self)==searchType:
+    def contains_type(self, search_type):
+        if type(self)==search_type:
             return True
-        if self.left!=None and self.left.contains_type(searchType):
+        if self.left!=None and self.left.contains_type(search_type):
             return True
-        if self.right!=None and self.right.contains_type(searchType):
-            return True
-        return False
-
-    def contains(self, node):
-        if self==node:
-            return True
-        if self.left!=None and self.left.contains(node):
-            return True
-        if self.right!=None and self.right.contains(node):
+        if self.right!=None and self.right.contains_type(search_type):
             return True
         return False
 
@@ -261,7 +252,6 @@ class NodeDivide(Node):
             return False
         return True
 
-
     def is_allowed_right_argument(self, node_arg):
         if node_arg == NodeConstant(0):
             return False
@@ -379,8 +369,8 @@ class NodeTan(Node):
         super().__init__()
         self.arity = 1
 
-    def is_allowed_left_argument(self, nodeArg):
-        if type(nodeArg) == type(NodeConstant(0)) and (nodeArg.value<-1 or nodeArg.value>1):
+    def is_allowed_left_argument(self, node_arg):
+        if type(node_arg) == type(NodeConstant(0)) and (node_arg.value<-1 or node_arg.value>1):
             return False
         return True
 

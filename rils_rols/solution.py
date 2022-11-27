@@ -1,7 +1,6 @@
 import copy
 from math import e, inf
 import math
-
 from .node import NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
 from .utils import R2, RMSE
 from sympy import *
@@ -9,7 +8,6 @@ from sympy.core.numbers import ImaginaryUnit
 from sympy.core.symbol import Symbol
 import numpy as np
 import statsmodels.api as sma
-
 
 class Solution:
 
@@ -24,6 +22,7 @@ class Solution:
         cls.fit_calls=0
 
     def __init__(self, factors, complexity_penalty):
+        # factors are basically subexpressions that enter linear combination, e.g. 2*x+3y*sin(x*y) --> factors = [2x, 3y*sin(x*y)]
         self.factors =  copy.deepcopy(factors)
         self.complexity_penalty = complexity_penalty
 
@@ -54,7 +53,6 @@ class Solution:
         for fact in self.factors:
             totSize+=fact.size()
         return totSize
-        
 
     def fit_constants_OLS(self, X, y):
         new_factors = []

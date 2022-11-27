@@ -15,18 +15,12 @@ warnings.filterwarnings("ignore")
 
 class RILSROLSRegressor(BaseEstimator):
 
-    improvements_by_type = {}
-    tries_by_type = {}
-    improvements_cnt = 0
-    tries_cnt = 0
-
     def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16,random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
         self.random_state = random_state
         self.error_tolerance = error_tolerance
-
 
     def __reset(self):
         self.model = None
@@ -68,21 +62,20 @@ class RILSROLSRegressor(BaseEstimator):
         best_solution =  Solution([NodeConstant(0)], self.complexity_penalty)
         best_fitness = best_solution.fitness(X, y)
         self.main_it = 0
-        checked_preturbations = set([])
+        checked_perturbations = set([])
         start_solutions = set([])
         start_solution = copy.deepcopy(best_solution)
         while self.time_elapsed<self.max_seconds and Solution.fit_calls<self.max_fit_calls: 
             start_solutions.add(str(start_solution))
-            all_preturbations = self.all_preturbations(start_solution, len(X[0]))
+            all_perturbations = self.all_perturbations(start_solution, len(X[0]))
             pret_fits = {}
-            for pret in all_preturbations: 
+            for pret in all_perturbations: 
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
                 pret_ols_fit = pret_ols.fitness(X, y)
                 pret_fits[pret]=pret_ols_fit[0]
 
             sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
-
             impr = False
             p = 0
             for pret, r2Inv in sorted_pret_fits:
@@ -90,10 +83,10 @@ class RILSROLSRegressor(BaseEstimator):
                 self.time_elapsed = time.time()-self.start
                 if self.time_elapsed>self.max_seconds:
                     break
-                if str(pret) in checked_preturbations:
+                if str(pret) in checked_perturbations:
                     print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+" SKIPPED")
                     continue
-                checked_preturbations.add(str(pret))
+                checked_perturbations.add(str(pret))
                 print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret))
                 new_solution = pret 
                 new_solution.simplify_whole(len(X[0]))
@@ -101,7 +94,7 @@ class RILSROLSRegressor(BaseEstimator):
                 new_solution = self.LS_best(new_solution, X, y)
                 new_fitness = new_solution.fitness(X, y, False)
                 if self.compare_fitness(new_fitness, best_fitness)<0:
-                    print("Preturbation "+str(pret)+" produced global improvement.")
+                    print("perturbation "+str(pret)+" produced global improvement.")
                     best_solution = copy.deepcopy(new_solution)
                     best_fitness = new_fitness
                     impr = True
@@ -110,21 +103,21 @@ class RILSROLSRegressor(BaseEstimator):
             start_solution = copy.deepcopy(best_solution)
             if not impr:
                 # introduce randomness now and generate new starting solution that wasn't used before and is relatively close to best_solution
-                all_preturbations = self.all_preturbations(best_solution, len(X[0]))
-                self.rg.shuffle(all_preturbations)
+                all_perturbations = self.all_perturbations(best_solution, len(X[0]))
+                self.rg.shuffle(all_perturbations)
                 k=0
-                while k<len(all_preturbations) and str(all_preturbations[k]) in start_solutions:
+                while k<len(all_perturbations) and str(all_perturbations[k]) in start_solutions:
                     k+=1
-                if k<len(all_preturbations):
-                    start_solution = all_preturbations[k]
+                if k<len(all_perturbations):
+                    start_solution = all_perturbations[k]
                     assert str(start_solution) not in start_solutions
                 else:
-                    # perform 2-consecutive preturbations -- do not check if this did happen before, it is very small chance for that
-                    if len(all_preturbations)>0:
-                        preturbation1 = all_preturbations[0]
-                        all2_preturbations = self.all_preturbations(preturbation1, len(X[0]))
-                        if len(all2_preturbations)>0:
-                            start_solution = all2_preturbations[self.rg.randrange(len(all2_preturbations))]
+                    # perform 2-consecutive perturbations -- do not check if this did happen before, it is very small chance for that
+                    if len(all_perturbations)>0:
+                        perturbation1 = all_perturbations[0]
+                        all2_perturbations = self.all_perturbations(perturbation1, len(X[0]))
+                        if len(all2_perturbations)>0:
+                            start_solution = all2_perturbations[self.rg.randrange(len(all2_perturbations))]
 
                 print("RANDOMIZING "+str(best_solution)+" TO "+str(start_solution))
                 if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
@@ -136,8 +129,6 @@ class RILSROLSRegressor(BaseEstimator):
                     y = y_all[:n]
                     size_increased_main_it = self.main_it
                     Node.reset_node_value_cache()
-                #else:
-                #    break # nothing more to do because this is deterministic algorithm
 
             self.time_elapsed = time.time()-self.start
             print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
@@ -192,78 +183,45 @@ class RILSROLSRegressor(BaseEstimator):
             c += 1
         return c
 
-    def preturb(self, solution:Solution,varCnt):
-        shaked_solution = copy.deepcopy(solution)
-        shaked_solution.normalize_constants()
-        shaked_solution.simplify_whole(varCnt)
-        shaked_solution.join()
-        j = self.rg.randrange(len(shaked_solution.factors))
-        all_subtrees = list(filter(lambda x: x.arity, shaked_solution.factors[j].all_nodes_exact()))
-        if len(all_subtrees)==0: # this is the case when we have constant or variable, so we just change the root
-            shaked_solution.factors[j] = self.random_change(shaked_solution.factors[j])
-        else:
-            i = self.rg.randrange(len(all_subtrees))
-            refNode = all_subtrees[i]
-            # give chance to root of the tree to get selected as well sometimes -- and not only when it is constant or single variable
-            if refNode==shaked_solution.factors[j] and self.rg.random()<=1.0/(1+refNode.arity):
-                shaked_solution.factors[j] = self.random_change(shaked_solution.factors[j])
-            else:
-                if refNode.arity == 1:
-                    newNode = self.random_change(refNode.left, refNode, True)
-                    refNode.left = newNode
-                elif refNode.arity==2:
-                    if self.rg.random()<0.5:
-                        newNode = self.random_change(refNode.left, refNode, True)
-                        refNode.left = newNode
-                    else:
-                        newNode = self.random_change(refNode.right, refNode, False)
-                        refNode.right = newNode
-                else:
-                    print("WARNING: Preturbation is not performed!")   
-        return shaked_solution
-
-    def all_preturbations(self, solution: Solution, varCnt):
+    def all_perturbations(self, solution: Solution, var_cnt):
         all = []
         shaked_solution = copy.deepcopy(solution)
         shaked_solution.normalize_constants()
-        shaked_solution.simplify_whole(varCnt)
+        shaked_solution.simplify_whole(var_cnt)
         shaked_solution.join()
         assert len(shaked_solution.factors)==1
-        #for j in range(len(shaked_solution.factors)):
         j = 0
         all_subtrees = shaked_solution.factors[0].all_nodes_exact()
         if len(all_subtrees)==0: # this is the case when we have constant or variable, so we just change the root
-            for cand in self.preturb_candidates(shaked_solution.factors[j]):
-                preturbed = copy.deepcopy(shaked_solution)
-                preturbed.factors[j] = cand
-                #preturbed.simplify_whole(varCnt)
-                all.append(preturbed)
+            for cand in self.perturb_candidates(shaked_solution.factors[j]):
+                perturbed = copy.deepcopy(shaked_solution)
+                perturbed.factors[j] = cand
+                #perturbed.simplify_whole(varCnt)
+                all.append(perturbed)
         else:
             for i in range(len(all_subtrees)):
                 refNode = all_subtrees[i]
                 if refNode==shaked_solution.factors[j]:
-                    for cand in self.preturb_candidates(shaked_solution.factors[j]):
-                        preturbed = copy.deepcopy(shaked_solution)
-                        preturbed.factors[j] = cand
-                        #preturbed.simplify_whole(varCnt)
-                        all.append(preturbed)
-                #else:
+                    for cand in self.perturb_candidates(shaked_solution.factors[j]):
+                        perturbed = copy.deepcopy(shaked_solution)
+                        perturbed.factors[j] = cand
+                        #perturbed.simplify_whole(varCnt)
+                        all.append(perturbed)
                 if refNode.arity >= 1:
-                    for cand in self.preturb_candidates(refNode.left, refNode, True):
-                        preturbed = copy.deepcopy(shaked_solution)
-                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                        preturbed_subtrees[i].left = cand
-                        #preturbed.simplify_whole(varCnt)
-                        all.append(preturbed)
+                    for cand in self.perturb_candidates(refNode.left, refNode, True):
+                        perturbed = copy.deepcopy(shaked_solution)
+                        perturbed_subtrees = perturbed.factors[j].all_nodes_exact()
+                        perturbed_subtrees[i].left = cand
+                        #perturbed.simplify_whole(varCnt)
+                        all.append(perturbed)
                 if refNode.arity>=2:
-                    for cand in self.preturb_candidates(refNode.right, refNode, False):
-                        preturbed = copy.deepcopy(shaked_solution)
-                        preturbed_subtrees = preturbed.factors[j].all_nodes_exact()
-                        preturbed_subtrees[i].right = cand
-                        #preturbed.simplify_whole(varCnt)
-                        all.append(preturbed)
+                    for cand in self.perturb_candidates(refNode.right, refNode, False):
+                        perturbed = copy.deepcopy(shaked_solution)
+                        perturbed_subtrees = perturbed.factors[j].all_nodes_exact()
+                        perturbed_subtrees[i].right = cand
+                        #perturbed.simplify_whole(varCnt)
+                        all.append(perturbed)
         return all
-
     
     def LS_best(self, solution: Solution, X, y):
         best_fitness = solution.fitness(X, y)
@@ -276,14 +234,9 @@ class RILSROLSRegressor(BaseEstimator):
             self.time_elapsed = time.time()-self.start
             if self.time_elapsed>self.max_seconds or Solution.fit_calls>self.max_fit_calls:
                 break
-
             old_best_fitness = best_fitness
             old_best_solution = copy.deepcopy(best_solution)
-                
             impr, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True)
-            #if not impr:
-            #    best_solution = copy.deepcopy(old_best_solution)
-            #    impr2, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True, True)
             if impr or impr2:
                 best_solution.simplify_whole(len(X[0]))
                 best_fitness = best_solution.fitness(X, y, False)
@@ -325,13 +278,11 @@ class RILSROLSRegressor(BaseEstimator):
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
                         new_fitness = new_solution.fitness(X, y, cache)
-                        #self.log_try("root", ref_node, cand)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
                             best_solution = copy.deepcopy(new_solution)
-                        #    self.log_improvement("root", ref_node, cand)
-                #else:
+
                 if ref_node.arity >= 1:
                     candidates = self.change_candidates(ref_node.left, ref_node, True)
                     for cand in candidates:
@@ -342,12 +293,10 @@ class RILSROLSRegressor(BaseEstimator):
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
                         new_fitness = new_solution.fitness(X, y, cache)
-                        #self.log_try("left", ref_node, cand)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
                             best_solution = copy.deepcopy(new_solution)
-                        #    self.log_improvement("left", ref_node, cand)
 
                 if ref_node.arity>=2:
                     candidates = self.change_candidates(ref_node.right, ref_node, False)
@@ -359,26 +308,15 @@ class RILSROLSRegressor(BaseEstimator):
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
                         new_fitness = new_solution.fitness(X, y, cache)
-                        #self.log_try("right", ref_node, cand)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
                             best_solution = copy.deepcopy(new_solution)
-                        #    self.log_improvement("right", ref_node, cand)
 
         return (impr, best_solution, best_fitness)
 
-    def random_change(self, old_node: Node, parent=None, is_left_from_parent=None):
-        candidates = self.preturb_candidates(old_node, parent, is_left_from_parent)
-        if candidates==[]:
-            print("Random preturbation failed.")
-            return old_node # Preturbation failed
-        i = self.rg.randrange(len(candidates))
-        candidate = candidates[i]
-        return candidate
-
-
-    def preturb_candidates(self, old_node: Node, parent=None, is_left_from_parent=None):
+    # perturb_candidates is a subset of change_candidates
+    def perturb_candidates(self, old_node: Node, parent=None, is_left_from_parent=None):
         candidates = set([])
         # change node to one of its subtrees -- reduces the size of expression
         if old_node.arity>=1:
@@ -396,15 +334,6 @@ class RILSROLSRegressor(BaseEstimator):
             for node in filter(lambda x:type(x)==type(NodeVariable(0)) and x!=old_node, self.allowed_nodes):
                 new_node = copy.deepcopy(node)
                 candidates.add(new_node)
-        # change anything except constant to unary operation applied to that -- increases the model size
-        #if type(old_node)!=type(NodeConstant(0)):
-        #    for node in filter(lambda x:x.arity==1, self.allowed_nodes):
-        #        if not node.is_allowed_left_argument(old_node):
-        #            continue
-        #        new_node = copy.deepcopy(node)
-        #        new_node.left =copy.deepcopy(old_node)
-        #        new_node.right = None
-        #        candidates.add(new_node)
         # change variable to unary operation applied to that variable
         if type(old_node)==type(NodeVariable(0)):
             for node in filter(lambda x:x.arity==1, self.allowed_nodes):
@@ -421,15 +350,6 @@ class RILSROLSRegressor(BaseEstimator):
                 new_node.left = copy.deepcopy(old_node.left)
                 assert old_node.right==None
                 candidates.add(new_node)
-        # change binary operation unary operation applied to first and second argument
-        #if old_node.arity == 2:
-        #    for node in filter(lambda x:x.arity==1, self.allowed_nodes):
-        #        new_node = copy.deepcopy(node)
-        #        new_node.left = copy.deepcopy(old_node.left)
-        #        candidates.add(new_node)
-        #        new_node = copy.deepcopy(node)
-        #        new_node.left = copy.deepcopy(old_node.right)
-        #        candidates.add(new_node)
         # change one binary operation to another
         if old_node.arity==2:
             for nodeOp in filter(lambda x: x.arity==2 and type(x).__name__ !=type(old_node).__name__, self.allowed_nodes):
@@ -445,7 +365,6 @@ class RILSROLSRegressor(BaseEstimator):
                 new_node.left = copy.deepcopy(old_node.right)
                 new_node.right = copy.deepcopy(old_node.left)
                 candidates.add(new_node)
-
         # change variable or constant to binary operation with some variable  -- increases the model size
         if old_node.arity==0:
             node_args = list(filter(lambda x: type(x)==type(NodeVariable(0)), self.allowed_nodes))
@@ -475,29 +394,28 @@ class RILSROLSRegressor(BaseEstimator):
         candidates = sorted(candidates, key=lambda x: str(x))
         return candidates
 
+    # superset of perturb_candidates
     def change_candidates(self, old_node:Node, parent=None, is_left_from_parent=None):
         candidates = set([])
-
+        # change constant to something multiplied with it
         if type(old_node)==type(NodeConstant(0)):
-            # change constant to something multiplied with it
             for mult in [0.01, 0.1, 0.2, 0.5, 0.8, 0.9,1.1,1.2, 2, 5, 10, 20, 50, 100]:
                 candidates.add(NodeConstant(old_node.value*mult))
-
+        # change anything to one of its left subtrees
         if old_node.arity>=1:
             all_left_subtrees = old_node.left.all_nodes_exact()
             for ls in all_left_subtrees:
                 candidates.add(copy.deepcopy(ls))
             #candidates.append(copy.deepcopy(old_node.left))
+        # change anything to one of its right subtrees
         if old_node.arity>=2:
             all_right_subtrees = old_node.right.all_nodes_exact()
             for rs in all_right_subtrees:
                 candidates.add(copy.deepcopy(rs))
             #candidates.append(copy.deepcopy(old_node.right))
-        
-
+        # change anything to a constant or variable
         for node in filter(lambda x:x.arity==0 and x!=old_node, self.allowed_nodes):
             candidates.add(copy.deepcopy(node))
-
         # change anything to unary operation applied to that -- increases the model size
         for node in filter(lambda x:x.arity==1, self.allowed_nodes):
             if not node.is_allowed_left_argument(old_node):
@@ -544,7 +462,6 @@ class RILSROLSRegressor(BaseEstimator):
                 new_node.left = copy.deepcopy(old_node.right)
                 new_node.right = copy.deepcopy(old_node.left)
                 candidates.add(new_node)
-
         # filtering not allowed candidates (because of the parent)
         filtered_candidates = []
         if parent is not None:
@@ -561,33 +478,17 @@ class RILSROLSRegressor(BaseEstimator):
     def compare_fitness(self, new_fit, old_fit):
         if math.isnan(new_fit[0]):
             return 1
-        if self.complexity_penalty is not None:
-            new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1]) 
-            old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[1]) 
-            if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
-                if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it
-                    return -1
-                if old_fit_wo_size_pen==1: # otherwise, old is better
-                    return 1
-
-            new_tot = new_fit_wo_size_pen*(1+new_fit[2]*self.complexity_penalty)
-            old_tot = old_fit_wo_size_pen*(1+old_fit[2]*self.complexity_penalty)
-            if new_tot<old_tot-0.00000001:
+        new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1]) 
+        old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[1]) 
+        if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
+            if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it
                 return -1
-            if new_tot>old_tot+0.00000001:
+            if old_fit_wo_size_pen==1: # otherwise, old is better
                 return 1
-            return 0
-        else:
-            if new_fit[0]<old_fit[0]:
-                return -1
-            if new_fit[0]>old_fit[0]:
-                return 1
-            if new_fit[2]<old_fit[2]:
-                return -1
-            if new_fit[2]>old_fit[2]:
-                return 1
-            if new_fit[1]<old_fit[1]:
-                return -1
-            if new_fit[1]>old_fit[1]:
-                return 1
-            return 0
+        new_tot = new_fit_wo_size_pen*(1+new_fit[2]*self.complexity_penalty)
+        old_tot = old_fit_wo_size_pen*(1+old_fit[2]*self.complexity_penalty)
+        if new_tot<old_tot-0.00000001:
+            return -1
+        if new_tot>old_tot+0.00000001:
+            return 1
+        return 0

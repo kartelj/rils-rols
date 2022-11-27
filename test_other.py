@@ -15,15 +15,12 @@ noise_level = 0
 complexity_penalty = 0.01 # 0.001 default
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
-#instance_files = ["random_04_01_0010000_04.data"]
 
 out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 with open(out_path, "w") as f:
     f.write("Tests started\n")
 
 for fpath in instance_files:
-    #if not "random_04_01_0010000_04" in fpath:
-    #    continue
     print("Running instance "+fpath)
     with open(instances_dir+"/"+ fpath) as f:
         lines = f.readlines()
