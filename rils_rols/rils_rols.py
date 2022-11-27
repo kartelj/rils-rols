@@ -46,7 +46,7 @@ class RILSROLSRegressor(BaseEstimator):
         # take 1% of points or at least 100 points initially 
         n = int(0.01*len(x_all))
         if n<100:
-            n=100
+            n=min(100, len(X))
         print("Taking "+str(n)+" points initially.")
         X = x_all[:n]
         y = y_all[:n]
