@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='rils-rols',
-    version='0.4',
+    version='0.5',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",
@@ -20,5 +20,6 @@ setup(
     ],
     python_requires= ">=3.6",
     py_modules=["rils-rols"],
-    package_dir = {'rils-rols':'rils_rols'}
+    package_dir = {'rils-rols':'rils_rols'}, 
+    install_requires=["scikit-learn", "sympy", "statsmodels"],
 )
