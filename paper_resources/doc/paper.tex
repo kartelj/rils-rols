@@ -46,6 +46,8 @@
 \usepackage{numprint}
 \npdecimalsign{.}
 \npthousandsep{}
+\usepackage{pythonhighlight}
+
 
 \usepackage[draft,nomargin,inline]{fixme}
 \fxsetface{inline}{\itshape}
@@ -638,7 +640,7 @@ SRBench (\url{https://cavalab.org/srbench/}) is an open-source benchmarking proj
 
 \fxnote{ACA: do ovde sam pregledao}
 The above-mentioned benchmark sets may be biased since the models which describe physical laws usually impose   various symmetries, periodicity w.r.t. some variables, internal separability on some variables etc. In that way, the search process and the search space can be pre-defined and thus significantly reduced. Thereby, some methods may get significant benefit with this regard, while some others may be in a subordinate situation. 
-In order to permit any kind of favoritism caused by physical lows behind the input data, we generate a set of randomly generated (non-biased) SR problem instances; this benchmark set is therefore labelled by \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance, itd.} 
+In order to permit any kind of favoritism caused by physical lows behind the input data, we generate a set of randomly generated (non-biased) SR problem instances; this benchmark set is therefore labelled by \textsc{Random}. These instances are generated according the following procedure. \fxnote{Opisati proceduru generisanja instanci + kombinaciju parametara za instance + koliko instanci, itd.} 
 
 Another purpose of having these instances is  systematically  providing conclusions on robustness and scalability of the RILS-ROLS method w.r.t.\ various instance size parameters. 
 
@@ -794,14 +796,14 @@ In Figure~\ref{fig:time-avg-exact-noise}, average runtimes of the algorithms on 
 
 \subsection{Statistical evaluation}
 
-In order to check the statistical significance of the results w.r.t.\ obtained exact models and their differences between the competitor approaches, we employed the statistical methodology comparing the results of \textsc{RILS}--\textsc{ROLS} to 14 other approaches over all algorithm runs of the problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that an indicator random variable is involved per each run of the algorithms. Thus, the score that comes into the statistical observation is an indicator (0 or 1) indicating weather or not an algorithm was able to return the exact model at that run. More precisely, we involved 1300 results into our statistical evaluation for each algorithm. Note that  results of some of the 13 competitors are not known from SRBench \url{https://cavalab.org/srbench/results/} due to   unknown reasons (most likely algorithm is terminated running out of memory or due to   chosen algorithm configuration settings). For these runs, we simply count a 0 for the score.   
+In order to check the statistical significance of the results w.r.t.\ obtained exact models and their differences between the competitor approaches, we employed the statistical methodology comparing the results of \textsc{RILS}--\textsc{ROLS} to 13 other approaches over all algorithm runs on the problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that an indicator random variable is involved for each run of each algorithm. More precisely, the score that comes into the statistical observation is an indicator (0 or 1) indicating weather or not an algorithm was able to return the exact model at specific run. More precisely, we involved 1300 results into our statistical evaluation per each algorithm. Note that  results of some of the 13 competitors are not known from SRBench \url{https://cavalab.org/srbench/results/} due to   unknown reasons (most likely algorithm is terminated running out of memory or due to   chosen algorithm configuration settings). For these runs, we simply indicate a 0 as their score.   
 
 Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained results of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In each CD plot, the (14) competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is drawn.   Three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts} per each level of noise. The following conclusions may be drawn from there.
 
 \begin{itemize}
 	\item  Concerning the instance problems where no noise is included, \textsc{RILS}-\textsc{ROLS} method returns the best average ranking in terms of the number of obtained exact models over all runs.  The second best average ranking is achieved by \textsc{AI-Feynman} algorithm. There is  statistically significant difference between these two approaches w.r.t.\ number of found exact solutions. The third best approach is \textsc{Apf-Fe},  which is far behind \textsc{RILS}-\textsc{ROLS} w.r.t.\ delivered average ranking.  
 	\item    Concerning the instance problems with the included  level of noise of 0.001, \textsc{RILS}-\textsc{ROLS} method again obtains the best average ranking in terms of the found exact solutions.   The second best ranking is obtained by \textsc{AI-Feynman} algorithm. There is again a statistically significant difference between the results obtained by these two approaches. The third best approach is \textsc{Afp-Fe} which performs statistically worse than \textsc{AI-Feynman}.  
-	\item  Concerning the instance problems with the included noise level of  0.01, again, \textsc{RILS-ROLS} method produces the best average ranking according to positively evaluated runs, i.e. the runs with obtained exact models; the second best approach w.r.t.\ average ranking is \textsc{Afp-Fe}, followed by \textsc{Dsr}, and \textsc{Afp}. The  latter three approaches perform statistically equal, but significantly worse than \text{RILS}-\textsc{ROLS} method. 	The fourth best approach according to delivered average ranking is \textsc{AI-Feynman} which is on pair with \textsc{gplearn}. Note that the average ranking of \textsc{AI-Feynman} method declines by increasing  the level of noise in the input data. Thus, despite being efficient on the no-noisy data, it seems that \textsc{AI-Feynman} is very sensitive w.r.t.  increase in the level of noise, which is not that dramatically conspicuous with our \textsc{RILS}-\textsc{ROLS} method.   
+	\item  Concerning the instance problems with the included noise level of  0.01, again, \textsc{RILS-ROLS} method produces the best average ranking according to positively evaluated runs, i.e. those runs with found  exact models; the second best approach w.r.t.\ average ranking is \textsc{Afp-Fe}, followed by \textsc{Dsr}, and \textsc{Afp}. The  latter three approaches perform statistically equal, but significantly worse than \text{RILS}-\textsc{ROLS} method. 	The fourth best approach according to delivered average ranking is \textsc{AI-Feynman} which is on pair with \textsc{gplearn}. Note that the average ranking of \textsc{AI-Feynman} method declines by increasing  the level of noise in the input data. Thus, despite being efficient when comes to the no-noisy data,  \textsc{AI-Feynman} shows to be very sensitive w.r.t.  increase of the level of noise, which is not that dramatically conspicuous with our \textsc{RILS}-\textsc{ROLS} method.   
 	
 \end{itemize}
 
@@ -833,30 +835,28 @@ Initially, Friedman’s test was separately executed for all competitor approach
 
 \subsection{Scalability of \textsc{RILS}-\textsc{ROLS} algorithm}\label{sec:scalability-rils-rols}
 
-In this section we study the scalability of our method in terms of the size of  instance problems and  the presence of different noise level in the input data. 
-
-First, we divide our benchmark sets into three parts as follows. 
+In this section we study the scalability of our method in terms of the size of  instance problems and  the presence of different noise levels in the input data.  First, for the shake of simplicity of presenting,  we split the instances from \textsc{Random} benchmark sets into three parts as follows. 
 \begin{itemize}
-	\item \textit{Small--sized instances}: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 3 to 7 nodes belong to this sub-set.
-	\item \textit{Middle--sized instances}:  all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 8 to 11 nodes belong to this sub-set.
-	\item \textit{Large--sized instances}: all instances from \textsc{Random} benchmark whose the corresponding exact models tree representations have from 12 to 15 nodes belong to this sub-set. 
+	\item \textit{Small--sized instances}: any instance  from \textsc{Random} benchmark whose   corresponding exact model  tree representation  has from 3 to 7 nodes belongs to this sub-set.
+	\item \textit{Medium--sized instances}:  any instance  from \textsc{Random} benchmark whose   corresponding exact model tree representation  has from 8 to 11 nodes belongs to this sub-set.
+	\item \textit{Large--sized instances}: any instances from \textsc{Random} benchmark whose   corresponding exact model  tree representation  has from 12 to 15 nodes belongs to this sub-set. 
 \end{itemize}
 
-The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with accordance to the (three) formed sub-groups ($x$-axis); for each of them the exact percentage rate of success of \textsc{RILS}--\textsc{ROLS} algorithm is shown ($y$-axis). The following conclusions may be drawn from here:
+The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with accordance to the above (three) formed sub-groups ($x$-axis); for each of them relative exact percentage rate   of \textsc{RILS}--\textsc{ROLS} algorithm is shown ($y$-axis). The following conclusions may be drawn from there. 
 
 \begin{itemize}
-	\item   As expected, the exact percentage success rate is the highest for the small--sized instance problems; it is sightly bellow 90\% for the no-noisy data. For noisy data, the success rate of the algorithm gets decreased as the level of noise increases. For example, on the small-sized problem instances with the noise level  of 0.0001, and 0.01, the exact percentage of \textsc{RILS}--\textsc{ROLS} is still reasonably high, at about 55\%~ and 34 \%, respectively. 
-	\item For the middle-sized instance problems, the exact percentage rate is slightly bellow 50\%. It also decreases by increasing the level of noise in the target data; for the highest level of noise (of 0.01), the success rate of \textsc{RILS}-\textsc{ROLS} method is just about 6\%. 
-	\item For the large-sized instance problems with no noise is utilized, the exact percentage of \textsc{RILS}--\textsc{ROLS} algorithm is at about 25\%, which means that the increase in the size of exact models affects the algorithm's performance, but within the expected range.  
+	\item   As expected, the exact percentage success rate is the highest for the small--sized instance problems; it is sightly bellow 90\% (over all XXx runs) in case of no-noisy data. For the noisy data, the exact success rate is getting decreased as the level of noise increases. For example, on the small-sized problem instances with the noise level  of 0.0001, and 0.01, the exact percentage achieved by \textsc{RILS}--\textsc{ROLS} algorithm is still reasonably high, at about 55\%~ and 34 \%, respectively. 
+	\item For the medium-sized instance problems where noise is not presented, the exact percentage rate of \textsc{RILS}-\textsc{ROLS} is slightly bellow 50\%. It also decreases by increasing the level of noise in the target data; for the highest level of noise (of 0.01), the success rate of \textsc{RILS}-\textsc{ROLS} method is just at about 6\%. 
+	\item For the large-sized instance problems where no noise is utilized, the exact percentage rate of \textsc{RILS}--\textsc{ROLS} algorithm is at about 25\%, which means that the increase in the size of exact models affects the algorithm's performance, but not dramatically.  
 	
-	\item From the above, we can conclude that the size of exact models (solutions) and the increase of the noise level both contribute to overall performance of our \textsc{RILS}--\textsc{ROLS} method. The exact percentage rate of the algorithm seems decreasing linearly  in the (exact) model size, regardless of the noise level values.
+	\item From the above, we can conclude that the size of exact models (solutions) and the increase of   level of noise both contribute to overall performance of our \textsc{RILS}--\textsc{ROLS} method. However, the exact percentage rate of the algorithm seems to decrease linearly  in the size of (exact) model, regardless of the noise level values.
 	
-	\item Concerning the high--accuracy percentages delivered by \textsc{RILS}--\textsc{ROLS} algorithm -- that is the percentage of problem instances for which the algorithm's termination yielded a model with $R^2 \geq 0.999$ -- for the small--sized problem instances with no noise is recorded, it is almost at the perfect score (i.e. $\approx$100\%). In the presence of a low noise level (equals to 0.001), the percentages of instance problems with the high--accuracy is still high, at about 95\%. In case when the high level of noise (equals to 0.01) is presented in the input data, these percentages stagnate, but still are at a respectable 66\%. %small-sized instances it reaches a high--precision of $R^2=0.999$ upon termination.   
-	As we pointed out already, a half of these math to the respectable exact models.
+	\item Concerning  the percentage of  runs over all random instances for which \textsc{RILS-ROLS} terminates by producing an accurate model, that is a model with $R^2 > 0.999$, for the small--sized problem instances where no noise is included, \textsc{RILS}-\textsc{ROLS} delivers  the perfect score almost. In the presence of a low noise level (equals to 0.001), this percentage  is still holding high, at about 95\%. In case when the high level of noise (equals to 0.01) is presented in the input data, these percentages stagnate, but still are at a respectable 66\%. %small-sized instances it reaches a high--precision of $R^2=0.999$ upon termination.   
+	As  pointed out already, for a half of these cases the respectable exact models were found by the algorithm.
 	
-	\item Concerning the high--accuracy percentage of the \textsc{RILS}--\textsc{ROLS} algorithm on the middle-sized instance problems when the input data are free of the noise, it is obtained on 65\% cases.    The noisy the data are, the accuracy percentages of the algorithm, as expected, drop off; however, not so dramatically. For the level of noise of 0.01, the high--accuracy of the final solution is reported on $\approx$30\% cases.
+	\item Concerning  the medium-sized instance problems when the input data are free of the noise,   the final outcome reached the high precision in 65\% of all algorithm runs.    The noisy the data are, these percentages, as expected, drop off; however, it is not so dramatically. For the level of noise of 0.01, the high--accuracy of the final solution is reported on $\approx$30\% of all runs.
 	
-	\item Concerning the high--accuracy percentages of the \textsc{RILS}--\textsc{ROLS} algorithm on the large-sized instance problems with no noise, it gets 60\%. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring $R^2\geq 0.999$ for the outcome  upon termination) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of the considered large--sized instance problems. 
+	\item Concerning  the large-sized instance problems with no noise, the  final solution reached the high precision in 60\% of all runs. Not so surprisingly, the hardest case to obtain the desired high--accuracy (that is, ensuring $R^2> 0.999$ for  the  outcome) is in the presence of a high level of noise (of 0.01), where the algorithm was successful on about 20\% of all runs concerning the large--sized instance problems. 
 	
 \end{itemize}
 
@@ -938,7 +938,7 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 	\label{fig:compR2_noise_size}
 \end{center}
 
-In this paragraph we investigate the  scalability of our \textsc{RILS}--\textsc{ROLS} algorithm in terms of the number of variables and sizes of corresponding exact models of the problem instances varying levels of noise. There is three bar plots shown per each level of noise.  These are shown by Figures~\ref{fig:compExact_noise_varcnt} and~\ref{fig:compExact_noise_varsizes}. The instances are grouped according to the different variable count/size of respective exact models ($x$-axis). For each group, the exact percentages of success rate of \textsc{RILS}--\textsc{ROLS} algorithm on the instance group is shown ($y$-axis).
+\fxnote{Marko: revidirano do ovog dijela...}In this paragraph we investigate the  scalability of our \textsc{RILS}--\textsc{ROLS} algorithm in terms of the number of variables and sizes of corresponding exact models of the problem instances varying levels of noise. There is three bar plots shown per each level of noise.  These are shown by Figures~\ref{fig:compExact_noise_varcnt} and~\ref{fig:compExact_noise_varsizes}. The instances are grouped according to the different variable count/size of respective exact models ($x$-axis). For each group, the exact percentages of success rate of \textsc{RILS}--\textsc{ROLS} algorithm on the instance group is shown ($y$-axis).
 
 The following conclusions can be drawn from Figure~\ref{fig:compExact_noise_varcnt}. 
 
@@ -1147,12 +1147,12 @@ In future work, one could think of constructing a hybrid of \textsc{RILS-ROLS} m
 \section{Overview of \textsc{RILS}-\textsc{ROLS} python package}\label{sec:appendix-1}
 
 \textsc{RILS-ROLS} algorithm is available for install on the well-known Python package repository \url{https://pypi.org}, so it can be easily installed by typing commands:
-\begin{verbatim}
+\begin{python} 
 	pip install rils-rols
-\end{verbatim}
+\end{python}
 \textsc{RILS-ROLS} project page is at \url{https://pypi.org/project/rils-rols}. Here, one can find a minimal working example on how-to-use \textsc{RILS-ROLS}:
 
-\begin{verbatim}
+\begin{python}
 from rils_rols.rils_rols import RILSROLSRegressor
 from math import sin, log
 
@@ -1172,9 +1172,9 @@ print("Final model is "+str(regr.model))
 X_test = [[4, 4], [3, 3]]
 y_test = regr.predict(X_test)
 print(y_test) 
-\end{verbatim}
+\end{python}
 
-Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found at the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
+Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found under the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
 
 %\section{Additional statistical analysis}\label{sec:appendix-2}
 
