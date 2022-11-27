@@ -4,6 +4,10 @@ All of its aspects (method description, empirical results, etc.) are explained i
 "RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares" by Aleksandar Kartelj and Marko Djukanovic. 
 This paper is currently under review in the Journal of Big Data, Springer. 
 
+All RILS-ROLS resources can be found at https://github.com/kartelj/rils-rols
+
+RILS-ROLS distribution is available as a pip package at https://pypi.org/project/rils-rols
+
 Minimal working example can be seen bellow:
 ```python
 from rils_rols.rils_rols import RILSROLSRegressor
