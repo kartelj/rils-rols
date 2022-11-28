@@ -286,7 +286,7 @@
 	\subsection{Ordinary least square method}\label{sec:ols}
 	Ordinary least square method (OLS) is a linear regression technique. It is based on applying the least-square method to minimize the square residual (error) sum  between actual and predicted values (given by the model). More precisely, given previously introduced dataset $D$ of $n$ points $(\mathbf{x_i}, y_i)$ where each $\mathbf{x_i}$ is $d$-dimensional, the task is to determine linear mapping $\tilde{y} = \mathbf{k} \mathbf{x} + b$, that is coefficients (line slope) $\mathbf{k} = (k_1, \ldots, k_d)$ and $b$ (intercept), so that $ \sum_{i}^{n} (\tilde{y}_i - y_i)^2 $ is minimized. This sum is also know as the sum of squared errors (SSE). There are many methods to minimize SSE. One of the analytical approaches is the calculus-oriented -- it takes into account partial derivatives of SSE w.r.t. $k_j,\; j \in \{1, ..., d\}$: 
 	
-	$$  \frac{\partial}{\partial k_j} \sum_{i}^{n} (\tilde{y}_i - y_i)^2 = \frac{\partial}{\partial k_j} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 =  \sum_{i=1}^{n} 2x_{ij}(\mathbf{k}\mathbf{x_i} + b - y_i).$$
+	$$  \frac{\partial}{\partial k_j} \sum_{i}^{n} (\tilde{y}_i - y_i)^2 = \frac{\partial}{\partial k_j} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 =  \sum_{i=1}^{n} 2x_{ij}(\mathbf{k}\mathbf{x_i} + b - y_i).$$ 
   
 	Similarly, by taking into account  partial derivation w.r.t. $b$, we have: 
 	$$  \frac{\partial}{\partial b} \sum_{i=1}^{n} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 = \sum_{i=1}^{n} -2  (y_i - \tilde{y}_i). $$
@@ -876,7 +876,7 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 				(2,42.5)
 				(3,21.05)
 			};
-			\addlegendentry{No noise}
+			\addlegendentry{$\alpha=0.00$}
 			
 			\addplot[smooth,color=red,mark=x]
 			plot coordinates {
@@ -884,7 +884,7 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 				(2,13.75)
 				(3,5.26)
 			};
-			\addlegendentry{Noise level 0.001}
+			\addlegendentry{$\alpha=0.001$}
 			
 			\addplot[smooth,color=green,mark=o]
 			plot coordinates {
@@ -892,7 +892,7 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 				(2,5)
 				(3,4.21)
 			};
-			\addlegendentry{Noise level 0.01}
+			\addlegendentry{$\alpha=0.01$}
 		\end{axis}
 	\end{tikzpicture}
 	\captionof{figure}{Exact solution percentages for varying levels of noise and formulae sizes}
@@ -938,14 +938,14 @@ The results are displayed in Figure~\ref{fig:compExact_noise_size}, grouped with
 	\label{fig:compR2_noise_size}
 \end{center}
 
-\fxnote{Marko: revidirano do ovog dijela...}In this paragraph we investigate the  scalability of our \textsc{RILS}--\textsc{ROLS} algorithm in terms of the number of variables and sizes of corresponding exact models of the problem instances varying levels of noise. There is three bar plots shown per each level of noise.  These are shown by Figures~\ref{fig:compExact_noise_varcnt} and~\ref{fig:compExact_noise_varsizes}. The instances are grouped according to the different variable count/size of respective exact models ($x$-axis). For each group, the exact percentages of success rate of \textsc{RILS}--\textsc{ROLS} algorithm on the instance group is shown ($y$-axis).
+In the rest of the section,  we investigate scalability of our \textsc{RILS}--\textsc{ROLS} algorithm in terms of the number of variables and sizes of corresponding exact models of the problem instances varying levels of noise. There are three bar plots generated per each level of noise, shown by Figures~\ref{fig:compExact_noise_varcnt}--\ref{fig:compExact_noise_varsizes}. The instances are grouped according to the different variable count/size of respective exact models ($x$-axis) that correspond to them. For each group, the exact percentages obtained by \textsc{RILS}--\textsc{ROLS} algorithm group are shown on $y$-axis.
 
 The following conclusions can be drawn from Figure~\ref{fig:compExact_noise_varcnt}. 
 
 \begin{itemize}
-	\item The exact percentage rate of \textsc{RILS}--\textsc{ROLS} algorithm  slightly decrease as the expected number of variables gets larger when no noise is presented in the data.
-	\item The exact percentages drop off with the presence of a larger noise level. Thus, the higher the noise level, the smaller the exact percentages are.
-	\item Interestingly, in the presence of noise, the highest exact percentages are not obtained on the problem instances whose exact models consists of a single variable, but two or three. We argue it by the fact that the early phase of the algorithm will more likely try to include additional variables in the solution at the cost of increasing the model accuracy to ensure improving the fitness value over iterations. In the presence of the zero noise, OLS method will more likely find a smaller model (on $\approx$ 50\% cases) with a high accuracy that fits to the (no-noisy) input data than the case of noisy data. When the data is noisy, the decision of adding more variables at the beginning is likely to be forced than just dealing with short-size solutions. By the algorithm's progression, it gets harder improving the best fitness value by adding variables, and other operations are more frequently involved than in previous iterations. %This conclusion also correlates to the shape of fitness function given by Equation~(\ref{eq:fitness}) where the first two product terms there are already small (close to 1).      \fxnote{TODO: need to be further expanded...}
+	\item For the no-noisy data, the exact percentage rate of \textsc{RILS}--\textsc{ROLS} algorithm  slightly decrease as the expected number of variables increases in the exact models. 
+	\item The exact percentages drop off with the presence of a larger noise level. As expected, the higher the noise level, the smaller the exact percentages are.
+	\item Interestingly, in the presence of noise in the data, the highest exact percentages are not obtained for the problem instances which have exact models consisted of a single variable, but two or three. We argue it by the fact that the early phase of the algorithm will more likely trying to include additional variables in current solution at the cost of increasing the model accuracy to ensure improving the fitness value over iterations. For the no--noisy data, OLS method will more likely find a small-sized high-accuracy model (in our experiments that happened on $\approx$ 50\% runs) that fits to the (no-noisy) input data than the case of noisy data. When the data is noisy, the decision of adding more variables at the beginning is likely to be forced than just dealing with short-size solutions. %By the progression of the algorithm, it gets harder improving the best fitness value by adding variables, and other operations are more frequently involved than in previous iterations. %This conclusion also correlates to the shape of fitness function given by Equation~(\ref{eq:fitness}) where the first two product terms there are already small (close to 1).      \fxnote{TODO: need to be further expanded...}
 	%Obtaining an accurate model with a few variables in the presence of a high level of nose in the data 
 \end{itemize}
 
@@ -976,10 +976,10 @@ The following conclusions can be drawn from Figure~\ref{fig:compExact_noise_varc
 
 The  following conclusions may be drawn from Figure~\ref{fig:compExact_noise_varsizes}.
 \begin{itemize}
-	\item The exact percentages are decreased with the increase of size of exact models, in case of any level of noise utilized on the target values.  %within the input data.
-	\item The highest exact percentages, which are higher than 70\%, are noticed for the small-sized problem instances  (the size ranges from 3 to 7) exact models. However, for the same sizes, for noisy data, these percentages are significantly lower; for example, in case of models of size 7 and the level of noise of 0.001 and 0.01, the exact percentages obtained are 20\% and 10\%, respectively. 
+	\item The exact percentages are decreased with increase in  the size of exact models, in case of any level of noise utilized on the target values.  %within the input data.
+	\item The highest exact percentages, which are larger than 70\%, are noticed in case of the small-sized problem instances  (the size of models ranges from 3 to 7). However, for the same sizes, for noisy data, these percentages are significantly lower; for example, in case of the instances whose exact models are of size 7 when utilizing the level of noise of 0.001 and 0.01, the exact percentages obtained are 20\% and 10\%, respectively. 
 	
-	\item   For the problem instances with a largest size of (exact) models for no noisy data, exact percentages are never lower than 20\%. The opposite holds for noisy data. 
+	\item   For the problem instances with the largest size of (exact) models in case of the no noisy data, exact percentages are never lower than 20\%. The opposite holds for noisy data. 
 \end{itemize}
 
 \begin{figure}[H]
@@ -1005,12 +1005,12 @@ The  following conclusions may be drawn from Figure~\ref{fig:compExact_noise_var
 	\label{fig:compExact_noise_varsizes}
 \end{figure}
 
-When one concerns of runtime analysis of the \textsc{RILS}--\textsc{ROLS} algorithm on the \textsc{Random} benchmark set w.r.t\ number of variables, the results are displayed in Figure~\ref{fig:runtime_rils_rols}. The instances are grouped w.r.t.\ number of variables included into corresponding exact model ($x$-axis). The following conclusions may be drawn from there.  
+When one concerns of the runtime analysis of \textsc{RILS}--\textsc{ROLS} algorithm on the \textsc{Random} benchmark set w.r.t\ number of variables, the results are displayed in Figure~\ref{fig:runtime_rils_rols}. The instances are grouped w.r.t.\ number of variables involved into corresponding exact models ($x$-axis). The following conclusions may be drawn from there.  
 
 \begin{itemize}
 	\item As one could expect, average runtime is getting increased with the increase of the number of variables in exact models. 
 	\item Note that the average runtime in case of the instances whose exact models have the largest number of variables (5) is just about 200$s$.
-	\item The two above-mentioned points indicate efficacy of our method especially in case of expected exact models of a small and middle sizes with small--to--middle levels of noise included in the input data. In these cases, the algorithm is able to deliver the reasonable exact percentages, which are always larger than 50\%. Note that models which have more compact representations (thus, small in their size) are desirable in many areas of natural sciences due to easier interpret-ability more than models represented by a more complex expression.   
+	\item The two above-mentioned points indicate efficacy of our method especially in case of the instances with small-to-medium sized exact models in the presence of small--to--middle noise levels included in the input data. In these cases, the algorithm is able to deliver a reasonable exact percentage rate, which are always larger than 50\%. Note that models which have more compact representations (thus, small in their size) are desirable in many areas of natural sciences as they are easy interpret-able than models represented by a more complex mathematical formula.   
 \end{itemize}
 
 \begin{figure}[H]
