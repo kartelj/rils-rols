@@ -756,7 +756,7 @@ SRBench (\url{https://cavalab.org/srbench/}) is an open-source benchmarking proj
 			$\omega = \frac{1 + \frac{v}{c}}{ \sqrt{1 - \frac{v^2}{c^2}}} \omega_0$ \\ \hline
 			
 		\end{tabular}
-		\caption{Some Feynman equations.}
+		\caption{Some \textsc{Feynman} instances.}
 		\label{tab:Feynamn-Eq}
 	\end{table}
 	
@@ -775,7 +775,7 @@ SRBench (\url{https://cavalab.org/srbench/}) is an open-source benchmarking proj
 			Shear Flow               &  $\theta' = \cot(\phi)\cos(\theta)$ \\
 			&  $ \phi'  = ( \cos^2(\phi) + 0.1 \cdot \sin^2 (\phi)) \sin(\theta) $ \\ \hline
 		\end{tabular}
-		\caption{Some Strogatz ODE problems.}
+		\caption{Some \textsc{Strogatz} ODE instances.}
 		\label{table:strogatz-ODEs}
 	\end{table}
 	
@@ -783,7 +783,7 @@ SRBench (\url{https://cavalab.org/srbench/}) is an open-source benchmarking proj
 
 The above-mentioned benchmark sets may be biased since the models which describe physical laws usually impose   various symmetries, periodicity w.r.t. some variables, internal separability on some variables, etc. In order to test \textsc{RILS-ROLS} robustness and scalability in unbiased setting, we generated a set of random SR problem instances called \textsc{Random}. These instances have a varying size (total number of expression nodes) and number of variables. In total, there are 235 random instances, or 5 randomly generated instances for each of the following 47 (size, number of variables) combinations $\{(3, 1), \{4, 5\} \times \{1, 2\}, \{6\} \times \{1, 2, 3\}, \{7, 8, 9, 10, 11, 12\} \times \{1, 2, 3, 4\}, \{13, 14, 15\} \times \{1, 2, 3, 4, 5\}\}$. Each of \textsc{Random} instances has 10 thousands randomly generated samples. 
 
-Some \textsc{Random} instances are shown in Table~\ref{tbl:random}, while all instances can be found at \textsc{RILS-ROLS} GitHub repository: \url{https://github.com/kartelj/rils-rols}. 
+Some \textsc{Random} instances are shown in Table~\ref{table:random}, while all instances can be found at \textsc{RILS-ROLS} GitHub repository: \url{https://github.com/kartelj/rils-rols}. 
 
 \begin{table}
 	\centering
@@ -796,12 +796,13 @@ Some \textsc{Random} instances are shown in Table~\ref{tbl:random}, while all in
 		random\_15\_03\_0010000\_04	&   $x_0 \cdot x_1/2 + (\cos{(x_2)} - \pi^2)^2$\\
 		\hline
 	\end{tabular}
-	\caption{Some \textsc{Random} instance problems.}
+	\caption{Some \textsc{Random} instances.}
 	\label{table:random}
 \end{table}
 
 \subsection{Parameter tuning}
-The \textsc{RILS}-\textsc{ROLS} algorithm employs two parameters that need to be tuned, $penalty_{size}$ and $tolerance_{error}$. The first parameter is fixed empirically to 0.001(?), according to the preliminary results.  The second parameter is tuned by monitoring the two errors the algorithm produced on a randomly chosen training set of xx problem instances. Among the following values \{ x, xx, ... \} we chose $tolerance_{error}=?$ for which the largest average $R^2$ and the smallest average RMSE error on all problem instances from the training set are produced. %Note that the training set is chosen randomly with a cardinalty of xx instances. 
+The \textsc{RILS}-\textsc{ROLS} algorithm employs two control parameters, $penalty_{size}$ and $tolerance_{error}$. The first parameter is empirically tuned for considered benchmarks to 0.001 -- this is also used as a default value in the corresponding Python package (package is described in \ref{sec:appendix-1}). The second parameter is negatively correlated with the expected level of noise in input data, i.e., for higher noise the $tolerance_{error}$ takes lower values and vice-versa.
+
 
 \fxnote{ drugi parametar manje vise zavistan od ocekivanog 
 	nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
