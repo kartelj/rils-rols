@@ -807,7 +807,7 @@ The \textsc{RILS}-\textsc{ROLS} algorithm employs two control parameters, $penal
 \fxnote{ drugi parametar manje vise zavistan od ocekivanog 
 	nivoa suma -- ne znam kako obrazloziti njegov tuning (mozda prema greski na trening skupu pa izabrati onaj za koji su R2 i RMSE bolji...). }
 
-\subsection{Comparison with other methods on the   ground--truth benchmark sets}
+\subsection{Comparison with other methods on the ground-truth benchmark sets}
 In this section, we evaluate our \textsc{RILS-ROLS} algorithm and compare it to the 13 other competitors from the literature. The numerical results are reported in terms of the three Tables~\ref{tab:comp_noise0}--\ref{tab:comp_noise001}. The results for the two ground-truth benchmark sets, \textsc{Feynman} and \textsc{Storgatz}, are given w.r.t.\   the following level of noise: 0.0 (no-noisy data), 0.001 (low-level noise), and 0.01 (high-level noise), respectively. In details, the white Gaussian noise is added to the target ($y$-axis) values as a fraction of the signal RMS value, applied also in~\cite{la2021contemporary}, i.e. for target noise level $\alpha$ we have
 $$ y_{noise} = y + \epsilon, \epsilon \sim \mathcal{N}\left(0, \alpha \sqrt{\frac{1}{n} \sum _{i=1}^n{y_i^2}}\right),$$
 where $n$ relates to the number of items in the input data.
