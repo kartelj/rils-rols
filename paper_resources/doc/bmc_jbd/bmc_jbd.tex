@@ -736,7 +736,7 @@ Change under point 10 is very important -- it performs the general coefficient t
 Our \textsc{RILS}--\textsc{ROLS} algorithm is implemented in Python 3.9.0. All experiments concerning our method are conducted in the single-core mode, on a PC with Intel i9-9900KF CPU @3.6GHz, 64GB RAM, under Windows 10 Pro OS. The RAM consumption was very small (up to few hundred megabytes) -- beside memory space needed to load input dataset, the only considerable amount is reserved for expression cache. 
 
 
-The following 14 algorithms are compared to our approach: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon}, the \textsc{Gplearn} from python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp}. 
+The following 14 algorithms are compared to our approach: \textsc{AI-Feynman}, \textsc{GOMEA}, \textsc{Afp-Fe}, \textsc{Itea}, \textsc{Afp}, \textsc{Dsr}, \textsc{Operon}, the \textsc{gplearn} from python package \textsc{gplearn}~\cite{stephens2016genetic}, \textsc{Sbp-Gp}, \textsc{Eplex}, \textsc{Bsr}, \textsc{Feat}, \textsc{Ffx}, \textsc{Mrgp}. 
 
 For the (14) competitors, the results are exported from \texttt{SRBench} \url{https://cavalab.org/srbench/results/}, reported in~\cite{la2021contemporary}. 
 The maximum computation time allowed for each run of \textsc{RILS}-\textsc{ROLS} is set to 1 hour, while the maximal number of fitness function evaluations is set to 1 million. All other algorithms from \texttt{SRBench} used the time limit that was equal or bellow 8 hours runtime and the same fitness evaluation limit of 1 million (see~\cite{la2021contemporary}). We did not use the full time limit of 8 hours because we empirically concluded that there were almost no improvements after 1 hour \textsc{RILS}-\textsc{ROLS} runtime.
@@ -834,7 +834,7 @@ The following conclusions may be drawn from the numerical results:
 	
 \end{itemize}
 
-\begin{table}[!htb]
+\begin{table}[!h]
 	\caption{Comparison without noise}\label{tab:comp_noise0}
 	\centering
 	\begin{tabular}{l|rrr|rrr} \hline
@@ -860,7 +860,7 @@ The following conclusions may be drawn from the numerical results:
 \end{table}
 
 
-\begin{table}[!htb]
+\begin{table}[!h]
 	\caption{Comparison with noise level 0.001}\label{tab:comp_noise0001}
 	\centering
 	\begin{tabular}{l|rrr|rrr} \hline
@@ -885,7 +885,7 @@ The following conclusions may be drawn from the numerical results:
 	\end{tabular}
 \end{table}
 
-\begin{table}[!htb]
+\begin{table}[!h]
 	\caption{Comparison with noise level 0.01}\label{tab:comp_noise001}
 	\centering
 	\begin{tabular}{l|rrr|rrr} \hline
@@ -910,7 +910,7 @@ The following conclusions may be drawn from the numerical results:
 	\end{tabular}
 \end{table}
 
-\begin{figure}[!ht]
+\begin{figure}[!h]
 	
 	
 	\begin{subfigure}[b]{0.45\textwidth}
@@ -945,43 +945,45 @@ Figure~\ref{fig:time-avg-exact-noise} compares the methods w.r.t. average runtim
 
 \subsection{Statistical evaluation}
 
-In order to check the statistical significance of the results w.r.t.\ obtained exact models and their differences between the competitor approaches, we employed the statistical methodology comparing the results of \textsc{RILS}--\textsc{ROLS} to 13 other approaches over all algorithm runs on the problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. Note that an indicator random variable is involved for each run of each algorithm. More precisely, the score that comes into the statistical observation is an indicator (0 or 1) indicating weather or not an algorithm was able to return the exact model at specific run. More precisely, we involved 1300 results into our statistical evaluation per each algorithm. Note that  results of some of the 13 competitors are not known from \texttt{SRBench} \url{https://cavalab.org/srbench/results/} due to   unknown reasons (most likely algorithm is terminated running out of memory or due to   chosen algorithm configuration settings). For these runs, we simply indicate a 0 as their score.   
+In order to check the statistical significance of the results w.r.t.\ competitor approaches, we employed the standard statistical methodology. To do so, we have compared the results of \textsc{RILS}-\textsc{ROLS} to 14 other approaches over all algorithm runs on the problem instances from the both ground-truth benchmark sets, \textsc{Feynman} and \textsc{Strogatz}. The successful run means that the corresponding algorithm found the exact model. Having 1300 runs involved, this means that the maximal number of successful runs is 1300. 
 
-Initially, Friedman’s test was separately executed for all competitor approaches.      In those cases in which the null hypothesis $H_0$ was rejected ($H_0$ states that there are no statistical differences between the obtained results of all competitors) pairwise comparisons are further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In each CD plot, the (14) competitor approaches are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is drawn.   Three (one for each level of noise) CD plots are shown in Figure~\ref{fig:cd-plots-exact-pcts} per each level of noise. The following conclusions may be drawn from there.
+\emph{Important note. Exact model accuracy of \textsc{RILS-ROLS} is calculated by dividing the number of successful runs with 1300, i.e., the maximal possible number of successful runs. 
+On the other hand, the exact model accuracy of methods revised in \texttt{SRBench} was calculated in a different way. First, the accuracy of each of 130 considered instances was calculated by dividing the number of successful runs with the number of runs that finished its execution. This means that, for example, if some instance was run 10 times, giving 4 successful models, but failing to finish 2 runs due to memory exhaustion or some other OS issue, the accuracy would be 50\% (4/8) instead of 40\% (4/10). Further, these individual accuracies were averaged. 
+We do not believe this was the right way to calculate the accuracy, because, this allows one to have high-accuracy method with a low number of successful runs. For example, if method A finishes all of its runs, out of which 650 are successful, its total accuracy will be 50\%. On the other hand, one can have a method B that finishes instances execution in only 4 out of 10 runs, giving 2 successful models each time -- its per-instances accuracy will be 50\%, and after averaging across all instances it will be also 50\%. So, methods A and B will have the same overall accuracy, although method A reached 650 correct solutions, while method B reached only 260.} 
+
+First, the omnibus rank-based Friedman’s test for all approaches was conducted. 
+The number of ranks is 1300, i.e., for each run of each method, the separate rank is calculated. Rank is based on the value of indicator variable, which takes 1 if the method delivers correct model in a given run, otherwise it takes value of 0, no matter if method finished and delivered incorrect model, or method did not finish at all.   Further, the ranks are averaged and used to test the null hypothesis, which states that there is no statistical differences between the average ranks of all competitors. 
+In the case in which the null hypothesis $H_0$ was rejected, pairwise comparisons were further performed by using the Nemenyi post-hoc test~\cite{pohlert2014pairwise}. The outcome is represented by means of critical difference (CD) plots. In each CD plot, the 15 competitors are placed on the horizontal axis according to their average ranking. Thereafter, the CD score is computed for a significance level of 0.05. If the difference is small enough, meaning that no statistical difference is detected, a horizontal bar linking statistically equal approaches is drawn. This analysis is done for all three levels of noise, and the corresponding CD plots are shown in Figures~\ref{fig:CDplots-no-noise}-\ref{fig:CDplots-noise0.01}. 
+
+
+\begin{figure}[!h]
+	\centering
+		\includegraphics[width=350pt]{plots/Feynman_strogatz_noise_0_0-expanded.pdf}
+		\caption{CD plots for no-noise scenario}
+		\label{fig:CDplots-no-noise}
+\end{figure}
+	
+\begin{figure}[!h]
+	
+	\includegraphics[width=350pt]{plots/Feynman_strogatz_noise_0_001-expanded.pdf}
+	\caption{CD plots for noise level 0.001}
+	\label{fig:CDplots-noise0.001}
+\end{figure}
+	
+	\begin{figure}[!h]
+		\includegraphics[width=350pt]{plots/Feynman_strogatz_noise_0_01-expanded.pdf}
+		\caption{CD plots for noise level 0.01. }
+		\label{fig:CDplots-noise0.01}
+	\end{figure}
+
+The following conclusions may be drawn.
 
 \begin{itemize}
-	\item  Concerning the instance problems where no noise is included, \textsc{RILS}-\textsc{ROLS} method returns the best average ranking in terms of the number of obtained exact models over all runs.  The second best average ranking is achieved by \textsc{AI-Feynman} algorithm. There is  statistically significant difference between these two approaches w.r.t.\ number of found exact solutions. The third best approach is \textsc{Apf-Fe},  which is far behind \textsc{RILS}-\textsc{ROLS} w.r.t.\ delivered average ranking.  
-	\item    Concerning the instance problems with the included  level of noise of 0.001, \textsc{RILS}-\textsc{ROLS} method again obtains the best average ranking in terms of the found exact solutions.   The second best ranking is obtained by \textsc{AI-Feynman} algorithm. There is again a statistically significant difference between the results obtained by these two approaches. The third best approach is \textsc{Afp-Fe} which performs statistically worse than \textsc{AI-Feynman}.  
-	\item  Concerning the instance problems with the included noise level of  0.01, again, \textsc{RILS-ROLS} method produces the best average ranking according to positively evaluated runs, i.e. those runs with found  exact models; the second best approach w.r.t.\ average ranking is \textsc{Afp-Fe}, followed by \textsc{Dsr}, and \textsc{Afp}. The  latter three approaches perform statistically equal, but significantly worse than \text{RILS}-\textsc{ROLS} method. 	The fourth best approach according to delivered average ranking is \textsc{AI-Feynman} which is on pair with \textsc{gplearn}. Note that the average ranking of \textsc{AI-Feynman} method declines by increasing  the level of noise in the input data. Thus, despite being efficient when comes to the no-noisy data,  \textsc{AI-Feynman} shows to be very sensitive w.r.t.  increase of the level of noise, which is not that dramatically conspicuous with our \textsc{RILS}-\textsc{ROLS} method.   
+	\item  Concerning the no-noise scenario, \textsc{RILS}-\textsc{ROLS} method returns the best average ranking in terms of the number of obtained exact models over all runs.  The second best average ranking is achieved by \textsc{AI-Feynman} algorithm. There is a statistically significant difference between these two approaches. The third best approach is \textsc{APF-FE},  which is far behind both \textsc{RILS}-\textsc{ROLS} and \textsc{AI-Feynman} w.r.t.\ delivered average ranking.  
+	\item  For noise 0.001, the situation is similar. \textsc{RILS}-\textsc{ROLS} method again obtains the best average ranking. The second best ranking is obtained by \textsc{AI-Feynman} algorithm. There is a statistically significant difference between the results obtained by these two approaches. The third best approach is \textsc{AFP-FE} which performs statistically worse than \textsc{AI-Feynman}.  
+	\item  When noise level is 0.01, \textsc{RILS-ROLS} method is significantly better than other methods. The second best is \textsc{AFP-FE}, followed by \textsc{DSR}, and \textsc{AFTP}. The latter three approaches perform statistically equal. \textsc{AI-Feynman} is fourth, and on pair with \textsc{gplearn}. Note that the average ranking of \textsc{AI-Feynman} method declined significantly with high noise, which is not the case with \textsc{RILS}-\textsc{ROLS} method.   
 	
 \end{itemize}
-
-
-
-\begin{figure}[!ht]
-	\centering
-	\begin{subfigure}[b]{0.75\textwidth} 
-		\includegraphics[  width=300pt,height=180pt]{plots/Feynman_strogatz_noise_0_0-expanded.pdf}
-		\caption{No noise}
-		\label{fig:CDplots-no-noise}
-	\end{subfigure}
-	
-	\begin{subfigure}[b]{0.75\textwidth}
-		
-		\includegraphics[  width=300pt,height=180pt]{plots/Feynman_strogatz_noise_0_001-expanded.pdf}
-		\caption{Level of noise equal to 0.001}
-		\label{fig:CDplots-noise0.001}
-	\end{subfigure}
-	
-	\begin{subfigure}[b]{0.75\textwidth}
-		\includegraphics[  width=300pt,height=180pt]{plots/Feynman_strogatz_noise_0_01-expanded.pdf}
-		\caption{Level of noise equal to 0.01. }
-		\label{fig:CDplots-noise0.01}
-	\end{subfigure}
-	\caption{CD plots comparisons in terms of exact percentages over all problem instances from the both ground-truth benchmark sets,  varying levels of noise.  }
-	\label{fig:cd-plots-exact-pcts}
-\end{figure}
-
 
 \subsection{Scalability of \textsc{RILS}-\textsc{ROLS} algorithm}\label{sec:scalability-rils-rols}
 
