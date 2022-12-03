@@ -211,13 +211,17 @@
 \begin{abstractbox}
 
 \begin{abstract} % abstract
-In this paper, we solve the well-known symbolic regression problem. This problem has been intensively studied in the literature and has a wide range of applications. The symbolic regression models could provide insights towards establishing physical theory behind experimentally observed data. Practical applications include revealing complex ecological dynamics in ecology, discovering mutations effects on protein stability in biology, modeling analytic representations of the exciton binding energy in energy science, finding models for band gaps of NaCl-type compounds
-in material science, just to name a few. 
+In this paper, we solve the well-known symbolic regression problem that has been intensively studied in the literature and has a wide range of applications. 
+% ACA: ove recenice vise prilice uvodu, tamo svakako i postoji, da ne bude preglomazan abstrakt
+%The symbolic regression models could provide insights towards establishing physical theory behind experimentally observed data. 
+%Practical applications include revealing complex ecological dynamics in ecology, discovering mutations effects on protein stability in biology, modeling analytic representations of the exciton binding energy in energy science, finding models for band gaps of NaCl-type compounds in material science, just to name a few. 
 
-We propose an efficient meta-heuristic-based approach, called \textsc{RILS}-\textsc{ROLS} to solve this problem. \textsc{RILS}-\textsc{ROLS} is based on the following elements: ($i$) iterated local search is the method backbone, mainly solving combinatorial and some continuous aspects of the problem; ($ii$) ordinary least square method is focused on the continuous aspect of the search space -- it efficiently determines the best--fitting coefficients of linear combinations within solution equations;  ($iii$) a novel fitness function combines three important model quality measures: $R^2$ score, RMSE score, and the size of the model (or model complexity). 
+We propose an efficient meta-heuristic-based approach, called \textsc{RILS}-\textsc{ROLS} to solve it. \textsc{RILS}-\textsc{ROLS} is based on the following two parts: ($i$) iterated local search serving as the method backbone, mainly solving combinatorial and some continuous aspects of the problem; ($ii$) ordinary least square method is focused on the continuous aspect of the search space -- it efficiently determines the best--fitting coefficients of linear combinations within solution equations. Beside that, we introduce a novel fitness function that combines three important model quality measures: $R^2$ score, RMSE score, and the size of the model (or model complexity), and carefully designed local search, which allows systematic search in proximity to candidate solution. 
 
-The experiments are conducted on the two well-known ground-truth benchmark sets called \textsc{Feynman} and \textsc{Strogatz}. \textsc{RILS}-\textsc{ROLS} was compared to 14 other competitors from the literature. Our method outperformed all 14 competitors with respect to the true symbolic model accuracy percentage under varying levels of noise. It also showed to be the most efficient considering the average running time of reaching the exact model.  
-In addition to evaluation on known ground-truth datasets, a new randomly generated set of problem instances is introduced. The goal of \textsc{Random} dataset was to test the scalability of our method with respect to incremental equation sizes and different levels of noise. \textsc{RILS}-\textsc{ROLS} can be considered as a new state-of-the-art method for solving the problem of symbolic regression when ground-truth equations are known.
+The experiments are conducted on the two well-known ground-truth benchmark sets called \textsc{Feynman} and \textsc{Strogatz}. \textsc{RILS}-\textsc{ROLS} was compared to 14 other competitors from the literature. Our method outperformed all 14 competitors with respect to the true symbolic model accuracy under varying levels of noise. It also showed to be the most efficient considering the average running time of reaching the exact model.  
+In addition to evaluation on known ground-truth datasets, a new randomly generated set of problem instances is introduced. The goal of \textsc{Random} dataset was to test the scalability of our method with respect to incremental equation sizes and number of variables, under different levels of noise. 
+
+Statistical analysis of obtained experimental results confirmed that \textsc{RILS}-\textsc{ROLS} can be considered as a new state-of-the-art method for solving the problem of symbolic regression when ground-truth equations are known.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,9 +233,9 @@ In addition to evaluation on known ground-truth datasets, a new randomly generat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{keyword}
-\kwd{Symbolic regression}
-\kwd{Iterated local search}
-\kwd{Ordinary least square}
+\kwd{symbolic regression}
+\kwd{iterated local search}
+\kwd{ordinary least square}
 \end{keyword}
 
 % MSC classifications codes, if any
@@ -952,7 +956,7 @@ In order to check the statistical significance of the results w.r.t.\ competitor
 
 \emph{Important note. Exact model accuracy of \textsc{RILS-ROLS} is calculated by dividing the number of successful runs with 1300, i.e., the maximal possible number of successful runs. 
 On the other hand, the exact model accuracy of methods revised in \texttt{SRBench} was calculated in a different way. First, the accuracy of each of 130 considered instances was calculated by dividing the number of successful runs with the number of runs that finished its execution. This means that, for example, if some instance was run 10 times, giving 4 successful models, but failing to finish 2 runs due to memory exhaustion or some other OS issue, the accuracy would be 50\% (4/8) instead of 40\% (4/10). Further, these individual accuracies were averaged. 
-We do not believe this was the right way to calculate the accuracy, because, this allows one to have high-accuracy method with a low number of successful runs. For example, if method A finishes all of its runs, out of which 650 are successful, its total accuracy will be 50\%. On the other hand, one can have a method B that finishes instances execution in only 4 out of 10 runs, giving 2 successful models each time -- its per-instances accuracy will be 50\%, and after averaging across all instances it will be also 50\%. So, methods A and B will have the same overall accuracy, although method A reached 650 correct solutions, while method B reached only 260.} 
+We do not believe this was the right way to calculate the accuracy, because, this allows one to have high-accuracy method with a low number of successful runs. For example, if method A finishes all of its runs, out of which 650 are successful, its total accuracy will be 50\%. On the other hand, one can have a method B that finishes instances execution in only 4 out of 10 runs, giving 2 successful models each time -- its per-instances accuracy will be 50\%, and after averaging across all instances it will be also 50\%. So, methods A and B will have the same overall accuracy, although method A reached 650 correct solutions, while method B reached only 260. Also, note that our calculation cannot overestimate \textsc{RILS-ROLS} exact model accuracy, since denominator is always maximal (1300) -- in essence, non-finished runs are counted as non-successful.} 
 
 First, the omnibus rank-based Friedman’s test for all approaches was conducted. 
 The number of ranks is 1300, i.e., for each run of each method, the separate rank is calculated. Rank is based on the value of indicator variable, which takes 1 if the method delivers correct model in a given run, otherwise it takes value of 0, no matter if method finished and delivered incorrect model, or the method did not finish at all.   Further, the ranks are averaged and used to test the null hypothesis, which states that there is   statistical differences between the average ranks of all competitors. 
