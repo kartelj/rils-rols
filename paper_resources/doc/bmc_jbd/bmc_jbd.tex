@@ -338,7 +338,7 @@ benchmarking standards. Recently, La Cava et al.~\cite{la2021contemporary} propo
 open-source, reproducible benchmarking platform for SR, called \texttt{SRBench}. The authors extended  PMLB~\cite{olson2017pmlb},  a repository of standardized regression problems, with 130 SR datasets for which exact (\emph{ground-truth}) models are known; see more in the aforementioned paper. In their extensive experimental evaluation, 14
 symbolic regression methods and 7 machine learning methods are compared on the set of 252 diverse regression problems. The remaining 122 SR datasets belong to a class of so-called \emph{black-box} problems for which the \emph{ground-truth} is unknown. One of the most interesting conclusions from La Cava et al. research is that algorithms specialize in either solving \emph{ground-truth} problems, or \emph{black-box} problems, but not both. 
 
-In this work we present a novel approach to solve \emph{ground-truth}-based SR, which combines the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2019iterated} with the ordinary least square method (OLS)~\cite{leng2007ordinary}. ILS mostly handles combinatorial (discrete) aspects of search space, while OLS helps in the process of a coefficient determination, so it handles some continuous parts of the search space. As will be shown later, the proposed method has shown its robustness w.r.t. introduced noise, therefore we called the method \textsc{RILS}-\textsc{ROLS}  (with letters R corresponding to regression and robust). Additionally, in order to navigate the search toward exact model (and not only accurate one) the algorithm is equipped with a carefully constructed fitness function that combines three important model characteristics: RMSE and $R^2$ scores which participate into models accuracy, and a weighted solution size that penalizes too complex models. 
+In this work we present a novel approach to solve \emph{ground-truth}-based SR, which combines the popular iterated local search meta-heuristic (ILS)~\cite{lourencco2003iterated,lourencco2010iterated} with the ordinary least square method (OLS)~\cite{leng2007ordinary}. ILS mostly handles combinatorial (discrete) aspects of search space, while OLS helps in the process of a coefficient determination, so it handles some continuous parts of the search space. As will be shown later, the proposed method has shown its robustness w.r.t. introduced noise, therefore we called the method \textsc{RILS}-\textsc{ROLS}  (with letters R corresponding to regression and robust). Additionally, in order to navigate the search toward exact model (and not only accurate one) the algorithm is equipped with a carefully constructed fitness function that combines three important model characteristics: RMSE and $R^2$ scores which participate into models accuracy, and a weighted solution size that penalizes too complex models. 
 
 The summary of main contributions is as follows: 
 
@@ -842,7 +842,7 @@ The following conclusions may be drawn from the numerical results:
 	\centering
 	\begin{tabular}{l|rrr|rrr} \hline
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
-		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
+		Method &  \textsc{Feynman} & \textsc{Strogatz}& Total &  \textsc{Feynman} & \textsc{Strogatz} & Total \\ \hline
 		\textsc{RILS-ROLS}&\bf{57.84}&\bf{83.57}&\bf{60.62}&82.59&90&83.38\\
 		\textsc{AI-Feynman}&55.78&27.14&52.65&78.51&35.71&73.83\\
 		\textsc{GP-GOMEA}&26.83&29.46&27.12&71.55&71.43&71.54\\
@@ -868,7 +868,7 @@ The following conclusions may be drawn from the numerical results:
 	\centering
 	\begin{tabular}{l|rrr|rrr} \hline
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
-		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
+		Method &  \textsc{Feynman} & \textsc{Strogatz} & Total &  \textsc{Feynman} & \textsc{Strogatz} & Total \\ \hline
 		\textsc{RILS-ROLS}&\bf{42.93}&\bf{35}&\bf{42.08}&80.26&65&78.62\\
 		\textsc{AI-Feynman}&33.08&22.14&31.89&77.39&42.86&73.64\\
 		\textsc{AFP-FE}&21.9&15.71&21.23&52.16&35.71&50.38\\
@@ -893,7 +893,7 @@ The following conclusions may be drawn from the numerical results:
 	\centering
 	\begin{tabular}{l|rrr|rrr} \hline
 		& \multicolumn{3}{c|}{Exact model percentage} & \multicolumn{3}{c}{$R^2 > 0.999$ percentage}\\ \hline
-		Method & Feynman & Strogatz & Total & Feynman & Strogatz & Total \\ \hline
+		Method & \textsc{Feynman} & \textsc{Strogatz} & Total & \textsc{Feynman} & \textsc{Strogatz} & Total \\ \hline
 		\textsc{RILS-ROLS}&\bf{36.29}&\bf{22.14}&\bf{34.77}&64.91&46.43&62.92\\
 		\textsc{AFP-FE}&20.78&13.57&20&52.59&32.14&50.38\\
 		\textsc{DSR}&18.97&18.57&18.92&26.29&14.29&25\\
@@ -1094,7 +1094,7 @@ Results for the $R^2 > 0.999$ accuracy are presented in Figure~\ref{fig:compR2_n
 	\label{fig:compR2_noise_size}
 \end{center}
 
-The following conclusions may be drawn from these results. \fxnote{Marko: dosao dovde!}
+The following conclusions may be drawn from these results.
 
 \begin{itemize}
 	
@@ -1138,7 +1138,7 @@ The following conclusions can be drawn from these results.
 	\item For data without noise, the exact percentage of \textsc{RILS}-\textsc{ROLS} slightly decreases as the  number of variables increases. 
 	\item The exact percentages drop off with the presence of a larger noise level. As expected, higher noise means smaller exact percentage.
 	\item Interestingly, in the presence of noise in data, the highest exact percentages are not obtained for the instances with a single input variable, but for those with two or three. This is probably due to the expected level of \emph{non-linearity} in instances. Namely, when the size of instance is fixed, instances with less input variables will have to use more operations to compensate for the lack of input variables. (Note that expression size is calculated simply by counting all nodes in the expression tree, whether these nodes are operations, constants or variables.) Therefore, instances with less variables will more heavily use operations and their compositions, paving a way to more \emph{difficult} functional structure. 
-	The reason this is not an issue for no-noisy data is because \textsc{RILS-ROLS} will have to wander less -- there will be no contradictory search directions as with noisy data.
+	The reason this is not an issue for no-noisy data is because \textsc{RILS-ROLS} will have to wander less -- there will be no so many contradictory search directions as with noisy data.
 \end{itemize}
 
 \textsc{RILS}-\textsc{ROLS} running times for \textsc{Random} benchmark are shown in Figure~\ref{fig:runtime_rils_rols}. Instances are grouped w.r.t.\ number of variables ($x$-axis). 
@@ -1227,32 +1227,32 @@ Python sources, experimental results and all other \textsc{RILS-ROLS} resources 
 
 \begin{backmatter}
 
-\section*{Acknowledgements}%% if any
-Text for this section\ldots
+ \section*{Acknowledgments}%% if any
+Not applicable.
 
-\section*{Funding}%% if any
-Text for this section\ldots
+ \section*{Funding}%% if any
+Not applicable.
 
-\section*{Abbreviations}%% if any
-Text for this section\ldots
+%\section*{Abbreviations}%% if any
+%Text for this section\ldots
 
-\section*{Availability of data and materials}%% if any
-Text for this section\ldots
+  \section*{Availability of data and materials}%% if any
+ All accompanying resources regarding this paper can be found under the repository \url{https://github.com/kartelj/rils-rols}. 
 
 \section*{Ethics approval and consent to participate}%% if any
-Text for this section\ldots
+Not applicable. 
 
 \section*{Competing interests}
-The authors declare that they have no competing interests.
+The authors declare  no competing interests.
 
 \section*{Consent for publication}%% if any
-Text for this section\ldots
+Not applicable. 
 
 \section*{Authors' contributions}
-Text for this section \ldots
+A.K. and M.D. contributed to the conception of the work. A.K. worked on implementing the algorithm and the design of experiments. M.D. worked on analysis and discussion of the results. Both authors read and approved the final manuscript.
 
-\section*{Authors' information}%% if any
-Text for this section\ldots
+%\section*{Authors' information}%% if any
+%Text for this section\ldots
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                  The Bibliography                       %%
@@ -1293,11 +1293,11 @@ Text for this section\ldots
  
  
 
-\section*{Additional Files}
-  \subsection*{Additional file 1 --- Sample additional file title}
-    Additional file descriptions text (including details of how to
-    view the file, if it is in a non-standard format or the file extension).  This might
-    refer to a multi-page table or a figure...
+%\section*{Additional Files}
+%  \subsection*{Additional file 1 --- Sample additional file title}
+ %   Additional file descriptions text (including details of how to
+ %   view the file, if it is in a non-standard format or the file extension).  This might
+ %   refer to a multi-page table or a figure...
  
 
 \end{backmatter}
