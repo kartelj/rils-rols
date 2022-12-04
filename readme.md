@@ -7,6 +7,11 @@ This paper is currently under review in the Journal of Big Data, Springer.
 All RILS-ROLS resources can be found at https://github.com/kartelj/rils-rols
 
 RILS-ROLS distribution is available as a pip package at https://pypi.org/project/rils-rols
+so it can be easily installed with the following pip command:
+
+```bat
+pip install rils-rols
+```
 
 Minimal working example can be seen bellow:
 ```python
