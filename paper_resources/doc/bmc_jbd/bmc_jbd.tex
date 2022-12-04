@@ -928,13 +928,13 @@ The following conclusions may be drawn from the numerical results:
 	\hfill
 	\begin{subfigure}[b]{0.47\textwidth}
 		
-		\includegraphics[  width=190pt,height=150pt]{plots/time-avg-noise0.001.eps}
+		\includegraphics[width=190pt,height=150pt]{plots/time-avg-noise0.001.eps}
 		\caption{Level of noise equal to 0.001}
 		\label{fig:noise0.001-time}
 	\end{subfigure}
 	\centering
 	\begin{subfigure}[b]{0.47\textwidth}
-		\includegraphics[  width=190pt,height=150pt]{plots/time-avg-noise0.01.eps}
+		\includegraphics[width=190pt,height=150pt]{plots/time-avg-noise0.01.eps}
 		\caption{Level of noise equal to 0.01.}
 		\label{fig:noise0.01-time}
 	\end{subfigure}
@@ -1115,20 +1115,20 @@ In the rest of the section, we investigate the sensitivity of \textsc{RILS}-\tex
 \begin{figure}[!h]
 	
 	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_no_noise.eps}
+		\includegraphics[width=180pt,height=140pt]{plots/numvars_vs_exact_correct_no_noise.eps}
 		\caption{No noise}
 		\label{fig:noNoise}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.45\textwidth}
 		
-		\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_001.eps}
+		\includegraphics[width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_001.eps}
 		\caption{Level of noise equal to 0.001}
 		\label{fig:noise0.001}
 	\end{subfigure}
 	\centering
 	\begin{subfigure}[b]{0.40\textwidth}
-		\includegraphics[  width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_01.eps}
+		\includegraphics[width=180pt,height=140pt]{plots/numvars_vs_exact_correct_noise0_01.eps}
 		\caption{Level of noise equal to 0.01.}
 		\label{fig:noise0.01}
 	\end{subfigure}
@@ -1151,20 +1151,20 @@ As one could expect, average running time is getting increased with the increase
 
 \begin{figure}[!h]
 	\begin{subfigure}[b]{0.45\textwidth}
-		\includegraphics[  width=180pt,height=140pt]{plots/numsize_vs_time_no_noise.eps}
+		\includegraphics[width=180pt,height=140pt]{plots/numsize_vs_time_no_noise.eps}
 		\caption{No noise}
 		\label{fig:time-no-noise}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.45\textwidth}
 		
-		\includegraphics[  width=180pt,height=140pt]{plots/vars_vs_time_noise0_001.eps}
+		\includegraphics[width=180pt,height=140pt]{plots/vars_vs_time_noise0_001.eps}
 		\caption{Level of noise equal to 0.001}
 		\label{fig:time-noise0.001}
 	\end{subfigure}
 	\centering
 	\begin{subfigure}[b]{0.40\textwidth}
-		\includegraphics[  width=180pt,height=140pt]{plots/vars_vs_time_noise0_01.eps}
+		\includegraphics[width=180pt,height=140pt]{plots/vars_vs_time_noise0_01.eps}
 		\caption{Level of noise equal to 0.01.}
 		\label{fig:time-noise0.01}
 	\end{subfigure}
@@ -1187,8 +1187,6 @@ In addition to well-known benchmarks from literature, we introduced a new non-bi
 This benchmark was used to test \textsc{RILS}-\textsc{ROLS} scalability, by varying the size of the model and the number of variables. 
 
 In the future work, one could think of constructing a hybrid of \textsc{RILS-ROLS} method with some other meta-heuristics to further boost the quality of the obtained results. For example, replacing ILS scheme of \textsc{RILS-RILS} with a more general Variable neighbourhood search (VNS) scheme is a reasonable option. Also, \textsc{RILS-ROLS} could be used to solve practical problems from various domains. For example, it can be used in physics or chemistry to help setting-up reasonable hypotheses or to obtain valuable insights on obtained experimental evaluations. One more improvement direction is incorporating top-level constraints into the method. For example, if one knows that the modeled function needs to be monotonically decreasing or differentiable, or both, this knowledge could be used to alter the search -- eliminate inadequate parts of the search space (hard constraint) or more \emph{subtly} penalize this behavior through fitness function (soft constraint). 
-
-\fxnote{ACA: PROVERITI REFERENCE, mislim da sam negde video da nedostaju volume ili stranice ili slicno...}
 
 \section*{Appendix - \textsc{RILS}-\textsc{ROLS} Python package}\label{sec:appendix-1}
 
@@ -1220,7 +1218,8 @@ In the future work, one could think of constructing a hybrid of \textsc{RILS-ROL
 	print(y_test) 
 \end{python}
 
-Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found under the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
+Python sources, experimental results and all other \textsc{RILS-ROLS} resources can be found at the project GitHub page \url{https://github.com/kartelj/rils-rols}. 
+In addition, there is a 
  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1253,7 +1252,7 @@ The authors declare  no competing interests.
 Not applicable. 
 
 \section*{Authors' contributions}
-A.K. and M.D. contributed to the conception of the work. A.K. worked on implementing the algorithm and the design of experiments. M.D. worked on analysis and discussion of the results. Both authors read and approved the final manuscript.
+Both A.K. and M.Dj. contributed to the conception of the work. A.K. worked on the implementation of method and the design of experiments. M.Dj. worked on analysis and discussion of the results, introduction and literature review. 
 
 %\section*{Authors' information}%% if any
 %Text for this section\ldots

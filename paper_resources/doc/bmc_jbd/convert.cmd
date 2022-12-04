@@ -1,0 +1,1 @@
+pandoc -s bmc_jbd.tex -o bmc_jdb.docx
