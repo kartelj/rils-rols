@@ -447,13 +447,14 @@ Similarly, by taking into account  partial derivation w.r.t. $b$, we have:
 $$  \frac{\partial}{\partial b} \sum_{i=1}^{n} (\tilde{y}_i - y_i)^2  = \frac{\partial}{\partial b} \sum_{i=1}^{n} ( \mathbf{k}\mathbf{x_i}+b  - y_i)^2 = \sum_{i=1}^{n} -2  (y_i - \tilde{y}_i). $$
 
 Finally, by setting each partial derivative to zero, we get the system of $d+1$ linear equations with $d+1$ unknowns ($\mathbf{k}=(k_1, ..., k_d)$ and $b$): 
+ 
  \begin{align*}
 	& \sum_{i=1}^{n} -2x_{i1} (y_i - \tilde{y}_i) = 0 \\
 	& \vdots \\
 	& \sum_{i=1}^{n} -2x_{id} (y_i - \tilde{y}_i) = 0 \\
 	&\sum_{i=1}^{n} -2  (y_i - \tilde{y}_i) = 0.
 \end{align*} 
- 
+
 
 %https://www.thekerneltrip.com/machine/learning/computational-complexity-learning-algorithms/
 %https://math.stackexchange.com/questions/84495/computational-complexity-of-least-square-regression-operation %https://levelup.gitconnected.com/train-test-complexity-and-space-complexity-of-linear-regression-26b604dcdfa3
@@ -467,10 +468,11 @@ We will now explain the proposed \textsc{RILS}-\textsc{ROLS} method in detail. T
 
 \begin{algorithm}
 	\footnotesize
-	\hspace*{\algorithmicindent} \textbf{Input}: input training dataset $D_{tr}$ \\
-	\hspace*{\algorithmicindent} \textbf{Control parameters}: size penalty $penalty_{size}$, error tolerance $tolerance_{error}$ \\
-	\hspace*{\algorithmicindent} \textbf{Output}: best symbolic formula solution $bs$
+
 	\begin{algorithmic}[1] 
+		\Statex	  \textbf{Input}: input training dataset $D_{tr}$  
+		\Statex \textbf{Control parameters}: size penalty $penalty_{size}$, error tolerance $tolerance_{error}$  
+		\Statex \textbf{Output}: best symbolic formula solution $bs$
 		\Procedure{\textsc{RILS}-\textsc{ROLS} }{$D_{tr}$}
 		\State $n_{tr} \gets |D_{tr}|$
 		\State $sample_{size} \gets $ \texttt{InitialSampleSize}($n_{tr}$)
