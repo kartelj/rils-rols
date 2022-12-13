@@ -412,7 +412,7 @@ Koza~\cite{koza1994genetic} introduced the problem of SR as a specific applicati
 	\section{The proposed RILS-ROLS method}\label{sec:rils}
 
 Our method relies on the following operations: $+$, $-$, $\cdot$, $/$, $\sqrt{x}$, $x^2 $, $\sin$, $\cos$, $\log$, $\exp$, $a^x$, where $a^x$ is only consequently used -- it is never explicitly introduced in the search space. Beside these, the following set of constants enters the search space explicitly: $-1$, $0$, $1$, $2$, $\pi$, and $10$. 
-Before we provide details of our method for solving SR, we will explain the two building blocks of \textsc{RILS-ROLS}: 1) iterated local search (ILS) and 2) ordinary least squares (OLS). 
+Before we provide details of our method for solving SR, we will explain the two building blocks of \textsc{RILS-ROLS}: 1) iterated local search (ILS) and 2) ordinary least square (OLS). 
 
 \subsection{Iterated local search}
 ILS~\cite{lourencco2003iterated} is an efficient meta-heuristic that iteratively generates a sequence of solutions produced by the (embedded) heuristic, such as local search (LS) or randomized greedy heuristics. When the search gets \emph{stuck} in the local optimum, \emph{perturbation} is performed, which is usually a non-deterministic step. This simple idea was proposed by Baxter~\cite{baxter1981local} in the early 1980s, and has since then been re-invented by many researchers under different names. These are some of the names that were used: iterated descent search~\cite{baum1998iterated}, large-step
@@ -593,9 +593,10 @@ Perturbations allow the algorithm to escape from local optima. As previously des
 In both cases, the same Algorithm~\ref{alg:pert} is used. 
 
 \begin{algorithm}
-     \textbf{Input}: solution $s$ \\
-     \textbf{Output}: local perturbations (1-perturbations) of solution $s$ -- $s_{perturbations}$ \\
+    
 	\begin{algorithmic}[1] 
+		\Statex   \textbf{Input}: solution $s$ 
+		\Statex \textbf{Output}: local perturbations (1-perturbations) of solution $s$ -- $s_{perturbations}$
 		\Procedure{All1Perturbations}{$s$}
 		\State $s_{perturbations} \gets \emptyset$ \label{line:pertInit}
 		\State $s \gets$ \texttt{NormalizeConstants}($s$)
@@ -615,7 +616,7 @@ In both cases, the same Algorithm~\ref{alg:pert} is used.
 Initially, the set of perturbations $s_{perturbations}$ is empty (line~\ref{line:pertInit} of Algorithm~\ref{alg:pert}).
 
 
-This is followed by constant normalization during which coefficients that enter multiplication, division, addition or subtraction are set to 1, while those entering the power function are rounded to integer, with the exception of square root, which is kept intact. For example, for expression $3.3\cdot(x+45.1\cdot y^{3.2})\cdot 81\cdot x/\sqrt{y}$ the normalized version is $1\cdot (x+1\cdot y^3)\cdot 1\cdot x/\sqrt{y}$. The reason for performing normalization is reducing the search space of possible perturbations. This reduction is reasonable, since normalization preserves the essential functional form. Note that coefficients get tuned later: the linear coefficient during the OLS phase, and the remaining ones during local search.
+This is followed by constant normalization during which coefficients that enter multiplication, division, addition or subtraction are set to 1, while those entering the power function are rounded to integer, with the exception of square root, which is kept intact. For example, for expression $3.3\cdot(x+45.1\cdot y^{3.2})\cdot 81\cdot x/\sqrt{y}$ the normalized version is $1\cdot (x+1\cdot y^3)\cdot 1\cdot x/\sqrt{y}$. The reason for performing normalization is reducing the search space of possible perturbations. This reduction is reasonable, since normalization preserves the essential functional form. Note that coefficients get tuned later: the linear coefficient during the OLS phase, and the remaining ones during local search, see Section~\ref{sec:ls}. 
 
 
 After performing the normalization process, the expression is simplified -- getting the compact expression is more likely after normalization than before it. The previous expression will take the form $(x+y^3)\cdot x/\sqrt{y}$. In this particular case, the simplification will usually only remove unnecessary coefficients, but in general it can also perform some non-trivial symbolic simplification. 
@@ -629,9 +630,10 @@ Further, the set of perturbations is generated around each subtree $n$ (lines \r
 Algorithm~\ref{alg:pertNode} shows how perturbations are generated around the given subtree.
 
 \begin{algorithm}	
-	\hspace*{\algorithmicindent} \textbf{Input}: solution $s$, node $n$\\
-	\hspace*{\algorithmicindent} \textbf{Output}: 1-perturbations of solution $s$ around node $n$
+	 
 	\begin{algorithmic}[1]
+		\Statex  \textbf{Input}: solution $s$, node $n$ 
+		\Statex  \textbf{Output}: 1-perturbations of solution $s$ around node $n$
 		\Procedure{All1PerturbationsAroundNode}{$s$, $n$}
 		\State $n_{perturbations} \gets \emptyset$
 		\If{$n = s$} \label{alg:alg4-case-1}
@@ -661,11 +663,11 @@ Algorithm~\ref{alg:pertNode} shows how perturbations are generated around the gi
 It can be seen that there are three possibly overlapping cases when performing perturbations on the per-node level. 
 
 \emph{Case 1}. 
-The observed node $n$ is the whole tree $s$ (see line ~\ref{alg:alg4-case-1} in Algorithm~\ref{alg:pertNode}). Based on  the previous exemplary expression tree, this means that the multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a 1-perturbation expression (tree) $(x+y^3)+ x/\sqrt{y}$. 
+The observed node $n$ is the whole tree $s$ (see line~\ref{alg:alg4-case-1} in Algorithm~\ref{alg:pertNode}). Based on  the previous exemplary expression tree, this means that the multiplication node that connects $(x+y^3)$ and $x/\sqrt{y}$ is to be changed. For example, multiplication can be replaced by addition, which forms a 1-perturbation expression (tree) $(x+y^3)+ x/\sqrt{y}$. 
 
 
 \emph{Case 2}. 
-Node $n$ has the arity of at least 1 (see line ~\ref{alg:alg4-case-2} in Algorithm~\ref{alg:pertNode}). This means that the left subtree exists, so the left subtree node is to be changed. 
+Node $n$ has the arity of at least 1 (see line~\ref{alg:alg4-case-2} in Algorithm~\ref{alg:pertNode}). This means that the left subtree exists, so the left subtree node is to be changed. 
 For example, if $n=x+y^3$, the overall perturbation might be $(x/y^3)+x/\sqrt{y}$ (addition is replaced by division). 
 Another example would be the case of unary operation, e.g., when $n=\sqrt{y}$. In that case, some possible perturbations could be $(x+y^3)\cdot x/\sqrt{\ln{y}}$ (application of logarithm to the left subtree $y$) or $(x+y^3)\cdot x/\sqrt{x}$ (changing variable $y$ to $x$), etc.
 
@@ -691,9 +693,10 @@ The method named \texttt{Replace}$(s, n, nc)$ inside Algorithm~\ref{alg:pertNode
 Perturbations are further improved by means of the local search procedure (Algorithm~\ref{alg:ls}). 
 
 \begin{algorithm}
-	\hspace*{\algorithmicindent} \textbf{Input}: perturbation $p$, sample training dataset $D_{tr}'$ \\
-	\hspace*{\algorithmicindent} \textbf{Output}: local optimum $bp$ in the vicinity of perturbation $p$
+ 
 	\begin{algorithmic}[1] 
+		\Statex \textbf{Input}: perturbation $p$, sample training dataset $D_{tr}'$   
+		\Statex \textbf{Output}: local optimum $bp$ in the vicinity of perturbation $p$
 		\Procedure{LocalSearch}{$p$, $D_{tr}'$}
 		\State $bp, bp_{fit} \gets p,\ $\texttt{Fitness}$(p,D_{tr}')$ 
 		\State $improved \gets true$
@@ -825,7 +828,7 @@ Each table consists of two blocks, where the first one provides the exact model 
 The following conclusions may also be drawn from the numerical results: 
 
 \begin{itemize}
-	\item Concerning the exact percentages in case when no noise is utilized in input data, the best performing algorithm is our \textsc{RILS-ROLS}. It found the exact solution in 57.84\% of runs for \textsc{Feynman} instances. It is even more impressive in solving \textsc{Strogatz} instances, when it was successful in 83.57\% runs. The second best performing  approach is \textsc{AI-Feynman}, successful in 55.78\% runs for the \textsc{Feynman} set, and 27.14\% runs for the problem instances from the benchmark set \textsc{Strogatz}. All other approaches perform significantly worse, and none of them are able to deliver the exact solution in more than 30\% runs over the instances of any of the two considered ground-truth benchmark sets. The overall results are in favor of \textsc{RILS-ROLS} with 60.62\%, while the second best is \textsc{AI-Feynman} with 52.65\%. 
+	\item Concerning the exact percentages in case when no noise is utilized in input data, the best performing algorithm is our \textsc{RILS-ROLS}. It found the exact solution in 57.84\% of runs for \textsc{Feynman} instances. It is even more impressive in solving \textsc{Strogatz} instances, as it was successful in 83.57\% runs. The second best performing  approach is \textsc{AI-Feynman}, successful in 55.78\% runs for the \textsc{Feynman} set, and 27.14\% runs for the problem instances from the benchmark set \textsc{Strogatz}. All other approaches perform significantly worse, and none of them are able to deliver the exact solution in more than 30\% runs over the instances of any of the two considered ground-truth benchmark sets. The overall results are in favor of \textsc{RILS-ROLS} with 60.62\%, while the second best is \textsc{AI-Feynman} with 52.65\%. 
 	\item  Concerning the exact results in the presence of small noise (0.001), our \textsc{RILS-ROLS} still performs well, finding the exact model in 42.08\% of runs considering all problem instances. The second best approach is again \textsc{AI-Feynman}, successful in 31.89\% runs. As in the no-noise scenario, there is a significant difference in \textsc{AI-Feynman} performances among two sets of instances -- it performs much better on \textsc{Feynman} instances than on \textsc{Strogatz}. It is also worth mentioning that \textsc{AFP-FE} shows to be robust w.r.t. noise so its performances only slightly deteriorate in comparison to the no-noise scenario. This puts it on the third place with the overall accuracy of 21.23\%. The accuracy of other approaches is below 20\%.  
 	\item  Concerning the scenario with high noise (level of 0.01), our \textsc{RILS-ROLS} still performs quite well -- it finds and exact model in 34.77\% runs. The second best is \textsc{AFP-FE}, reaching 20\% correct solutions. \textsc{AI-Feynman} performances degrade significantly under this level of noise, so it is the 6-th overall ranking, reaching the accuracy of only 12.61\%. 
 	
@@ -1182,7 +1185,7 @@ Further, we designed an efficient local search that systematically explores the 
 The \textsc{RILS-ROLS} method is compared to 14 other competing methods from the literature on two ground-truth benchmark sets from the literature: \textsc{Feynman} and \textsc{Strogatz}. Experimental evaluation confirmed the quality of our method -- \textsc{RILS-ROLS} produced the best average ranking results in terms of exact model accuracy under varying levels of noise in data. 
 Our algorithm was able to find the right model with 60.62\%, 42.08\%, and 34.77\% accuracy under no-noise, low-level noise and high-level noise, respectively. The second best approach, \textsc{AI-Feynman}, obtains fairly worse percentages: 52.65\%, 31.89\%, and 20\%. 
 
-In addition to well-known benchmarks from the literature, we introduced a new non-biased benchmark set of randomly generated instances, labeled by \textsc{Random}. 
+In addition to well-known benchmarks from the literature, we introduced a new non-biased benchmark set of randomly generated instances.  %, labeled by \textsc{Random}. 
 This benchmark was used to test \textsc{RILS}-\textsc{ROLS} scalability, by varying the size of the model and the number of variables. 
 
 In the future, one could think of constructing a hybrid of \textsc{RILS-ROLS} method with some other meta-heuristics to further boost the quality of the obtained results. For example, replacing the ILS scheme of \textsc{RILS-RILS} with a more general Variable neighborhood search (VNS) scheme is a reasonable option. Also, \textsc{RILS-ROLS} could be used to solve practical problems from various domains. For example, it can be used in physics or chemistry to help set up reasonable hypotheses or obtain valuable insights into obtained experimental evaluations. Another improvement direction is incorporating top-level constraints into the method. For example, if one knows that the modeled function needs to be monotonically decreasing or differentiable, or both, this knowledge can be used to alter the search -- eliminate inadequate parts of the search space (hard constraint) or more subtly penalize this behavior through fitness function (soft constraint). 
