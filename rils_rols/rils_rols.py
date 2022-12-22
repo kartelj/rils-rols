@@ -15,12 +15,14 @@ warnings.filterwarnings("ignore")
 
 class RILSROLSRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16,random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16, random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
         self.random_state = random_state
         self.error_tolerance = error_tolerance
+        self.verbose = verbose
+        self.random_perturbations_order = random_perturbations_order
 
     def __reset(self):
         self.model = None
@@ -76,6 +78,9 @@ class RILSROLSRegressor(BaseEstimator):
                 pret_fits[pret]=pret_ols_fit[0]
 
             sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
+            if self.random_perturbations_order:
+                shuffle(sorted_pret_fits)
+
             impr = False
             p = 0
             for pret, r2Inv in sorted_pret_fits:
@@ -84,17 +89,20 @@ class RILSROLSRegressor(BaseEstimator):
                 if self.time_elapsed>self.max_seconds:
                     break
                 if str(pret) in checked_perturbations:
-                    print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+" SKIPPED")
+                    if self.verbose:
+                        print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret)+" SKIPPED")
                     continue
                 checked_perturbations.add(str(pret))
-                print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret))
+                if self.verbose:
+                    print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret))
                 new_solution = pret 
                 new_solution.simplify_whole(len(X[0]))
                 new_fitness = new_solution.fitness(X, y)
                 new_solution = self.LS_best(new_solution, X, y)
                 new_fitness = new_solution.fitness(X, y, False)
                 if self.compare_fitness(new_fitness, best_fitness)<0:
-                    print("perturbation "+str(pret)+" produced global improvement.")
+                    if self.verbose:
+                        print("perturbation "+str(pret)+" produced global improvement.")
                     best_solution = copy.deepcopy(new_solution)
                     best_fitness = new_fitness
                     impr = True
@@ -119,7 +127,8 @@ class RILSROLSRegressor(BaseEstimator):
                         if len(all2_perturbations)>0:
                             start_solution = all2_perturbations[self.rg.randrange(len(all2_perturbations))]
 
-                print("RANDOMIZING "+str(best_solution)+" TO "+str(start_solution))
+                if self.verbose:
+                    print("RANDOMIZING "+str(best_solution)+" TO "+str(start_solution))
                 if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
                     n*=2
                     if n>len(x_all):
@@ -139,6 +148,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.model_simp = simplify(str(best_solution), ratio=1)
         self.model_simp = self.round_floats(self.model_simp)
         self.model = Solution([Solution.convert_to_my_nodes(self.model_simp)], self.complexity_penalty)
+        return (self.model, self.model_simp)
     
     def round_floats(self, ex1):
         round_digits = int(math.log10(1/self.error_tolerance))
