@@ -148,7 +148,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.model_simp = simplify(str(best_solution), ratio=1)
         self.model_simp = self.round_floats(self.model_simp)
         self.model = Solution([Solution.convert_to_my_nodes(self.model_simp)], self.complexity_penalty)
-        return (self.model, self.model_simp)
+        return (self.model, self.model_simp, Solution.fit_calls, self.main_it, self.ls_it)
     
     def round_floats(self, ex1):
         round_digits = int(math.log10(1/self.error_tolerance))
