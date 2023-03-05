@@ -1,3 +1,5 @@
+# General
+
 RILS-ROLS is metaheuristic-based framework to deal with problems of symbolic regression. 
 
 All of its aspects (method description, empirical results, etc.) are explained in the paper named:
@@ -13,7 +15,7 @@ so it can be easily installed with the following pip command:
 pip install rils-rols
 ```
 
-Minimal working example can be seen bellow:
+# Minimal working example
 ```python
 from rils_rols.rils_rols import RILSROLSRegressor
 from math import sin, log
@@ -42,4 +44,12 @@ X_test = [[4, 4], [3, 3]]
 y_test = regr.predict(X_test)
 print(y_test)
 ```
+# Citation
 
+```
+@article{kartelj2022rils,
+  title={RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares},
+  author={Kartelj, Aleksandar and Djukanovi{\'c}, Marko},
+  year={2022}
+}
+```
