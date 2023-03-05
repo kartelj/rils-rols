@@ -42,4 +42,12 @@ X_test = [[4, 4], [3, 3]]
 y_test = regr.predict(X_test)
 print(y_test)
 ```
+# Citation
 
+```
+@article{kartelj2022rils,
+  title={RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares},
+  author={Kartelj, Aleksandar and Djukanovi{\'c}, Marko},
+  year={2022}
+}
+```
