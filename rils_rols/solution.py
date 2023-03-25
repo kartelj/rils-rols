@@ -2,7 +2,7 @@ import copy
 from math import e, inf
 import math
 from .node import NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
-from .utils import R2, RMSE
+from .utils import R2, RMSE, ResidualVariance
 from sympy import *
 from sympy.core.numbers import ImaginaryUnit
 from sympy.core.symbol import Symbol
@@ -41,17 +41,29 @@ class Solution:
         try:
             Solution.fit_calls+=1
             yp = self.evaluate_all(X, cache) 
-            return (1-R2(y, yp), RMSE(y, yp), self.size())
+            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only())
         except Exception as e:
             #print(e)
             Solution.math_error_count+=1
             Solution.fit_fails+=1
-            return (inf, inf, inf)
+            return (inf, inf, inf, inf, inf, inf)
 
     def size(self):
         totSize = len(self.factors) 
         for fact in self.factors:
             totSize+=fact.size()
+        return totSize
+    
+    def size_non_linear(self):
+        totSize = 1
+        for fact in self.factors:
+            totSize+=fact.size_non_linear()
+        return totSize
+    
+    def size_operators_only(self):
+        totSize = len(self.factors)
+        for fact in self.factors:
+            totSize+=fact.size_operators_only()
         return totSize
 
     def fit_constants_OLS(self, X, y):
@@ -228,6 +240,10 @@ class Solution:
                     print(sympy_node)
                     print(ex)
             else:
+                if str(sympy_node)=="1/2":
+                    return NodeConstant(0.5)
+                elif str(sympy_node)=="1/10":
+                    return NodeConstant(0.1)
                 return NodeConstant(float(str(sympy_node)))
 
         if len(sympy_node.args)==1:

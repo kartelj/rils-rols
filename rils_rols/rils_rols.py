@@ -7,26 +7,33 @@ from sklearn.base import BaseEstimator
 import copy
 from sympy import *
 from .node import Node, NodeConstant, NodeVariable, NodePlus, NodeMinus, NodeMultiply, NodeDivide, NodeSqr, NodeSqrt, NodeLn, NodeExp, NodeSin, NodeCos
-
+from enum import Enum
 import warnings
-
 from .solution import Solution
+
 warnings.filterwarnings("ignore")
+
+
+class FitnessType(Enum):
+    BIC = 1 # bayesian information criterion
+    SRM = 2 # structural risk minimization
+    PENALTY = 3 # penalty based fitness function
 
 class RILSROLSRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16, random_perturbations_order = False, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.BIC, complexity_penalty=0.001, initial_sample_size=0.01, error_tolerance=1e-16,  random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
+        self.fitness_type = fitness_type
         self.complexity_penalty = complexity_penalty
-        self.random_state = random_state
+        self.initial_sample_size = initial_sample_size
         self.error_tolerance = error_tolerance
         self.verbose = verbose
         self.random_perturbations_order = random_perturbations_order
+        self.random_state = random_state
 
     def __reset(self):
         self.model = None
-        self.varNames = None
         self.ls_it = 0
         self.main_it = 0
         self.last_improved_it = 0
@@ -46,12 +53,13 @@ class RILSROLSRegressor(BaseEstimator):
         x_all = copy.deepcopy(X)
         y_all = copy.deepcopy(y)
         # take 1% of points or at least 100 points initially 
-        n = int(0.01*len(x_all))
-        if n<100:
-            n=min(100, len(X))
-        print("Taking "+str(n)+" points initially.")
-        X = x_all[:n]
-        y = y_all[:n]
+        self.n = int(self.initial_sample_size*len(x_all))
+        if self.n<100:
+            self.n=min(100, len(X))
+        print("Taking "+str(self.n)+" points initially.")
+        X = x_all[:self.n]
+        y = y_all[:self.n]
+
         size_increased_main_it = 0
 
         self.__reset()
@@ -129,19 +137,19 @@ class RILSROLSRegressor(BaseEstimator):
 
                 if self.verbose:
                     print("RANDOMIZING "+str(best_solution)+" TO "+str(start_solution))
-                if n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
-                    n*=2
-                    if n>len(x_all):
-                        n = len(x_all)
-                    print("Increasing data count to "+str(n))
-                    X = x_all[:n]
-                    y = y_all[:n]
+                if self.n<len(x_all) and (self.main_it-size_increased_main_it)>=10:
+                    self.n*=2
+                    if self.n>len(x_all):
+                        self.n = len(x_all)
+                    print("Increasing data count to "+str(self.n))
+                    X = x_all[:self.n]
+                    y = y_all[:self.n]
                     size_increased_main_it = self.main_it
                     Node.reset_node_value_cache()
 
             self.time_elapsed = time.time()-self.start
-            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
-            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(), len(best_solution.factors), Solution.math_error_count, Solution.fit_calls, Solution.fit_fails, Node.cache_hits, Node.cache_tries, Node.cache_hits*100.0/Node.cache_tries, len(Node.node_value_cache), best_solution))
+            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d sizenl=%d sizeop=%d factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
+            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(),best_solution.size_non_linear(),best_solution.size_operators_only(), len(best_solution.factors), Solution.math_error_count, Solution.fit_calls, Solution.fit_fails, Node.cache_hits, Node.cache_tries, Node.cache_hits*100.0/Node.cache_tries, len(Node.node_value_cache), best_solution))
             self.main_it+=1
             if best_fitness[0]<=self.error_tolerance and best_fitness[1] <= pow(self.error_tolerance, 0.125):
                 break
@@ -184,8 +192,8 @@ class RILSROLSRegressor(BaseEstimator):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
-        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance)
+        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}\tfitType={14}\tinitSampleSize={15}\trandomPert={16}".format(
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance, self.fitness_type, self.initial_sample_size, self.random_perturbations_order)
 
     def complexity(self):
         c=0
@@ -484,8 +492,54 @@ class RILSROLSRegressor(BaseEstimator):
             candidates = filtered_candidates
         candidates = sorted(candidates, key=lambda x: str(x))
         return candidates
-
+    
     def compare_fitness(self, new_fit, old_fit):
+        if self.fitness_type == FitnessType.BIC:
+            return self.compare_fitness_bic(new_fit, old_fit)
+        elif self.fitness_type == FitnessType.SRM:
+            return self.compare_fitness_srm(new_fit, old_fit)
+        elif self.fitness_type == FitnessType.PENALTY:
+            return self.compare_fitness_penalty(new_fit, old_fit)
+        else:
+            raise Exception("Unrecognized fitness type "+str(self.fitness_type))
+
+    def compare_fitness_bic(self, new_fit, old_fit):
+        if math.isnan(new_fit[0]):
+            return 1
+        # BIC -- see equation (9) in https://www.researchgate.net/profile/Jose-Montana/publication/220743408_Model_selection_in_genetic_programming/links/0c960532776628e069000000/Model-selection-in-genetic-programming.pdf
+        new_mse = new_fit[1]*new_fit[1]
+        old_mse = old_fit[1]*old_fit[1]
+        new_h = new_fit[2]
+        old_h = old_fit[2]
+        new_var = new_fit[3]
+        old_var = old_fit[3]
+        new_tot = new_mse + math.log(self.n)*new_h*new_var/self.n
+        old_tot = old_mse + math.log(self.n)*old_h*old_var/self.n
+        if new_tot<old_tot-0.00000001:
+            return -1
+        if new_tot>old_tot+0.00000001:
+            return 1
+        return 0
+    
+    def compare_fitness_srm(self, new_fit, old_fit):
+        if math.isnan(new_fit[0]):
+            return 1
+        # SRM -- see equation (11) in https://www.researchgate.net/profile/Jose-Montana/publication/220743408_Model_selection_in_genetic_programming/links/0c960532776628e069000000/Model-selection-in-genetic-programming.pdf
+        new_mse = new_fit[1]*new_fit[1]
+        old_mse = old_fit[1]*old_fit[1]
+        new_h = new_fit[4] # non-linear size
+        old_h = old_fit[4]
+        new_p = new_h/self.n
+        old_p = old_h/self.n
+        new_tot = new_mse/(1-math.sqrt(new_p-new_p*math.log(new_p)+math.log(self.n)/(2*self.n)))
+        old_tot = old_mse/(1-math.sqrt(old_p-old_p*math.log(old_p)+math.log(self.n)/(2*self.n)))
+        if new_tot<old_tot-0.00000001:
+            return -1
+        if new_tot>old_tot+0.00000001:
+            return 1
+        return 0
+
+    def compare_fitness_penalty(self, new_fit, old_fit):
         if math.isnan(new_fit[0]):
             return 1
         new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1]) 

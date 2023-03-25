@@ -14,16 +14,17 @@ warnings.filterwarnings("ignore")
 
 class RILSROLSEnsembleRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, error_tolerance=1e-16, parallelism = 8, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, initial_sample_size=0.01, stratified_sampling = False, error_tolerance=1e-16, parallelism = 8, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
         self.random_state = random_state
         self.error_tolerance = error_tolerance
         self.parallelism = parallelism
+        self.stratified_sampling = stratified_sampling
         rg = Random(random_state)
         random_states = [rg.randint(10000, 99999) for i in range(self.parallelism)]
-        self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, complexity_penalty=complexity_penalty,
+        self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, complexity_penalty=complexity_penalty, initial_sample_size=initial_sample_size,stratified_sampling = stratified_sampling,
             error_tolerance=error_tolerance, random_perturbations_order=True, random_state=rgs) for rgs in random_states]
 
     def fit(self, X, y):

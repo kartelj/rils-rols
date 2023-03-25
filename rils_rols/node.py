@@ -114,6 +114,32 @@ class Node:
         if self.right!=None:
             right_size = self.right.size()
         return 1+left_size+right_size
+    
+    def size_non_linear(self):
+        left_size = 0
+        if self.left!=None:
+            left_size = self.left.size_non_linear()
+        right_size = 0
+        if self.right!=None:
+            right_size = self.right.size_non_linear()
+        # counting the level of non-linearity, so excluding terms and operations plus and minus
+        if type(self)!=type(NodeConstant(0)) and type(self)!=type(NodeVariable(0)) and type(self)!=type(NodePlus) and type(self)!=type(NodeMinus):
+            return 1+left_size+right_size
+        else:
+            return left_size+right_size
+        
+    def size_operators_only(self):
+        left_size = 0
+        if self.left!=None:
+            left_size = self.left.size_operators_only()
+        right_size = 0
+        if self.right!=None:
+            right_size = self.right.size_operators_only()
+        # not counting terms
+        if type(self)!=type(NodeConstant(0)) and type(self)!=type(NodeVariable(0)):
+            return 1+left_size+right_size
+        else:
+            return left_size+right_size
 
     def contains_type(self, search_type):
         if type(self)==search_type:

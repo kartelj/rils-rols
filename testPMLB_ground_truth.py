@@ -66,8 +66,9 @@ for i in range(len(ground_truth_regr_datasets)):
         yp = rils.predict(X_test)
         rils_R2 = R2(y_test, yp)
         rils_RMSE = RMSE(y_test, yp)
-        print("%s\tR2=%.8f\tRMSE=%.8f\texpr=%s"%(dataset, rils_R2, rils_RMSE, rils.model))
+        print("%s\tR2=%.8f\tRMSE=%.8f\texpr=%s"%(dataset, rils_R2, rils_RMSE, rils.model))    
+        with open(out_path, "a") as f:
+            f.write("{0}\t{1}\tTestR2={2:.8f}\tTestRMSE={3:.8f}\n".format(dataset, report_string, rils_R2, rils_RMSE))
     except:
         print("ERROR during test.")
-    with open(out_path, "a") as f:
-        f.write("{0}\t{1}\tTestR2={2:.8f}\tTestRMSE={3:.8f}\n".format(dataset, report_string, rils_R2, rils_RMSE))
+

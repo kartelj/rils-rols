@@ -31,6 +31,22 @@ def RMSE(yt, yp):
         return rmse
     except OverflowError:
        return nan
+    
+def ResidualVariance(yt, yp, complexity):
+    if len(yp)!=len(yt):
+        raise Exception("Vectors of predicted and true y values should be of same size.")
+    try:
+        var = 0.0
+        for i in range(len(yp)):
+            err = yp[i]-yt[i]
+            err*=err
+            if err == nan:
+                return nan
+            var+=err
+        var = var/(len(yp)-complexity)
+        return var
+    except OverflowError:
+       return nan
 
 def percentile_abs_error(yt, yp, percentile):
     if len(yp)!=len(yt):
