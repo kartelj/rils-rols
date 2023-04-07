@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_13_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2734.84375,
+    "time_time": 2740.5489509105682,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "m*(u**2 + v**2 + w**2)/2",
+    "model_size": 46,
+    "symbolic_model": "0.49806205*x0*x1**2 + 0.49503004*x0*x2**2 + 0.50243575*x0*x3**2 - 0.43402597*sin(x0**x2*x1*x3 + cos(x0**(x2 + 1)*x3 + 2))",
+    "mse_train": 0.4132206860267423,
+    "mae_train": 0.5146004086905716,
+    "r2_train": 0.9994086675357393,
+    "mse_test": 0.1345025624553896,
+    "mae_test": 0.30855705842878534,
+    "r2_test": 0.9998048807782841,
+    "simplified_symbolic_model": "0.495*m*u**2 + 0.498*m*v**2 + 0.502*m*w**2 - 0.434*sin(m**u*v*w + cos(m**(u + 1)*w + 2))",
+    "simplified_complexity": 39,
+    "symbolic_error": "0.005*m*u**2 + 0.00201*m*v**2 - 0.00201*m*w**2 + 0.434*sin(m**u*v*w + cos(m**(u + 1)*w + 2))",
+    "symbolic_fraction": "2*(0.495*m*u**2 + 0.498*m*v**2 + 0.502*m*w**2 - 0.434*sin(m**u*v*w + cos(m**(u + 1)*w + 2)))/(m*(u**2 + v**2 + w**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

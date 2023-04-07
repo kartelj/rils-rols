@@ -1,0 +1,25 @@
+{
+    "dataset": "strogatz_shearflow1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 2823.328125,
+    "time_time": 2842.162519454956,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": " cot(y) * cos(x)",
+    "model_size": 33,
+    "symbolic_model": "-0.00413651*x0*(x1**(-10))**0.5 + 1.325e-5*x1**12 + 0.23667851 - 0.59029318*cos(x1)/x1 - 0.48815075/x1**2",
+    "mse_train": 0.34694517807921654,
+    "mae_train": 0.11648667134096091,
+    "r2_train": -0.13265899244992596,
+    "mse_test": 1.785663553648149,
+    "mae_test": 0.2047996232910583,
+    "r2_test": -2.4072131246568986
+}

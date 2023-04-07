@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_48_2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 15795,
+        "verbose": false
+    },
+    "random_state": 15795,
+    "process_time": 3039.109375,
+    "time_time": 3039.332803249359,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "c**2*m/sqrt(1 - v**2/c**2)",
+    "model_size": 54,
+    "symbolic_model": "-0.65900987*x0*x1**4/((x1 - x2)*(3.14159265*x1 + x2)) + 0.48733834*x0*x1**2 - 0.00286757*x0*x2**3/(x1 + x2) + 1.00270628*x0*x2**2",
+    "mse_train": 3.763021461084724e-06,
+    "mae_train": 0.0004294770438613838,
+    "r2_train": 0.9999999996415435,
+    "mse_test": 3.0776549741523276e-06,
+    "mae_test": 0.0004119441344250429,
+    "r2_test": 0.9999999996978028,
+    "simplified_symbolic_model": "-0.00299*c**3*m/(c + v) + 1.0*c**2*m + 0.659*m*v**4/((c - v)*(c + 3.14*v)) + 0.487*m*v**2",
+    "simplified_complexity": 44
+}

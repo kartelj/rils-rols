@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2600.640625,
+    "time_time": 2601.5919716358185,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "0.08*q*(12.6*Volt*d*epsilon - d*q*y**3/(-d**2 + y**2)**2)/(epsilon*y**2)",
+    "model_size": 54,
+    "symbolic_model": "-6.707e-5*x0**4*x4**3/(x1*cos(x0*x2 - 10*x0 + x1**2)) + 2.72294773*x0*x2*x3/(x1*(x1**2 + sin(x1) + 1)) + 1.00634227",
+    "mse_train": 2777.0078186015144,
+    "mae_train": 3.5353903352095504,
+    "r2_train": -11.220530798711206,
+    "mse_test": 1456589.9502116141,
+    "mae_test": 9.51984088872936,
+    "r2_test": -6940.569034114477,
+    "simplified_symbolic_model": "2.72*Volt*d*q/(y*(y**2 + sin(y) + 1)) + 1.01",
+    "simplified_complexity": 19,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

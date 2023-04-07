@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2747.15625,
+    "time_time": 2748.352550506592,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "0.08*q*(12.6*Volt*d*epsilon - d*q*y**3/(-d**2 + y**2)**2)/(epsilon*y**2)",
+    "model_size": 10,
+    "symbolic_model": "x0*x2*x3/x1**2",
+    "mse_train": 0.0007938244684746618,
+    "mae_train": 0.02113216076049336,
+    "r2_train": 0.9999961647198697,
+    "mse_test": 0.0003395045856337709,
+    "mae_test": 0.010345949151247693,
+    "r2_test": 0.9999983651621158,
+    "simplified_symbolic_model": "Volt*d*q/y**2",
+    "simplified_complexity": 7,
+    "symbolic_error": "0.00702*Volt*d*q/y**2 - 0.08*d*q**2*y/(epsilon*(d**2 - y**2)**2)",
+    "symbolic_fraction": "12.5*Volt*d*epsilon/(12.6*Volt*d*epsilon - d*q*y**3/(-d**2 + y**2)**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

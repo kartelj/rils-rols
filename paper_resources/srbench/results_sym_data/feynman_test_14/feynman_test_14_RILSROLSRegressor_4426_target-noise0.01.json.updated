@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 6275.3125,
+    "time_time": 7201.765772342682,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "Ef*(d**3*(alpha - 1)/(r**2*(alpha + 2)) - r)*cos(theta)",
+    "model_size": 37,
+    "symbolic_model": "(-1.00003014*x0*x2**3 + 0.37726925*x0*x3**3*log(x4) - 0.01508401*x3**3*x4*log(x0))*cos(x1)/x2**2",
+    "mse_train": 0.035847272237190794,
+    "mae_train": 0.12977678459545647,
+    "r2_train": 0.9998070708723493,
+    "mse_test": 0.01827977707423261,
+    "mae_test": 0.040800805010861835,
+    "r2_test": 0.9998978180691004,
+    "simplified_symbolic_model": "-(-0.377*Ef*d**3*log(alpha) + 1.0*Ef*r**3 + 0.015*alpha*d**3*log(Ef))*cos(theta)/r**2",
+    "simplified_complexity": 30,
+    "symbolic_error": "d**3*(-0.378*Ef*alpha*log(alpha) + 1.0*Ef*alpha - 0.757*Ef*log(alpha) - 1.0*Ef + 0.015*alpha**2*log(Ef) + 0.03*alpha*log(Ef))*cos(theta)/(r**2*(1.0*alpha + 2.0))",
+    "symbolic_fraction": "-(-0.377*Ef*d**3*log(alpha) + 1.0*Ef*r**3 + 0.015*alpha*d**3*log(Ef))/(Ef*r**2*(d**3*(alpha - 1)/(r**2*(alpha + 2)) - r))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

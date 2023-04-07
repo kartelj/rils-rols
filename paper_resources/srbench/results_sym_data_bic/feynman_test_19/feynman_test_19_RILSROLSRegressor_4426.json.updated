@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_19",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 4426,
+        "verbose": false
+    },
+    "random_state": 4426,
+    "process_time": 3290.96875,
+    "time_time": 3291.2058300971985,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "-0.04*(H_G**2*c**2*(1 - 2*alpha) + c**4*k_f/r**2)/G",
+    "model_size": 51,
+    "symbolic_model": "0.06142037*x4**2*x5**2*log(x3)**2*sin(1/x0) + 0.43723333 - 0.01116006*x5**5*log(x1)/x2**3 + 0.00895637*x3**3*x4*x5**2/x0",
+    "mse_train": 2.5501656239219512,
+    "mae_train": 0.7888209682866298,
+    "r2_train": 0.982700304736994,
+    "mse_test": 2.7177951961430913,
+    "mae_test": 0.8135507760922508,
+    "r2_test": 0.9805341066850469,
+    "simplified_symbolic_model": "0.061*alpha**2*c**2*log(H_G)**2*sin(1/G) - 0.011*c**5*log(k_f)/r**3 + 0.437 + 0.00903*H_G**3*alpha*c**2/G",
+    "simplified_complexity": 40
+}

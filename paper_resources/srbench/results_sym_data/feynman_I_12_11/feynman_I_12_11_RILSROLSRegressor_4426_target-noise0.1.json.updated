@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_12_11",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2780.46875,
+    "time_time": 2785.324001312256,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "q*(B*v*sin(theta) + Ef)",
+    "model_size": 31,
+    "symbolic_model": "0.84976031*x0*x1 + 1.02502567*x0*x2*x3*sin(x4) + 1.76116858 - 5.44989741*x2/(x0**2*x3**2)",
+    "mse_train": 10.187141034759367,
+    "mae_train": 2.5075339597896367,
+    "r2_train": 0.9851858053404551,
+    "mse_test": 2.214590009495132,
+    "mae_test": 0.9698451468282718,
+    "r2_test": 0.9966605179209008,
+    "simplified_symbolic_model": "1.02*B*q*v*sin(theta) - 5.45*B/(q**2*v**2) + 0.85*Ef*q + 1.76",
+    "simplified_complexity": 22,
+    "symbolic_error": "-0.00999*B*q*v*sin(theta) + 5.45*B/(q**2*v**2) + 0.15*Ef*q - 1.76",
+    "symbolic_fraction": "(1.01*B*q*v*sin(theta) - 5.45*B/(q**2*v**2) + 0.85*Ef*q + 1.76)/(q*(B*v*sin(theta) + Ef))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

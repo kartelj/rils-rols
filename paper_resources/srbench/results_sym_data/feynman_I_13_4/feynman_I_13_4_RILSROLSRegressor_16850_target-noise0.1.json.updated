@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_13_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 3816.578125,
+    "time_time": 3818.170999288559,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "m*(u**2 + v**2 + w**2)/2",
+    "model_size": 89,
+    "symbolic_model": "0.14082077*x0*(x1 + x2 + x3)**2 + 3.38946177*x0 - 0.00302527*x1/(x2 - x3 + 1)**2 + 0.0001317*exp(0.53303556*x0*x1) - 29.9984966 + 5.09682903/(x2/(x2 + x3 + 1) + 1/x3)**2 + 0.95166958*(x2 + x3 + 1)**2/x3 + 110.62236675*x1/(x0*(x2 + x3 + 1)**2)",
+    "mse_train": 3430656.2814530274,
+    "mae_train": 30.218761416529002,
+    "r2_train": -4975.900647222528,
+    "mse_test": 634842743175.5905,
+    "mae_test": 5305.389599245534,
+    "r2_test": -900830020.1123053,
+    "simplified_symbolic_model": "0.141*m*(u + v + w)**2 + 3.39*m - 0.00299*v/(u - w + 1)**2 - 30.0 + 5.1/(u/(u + w + 1) + 1/w)**2 + 0.952*(u + w + 1)**2/w + 111.0*v/(m*(u + w + 1)**2)",
+    "simplified_complexity": 64,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

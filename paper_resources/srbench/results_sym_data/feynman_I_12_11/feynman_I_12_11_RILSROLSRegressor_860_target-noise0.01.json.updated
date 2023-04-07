@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_12_11",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2220.53125,
+    "time_time": 2221.031222343445,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "q*(B*v*sin(theta) + Ef)",
+    "model_size": 41,
+    "symbolic_model": "1.00357506*x0*x1 + 0.99905417*x0*x2*x3*sin(x4) + 0.40091428*cos(x3)*cos(x4*exp(x1) + cos((x2 + x4)**4/x2**x2))",
+    "mse_train": 0.11617975988824886,
+    "mae_train": 0.2724415534800347,
+    "r2_train": 0.9998316905810413,
+    "mse_test": 0.03475772676616011,
+    "mae_test": 0.14663448705149812,
+    "r2_test": 0.9999489211356947,
+    "simplified_symbolic_model": "0.999*B*q*v*sin(theta) + 1.0*Ef*q + 0.401*cos(v)*cos(theta*exp(Ef) + cos((B + theta)**4/B**B))",
+    "simplified_complexity": 34,
+    "symbolic_error": "0.00101*B*q*v*sin(theta) - 0.401*cos(v)*cos(theta*exp(Ef) + cos((B + theta)**4/B**B))",
+    "symbolic_fraction": "(0.999*B*q*v*sin(theta) + 1.0*Ef*q + 0.401*cos(v)*cos(theta*exp(Ef) + cos((B + theta)**4/B**B)))/(q*(B*v*sin(theta) + Ef))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

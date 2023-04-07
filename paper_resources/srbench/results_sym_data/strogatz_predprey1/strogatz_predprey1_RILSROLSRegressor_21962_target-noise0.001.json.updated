@@ -1,0 +1,31 @@
+{
+    "dataset": "strogatz_predprey1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2859.0,
+    "time_time": 2860.6880011558533,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "x*(-x - y/(x + 1) + 4)",
+    "model_size": 39,
+    "symbolic_model": "-0.50830677*x0**0.5*x1 + 1.82314419*x0**0.5 - 0.14157938*x0**2 + 0.05961798*x1 - 1.17783716*cos(x0 + x0/x1 + 0.5) + 0.81005466",
+    "mse_train": 0.6096816349428753,
+    "mae_train": 0.08821767030429845,
+    "r2_train": 0.8997724843899755,
+    "mse_test": 0.4813640936068253,
+    "mae_test": 0.09403838381358844,
+    "r2_test": 0.9039654725304788,
+    "simplified_symbolic_model": "-0.508*x**0.5*y + 1.82*x**0.5 - 0.142*x**2 + 0.06*y - 1.18*cos(x + x/y + 0.5) + 0.81",
+    "simplified_complexity": 32,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

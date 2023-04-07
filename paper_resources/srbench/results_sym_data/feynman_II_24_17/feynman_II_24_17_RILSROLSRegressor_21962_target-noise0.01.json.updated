@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_24_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2574.59375,
+    "time_time": 2580.429526090622,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "3.14*sqrt(-1/d**2 + 0.101*omega**2/c**2)",
+    "model_size": 19,
+    "symbolic_model": "0.99464241*x0/x1 - 44.58213868*x1/(x2 + log(x0))**4",
+    "mse_train": 0.0013829689672730887,
+    "mae_train": 0.029730574903889227,
+    "r2_train": 0.9981350682064434,
+    "mse_test": 0.000237457814280926,
+    "mae_test": 0.012432967241171275,
+    "r2_test": 0.9996776272054174,
+    "simplified_symbolic_model": "-44.6*c/(d + log(omega))**4 + 0.995*omega/c",
+    "simplified_complexity": 16,
+    "symbolic_error": "44.6*c/(d + log(omega))**4 + 3.14*sqrt(-1/d**2 + 0.101*omega**2/c**2) - 0.995*omega/c",
+    "symbolic_fraction": "0.318*(-44.6*c/(d + log(omega))**4 + 0.995*omega/c)/sqrt(-1/d**2 + 0.101*omega**2/c**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_18_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2462.34375,
+    "time_time": 2462.8798973560333,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "m*r*v*sin(theta)",
+    "model_size": 23,
+    "symbolic_model": "0.99847305*x0*x1*x2*sin(x3) - 0.21150891*cos(x3 + sin(10*x3) + 1)",
+    "mse_train": 0.08307107886424782,
+    "mae_train": 0.23002568606526302,
+    "r2_train": 0.9998720805868536,
+    "mse_test": 0.017206434258635408,
+    "mae_test": 0.11592556843438234,
+    "r2_test": 0.9999737795833957,
+    "simplified_symbolic_model": "0.998*m*r*v*sin(theta) - 0.212*cos(theta + sin(10*theta) + 1)",
+    "simplified_complexity": 18,
+    "symbolic_error": "0.00201*m*r*v*sin(theta) + 0.212*cos(theta + sin(10*theta) + 1)",
+    "symbolic_fraction": "(0.998*m*r*v*sin(theta) - 0.212*cos(theta + sin(10*theta) + 1))/(m*r*v*sin(theta))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

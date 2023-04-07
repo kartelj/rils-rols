@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_34_29b",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2091.140625,
+    "time_time": 2094.969492673874,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "6.28*B*Jz*g_*mom/h",
+    "model_size": 30,
+    "symbolic_model": "6.28253781*x0*x2*x3*x4/x1 - 0.01619495*x1*x4 - 0.19696825*sin(x0*log(x4)) + 0.18198827",
+    "mse_train": 0.11605330303580999,
+    "mae_train": 0.2715501562790599,
+    "r2_train": 0.9999977794054253,
+    "mse_test": 0.018779423342708906,
+    "mae_test": 0.11404256711327633,
+    "r2_test": 0.9999996107255772,
+    "simplified_symbolic_model": "6.28*B*Jz*g_*mom/h - 0.016*B*h - 0.197*sin(g_*log(B)) + 0.182",
+    "simplified_complexity": 22,
+    "symbolic_error": "0.016*B*h + 0.197*sin(g_*log(B)) - 0.182",
+    "symbolic_fraction": "0.159*h*(6.28*B*Jz*g_*mom/h - 0.016*B*h - 0.197*sin(g_*log(B)) + 0.182)/(B*Jz*g_*mom)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_38_3",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2935.609375,
+    "time_time": 2962.5176701545715,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "A*Y*x/d",
+    "model_size": 52,
+    "symbolic_model": "1.02082874*x0*x1*x3/x2 - 0.0002655*x0**x0*x2 - 36.40956193/x2**100 - 3.01581248*sin(x0/x1)*sin(1.5**x3 + 1 + x2/x0)/x1",
+    "mse_train": 5.164221674202182,
+    "mae_train": 1.4490018725802976,
+    "r2_train": 0.9464343987489523,
+    "mse_test": 2.5623256481745353,
+    "mae_test": 0.7567202391570338,
+    "r2_test": 0.9742734752695548,
+    "simplified_symbolic_model": "1.02*A*Y*x/d - 36.4/d**100 - 3.02*sin(Y/A)*sin(1.5**x + 1 + d/Y)/A",
+    "simplified_complexity": 36,
+    "symbolic_error": "-0.021*A*Y*x/d + 36.4/d**100 + 3.02*sin(Y/A)*sin(1.5**x + 1 + d/Y)/A",
+    "symbolic_fraction": "d*(1.02*A*Y*x/d - 36.4/d**100 - 3.02*sin(Y/A)*sin(1.5**x + 1 + d/Y)/A)/(A*Y*x)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

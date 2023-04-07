@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_III_7_38",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2958.0,
+    "time_time": 2959.0970978736877,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "12.6*B*mom/h",
+    "model_size": 65,
+    "symbolic_model": "-0.13066631*x0**3 + 13.5868843*x0*x1/x2 - 7.01e-6*x0*(x0 - x1)**10/sin(x2**10) - 0.00639088*x2**2*(2 + 1/x0)**x1 + 2.73379142*x2*log(x0) - 1.62044353*sin(x2**10) - 5.70112517",
+    "mse_train": 715.7831081671917,
+    "mae_train": 6.666968302571455,
+    "r2_train": 0.46484041420033884,
+    "mse_test": 50256.64590032185,
+    "mae_test": 5.669840199754299,
+    "r2_test": -37.415615155290624,
+    "simplified_symbolic_model": "13.6*B*mom/h - 0.00598*h**2*(2 + 1/mom)**B + 2.73*h*log(mom) - 0.132*mom**3 - 1.62*sin(h**10) - 5.7",
+    "simplified_complexity": 37,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

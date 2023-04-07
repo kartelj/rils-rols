@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_lv1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2038.375,
+    "time_time": 2038.7974905967712,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "-x**2 - 2*x*y + 3*x",
+    "model_size": 16,
+    "symbolic_model": "-0.99987947*x0**2 - 2.00021467*x0*x1 + 2.99968582*x0",
+    "mse_train": 5.512997924470045e-07,
+    "mae_train": 0.0005861366979795942,
+    "r2_train": 0.9999990793479036,
+    "mse_test": 8.946279045750579e-08,
+    "mae_test": 0.00013016916527849412,
+    "r2_test": 0.9999999983525697,
+    "simplified_symbolic_model": "x*(-1.0*x - 2.0*y + 3.0)",
+    "simplified_complexity": 10,
+    "symbolic_error": "-x**2 - 2*x*y - x*(-1.0*x - 2.0*y + 3.0) + 3*x",
+    "symbolic_fraction": "x*(-1.0*x - 2.0*y + 3.0)/(-x**2 - 2*x*y + 3*x)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": true,
+    "symbolic_fraction_is_constant": null
+}

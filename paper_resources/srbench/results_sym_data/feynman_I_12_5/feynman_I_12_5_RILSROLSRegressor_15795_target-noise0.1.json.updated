@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_12_5",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2259.609375,
+    "time_time": 2267.6747012138367,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Ef*q2",
+    "model_size": 29,
+    "symbolic_model": "1.03847245*x0*x1 - 0.38003821*x1 + 0.45047653*cos(x0*x1) + 0.66022139 + 0.01853004*x1**4/x0**4",
+    "mse_train": 1.6588663834296724,
+    "mae_train": 0.9515465079867926,
+    "r2_train": 0.9366064417925892,
+    "mse_test": 0.5918021458353346,
+    "mae_test": 0.42049290173374027,
+    "r2_test": 0.9776364016683722,
+    "simplified_symbolic_model": "0.019*Ef**4/q2**4 + 1.04*Ef*q2 - 0.38*Ef + 0.45*cos(Ef*q2) + 0.66",
+    "simplified_complexity": 23,
+    "symbolic_error": "-0.019*Ef**4/q2**4 - 0.038*Ef*q2 + 0.38*Ef - 0.45*cos(Ef*q2) - 0.66",
+    "symbolic_fraction": "(0.019*Ef**4/q2**4 + 1.04*Ef*q2 - 0.38*Ef + 0.45*cos(Ef*q2) + 0.66)/(Ef*q2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

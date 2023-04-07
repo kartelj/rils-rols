@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_13_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 2643.265625,
+    "time_time": 2644.3900010585785,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "G*m1*m2*(1/r2 - 1/r1)",
+    "model_size": 31,
+    "symbolic_model": "-1.04685485*x0*x1*x4*log(x3/x2)/(x0/(x1**2*x2**2) + x2*x3)**0.5",
+    "mse_train": 0.9683971779304371,
+    "mae_train": 0.7797017006735759,
+    "r2_train": 0.9884564489600749,
+    "mse_test": 0.10871566183192719,
+    "mae_test": 0.1558767729071268,
+    "r2_test": 0.9986814372073389,
+    "simplified_symbolic_model": "-1.05*G*m1*m2*log(r2/r1)/(m1/(m2**2*r1**2) + r1*r2)**0.5",
+    "simplified_complexity": 25,
+    "symbolic_error": "G*m1*m2*(1/r2 - 1/r1) + 1.05*G*m1*m2*log(r2/r1)/(m1/(m2**2*r1**2) + r1*r2)**0.5",
+    "symbolic_fraction": "-1.05*log(r2/r1)/((1/r2 - 1/r1)*(m1/(m2**2*r1**2) + r1*r2)**0.5)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

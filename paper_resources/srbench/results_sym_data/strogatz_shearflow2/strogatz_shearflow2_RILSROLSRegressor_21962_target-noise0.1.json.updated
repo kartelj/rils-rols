@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_shearflow2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2600.625,
+    "time_time": 2601.2669625282288,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "(0.1*sin(y)**2 + cos(y)**2)*sin(x)",
+    "model_size": 46,
+    "symbolic_model": "1.41547266*0.5**((sin(x1) + 0.54030231)**4) + 2.40763149*0.5**((sin(x1) + 0.59433254)**4)*x0 + 1.02018082*x0*sin(x1) - 1.37106006*x0 - 1.3929805 - 0.18002325*sin(x1)/x0",
+    "mse_train": 0.1904430337802158,
+    "mae_train": 0.04986808203841704,
+    "r2_train": -2.2149662204562306,
+    "mse_test": 0.0007730241868631,
+    "mae_test": 0.014730444051776516,
+    "r2_test": 0.9850737572413539,
+    "simplified_symbolic_model": "1.42*0.5**((sin(y) + 0.54)**4) + 2.41*0.5**((sin(y) + 0.594)**4)*x + 1.02*x*sin(y) - 1.37*x - 1.39 - 0.18*sin(y)/x",
+    "simplified_complexity": 38,
+    "symbolic_error": "(x*(-1.42*0.5**((sin(y) + 0.54)**4) - 2.41*0.5**((sin(y) + 0.594)**4)*x - 1.02*x*sin(y) + 1.37*x + (1.0 - 0.9*sin(y)**2)*sin(x) + 1.39) + 0.18*sin(y))/x",
+    "symbolic_fraction": "(1.42*0.5**((sin(y) + 0.54)**4) + 2.41*0.5**((sin(y) + 0.594)**4)*x + 1.02*x*sin(y) - 1.37*x - 1.39 - 0.18*sin(y)/x)/((0.1*sin(y)**2 + cos(y)**2)*sin(x))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

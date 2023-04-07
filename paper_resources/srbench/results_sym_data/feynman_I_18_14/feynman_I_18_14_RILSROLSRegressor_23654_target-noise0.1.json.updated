@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_18_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 3237.0625,
+    "time_time": 3237.8664247989655,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "m*r*v*sin(theta)",
+    "model_size": 87,
+    "symbolic_model": "3.46988411*x0**0.5 + 1.0222237*x0*x1*x2*sin(x3) + 1.51831011*x1*sin(x0)/x3 + 1.02258579*x3 - 0.74601898*cos(x0 + x2**2 + 1) + 1.13075181*cos(x0 + x3**2 + 2) - 9.47260616 + 0.78490872*sin(x0 + x2**2)/sin(x2) + 29.42868977*sin(x0 + x2**2)/(x1**10*x3**2)",
+    "mse_train": 1420.4400081640085,
+    "mae_train": 4.401797131383381,
+    "r2_train": -1.167896038054022,
+    "mse_test": 15408.242045309933,
+    "mae_test": 3.8674282362096815,
+    "r2_test": -22.03583008255827,
+    "simplified_symbolic_model": "3.46*m**0.5 + 1.01*m*r*v*sin(theta) + 1.51*r*sin(m)/theta + 1.01*theta + 1.13*cos(m + theta**2 + 2) - 0.736*cos(m + v**2 + 1) - 9.46 + 0.795*sin(m + v**2)/sin(v) + 29.4*sin(m + v**2)/(r**10*theta**2)",
+    "simplified_complexity": 69,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

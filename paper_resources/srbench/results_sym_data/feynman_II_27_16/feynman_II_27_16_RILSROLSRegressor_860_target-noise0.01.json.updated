@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_27_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2228.59375,
+    "time_time": 2229.136890888214,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "Ef**2*c*epsilon",
+    "model_size": 46,
+    "symbolic_model": "0.99500045*x0*x1*x2**2 + 0.00034315*x0*log(cos(x0)**10)**2 + 0.91912179*x1/x2 + 0.51872196*x2 - 0.06279551*cos(x0)/cos(x2) - 2.28062123",
+    "mse_train": 19.98156876749117,
+    "mae_train": 1.3740606701258669,
+    "r2_train": 0.9973955233375229,
+    "mse_test": 40.36972851086734,
+    "mae_test": 0.7371189048238194,
+    "r2_test": 0.9950518071553622,
+    "simplified_symbolic_model": "0.998*Ef**2*c*epsilon + 0.518*Ef - 2.28 - 0.0617*cos(epsilon)/cos(Ef) + 0.925*c/Ef",
+    "simplified_complexity": 26,
+    "symbolic_error": "0.00201*Ef**2*c*epsilon - 0.518*Ef + 2.28 + 0.063*cos(epsilon)/cos(Ef) - 0.924*c/Ef",
+    "symbolic_fraction": "(0.998*Ef**2*c*epsilon + 0.518*Ef - 2.28 - 0.062*cos(epsilon)/cos(Ef) + 0.925*c/Ef)/(Ef**2*c*epsilon)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

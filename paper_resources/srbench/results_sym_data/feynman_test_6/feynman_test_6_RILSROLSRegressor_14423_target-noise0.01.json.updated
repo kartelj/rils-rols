@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_6",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 5179.171875,
+    "time_time": 6899.577548027039,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "sqrt(2*E_n*L**2*epsilon**2/(Z_1**2*Z_2**2*m*q**4) + 1)",
+    "model_size": 58,
+    "symbolic_model": "0.18289404*x0*x1*x5/((x2*x3*log(x5)/x6)**0.5*(x3/x5**5 + x5**2*log(x3*log(x5) + x4 + log(x5)/x0)**2)) + 1.0066053 - 0.42070088/x5**2",
+    "mse_train": 0.2693540700011564,
+    "mae_train": 0.06337187266733135,
+    "r2_train": -0.18628434320102172,
+    "mse_test": 2.4123745887144588,
+    "mae_test": 0.07166614012004652,
+    "r2_test": -10.702731290877157,
+    "simplified_symbolic_model": "0.183*L*epsilon*q/((Z_1*m*log(q)/E_n)**0.5*(Z_1/q**5 + q**2*log(Z_1*log(q) + Z_2 + log(q)/epsilon)**2)) + 1.01 - 0.421/q**2",
+    "simplified_complexity": 49,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

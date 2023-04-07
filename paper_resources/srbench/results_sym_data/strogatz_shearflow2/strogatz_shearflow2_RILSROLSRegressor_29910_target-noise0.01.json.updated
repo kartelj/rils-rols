@@ -1,0 +1,31 @@
+{
+    "dataset": "strogatz_shearflow2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2786.015625,
+    "time_time": 2786.4948987960815,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "(0.1*sin(y)**2 + cos(y)**2)*sin(x)",
+    "model_size": 54,
+    "symbolic_model": "0.00382982*x0**2*x1**3 - 0.04589349*x1 + 0.5731556*sin(1/x0) - 0.44918803*cos(1.11111111*x1 + 1 + 1/x0)**2 + 0.26794945 + 0.03109158/(x0 + x1) - 0.08566292/(x0 + 3.14159265)",
+    "mse_train": 0.13046007436576385,
+    "mae_train": 0.06431352269363388,
+    "r2_train": -1.3114866252590933,
+    "mse_test": 0.004710816440165183,
+    "mae_test": 0.035451649404212617,
+    "r2_test": 0.918383487755552,
+    "simplified_symbolic_model": "0.00403*x**2*y**3 - 0.046*y + 0.573*sin(1/x) - 0.449*cos(1.11*y + 1 + 1/x)**2 + 0.268 + 0.031/(x + y) - 0.0861/(x + 3.14)",
+    "simplified_complexity": 46,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

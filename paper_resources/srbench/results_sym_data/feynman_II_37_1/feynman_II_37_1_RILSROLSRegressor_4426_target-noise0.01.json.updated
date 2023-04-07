@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_37_1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2270.640625,
+    "time_time": 2271.4116604328156,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "B*mom*(chi + 1)",
+    "model_size": 36,
+    "symbolic_model": "0.99954832*x0*x1*x2 + 1.00436692*x0*x1 + 0.54093166*sin(x0**x2*(x0 + x2)**2 + 1/(x2 - 1))*cos(x0)",
+    "mse_train": 0.24649822318109432,
+    "mae_train": 0.396959251936853,
+    "r2_train": 0.9995575941950772,
+    "mse_test": 0.06056420305793391,
+    "mae_test": 0.1917432976704855,
+    "r2_test": 0.9998906043212495,
+    "simplified_symbolic_model": "1.0*B*chi*mom + 1.0*B*mom + 0.541*sin(mom**chi*(chi + mom)**2 + 1/(chi - 1))*cos(mom)",
+    "simplified_complexity": 30,
+    "symbolic_error": "-0.541*sin(chi*mom**chi*(chi + mom)**2/(chi - 1) - mom**chi*(chi + mom)**2/(chi - 1) + 1/(chi - 1))*cos(mom)",
+    "symbolic_fraction": "(1.0*B*chi*mom + 1.0*B*mom + 0.541*sin(mom**chi*(chi + mom)**2 + 1/(chi - 1))*cos(mom))/(B*mom*(chi + 1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

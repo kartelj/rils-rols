@@ -1,0 +1,25 @@
+{
+    "dataset": "feynman_test_9",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 7231.59375,
+    "time_time": 7233.802856206894,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": " -32/5*G**4/c**5*(m1*m2)**2*(m1+m2)/r**5",
+    "model_size": 215,
+    "symbolic_model": "-17168.58648471*x0**4*x2*x4*log(x3 + x4)/(x1 + x4)**8 - 584744.4586793*x0*x3*sin(x3 + x4)/((x1 + 1)**10*(x2 + 0.5)**3*cos(x4 + 1)**4) - 15.47172736*x0*x2*x3*x4*log(x4 - 1/x3)/x1 + 3.04443431*x3*sin(x3 + x4)/cos(x4 + 1)**4 + 0.94669631*x3*sin(-x2 + x3 + x4)/cos(x4 - 9) + 121730.8063269*x3*log(x0**4)*log(x3 + x4)*cos(x3)/(x1 + x4)**8 + 128.40384331*log(x0*x4 + x3*x4) - 187.49480169 + 1.23848271/cos(10/(x4 - 0.05555556)) - 1.07816307/cos(x4 - 9) - 79.02951711*(0.46694221*x0*x2 + 0.46694221*x0*x3 + 0.46694221*x0*x4*cos(x1) - x0*x4)**4*log(x0 + x3 + x4)*sin(x4**(-4))/x1**4",
+    "mse_train": 529301.2052990939,
+    "mae_train": 156.26004733010524,
+    "r2_train": 0.9876738993320485,
+    "mse_test": 810932.7322907434,
+    "mae_test": 166.8427318960813,
+    "r2_test": 0.9829278729675194
+}

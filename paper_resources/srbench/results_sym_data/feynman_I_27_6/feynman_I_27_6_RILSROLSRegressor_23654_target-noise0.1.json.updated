@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_27_6",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 2024.90625,
+    "time_time": 2025.2925100326538,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "1/(n/d2 + 1/d1)",
+    "model_size": 29,
+    "symbolic_model": "0.19289631*x1*log(x0)/x2 - 0.10292678*x2 + 0.24833078*log(x1) + 0.04562838*sin(x1*x2) + 0.58800784",
+    "mse_train": 0.010327709865020357,
+    "mae_train": 0.08107397168924266,
+    "r2_train": 0.9262901927977486,
+    "mse_test": 0.0029467519121065275,
+    "mae_test": 0.04262734832230155,
+    "r2_test": 0.9765658216251255,
+    "simplified_symbolic_model": "0.193*d2*log(d1)/n - 0.103*n + 0.248*log(d2) + 0.046*sin(d2*n) + 0.588",
+    "simplified_complexity": 23,
+    "symbolic_error": "-0.193*d2*log(d1)/n + 0.103*n - 0.248*log(d2) - 0.046*sin(d2*n) - 0.588 + 1/(n/d2 + 1/d1)",
+    "symbolic_fraction": "(n/d2 + 1/d1)*(0.193*d2*log(d1)/n - 0.103*n + 0.248*log(d2) + 0.046*sin(d2*n) + 0.588)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_29_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 3244.140625,
+    "time_time": 3244.328882932663,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "sqrt(x1**2 - 2*x1*x2*cos(theta1 - theta2) + x2**2)",
+    "model_size": 59,
+    "symbolic_model": "0.53780831*0.05**(((x2 - x3)**2)**0.5)*x0 - 1.50976574*0.5**(((x2 - x3)**2)**0.5)*x1*log(x0) - 2.81078305*0.5**(((x2 - x3)**2)**0.5) + 1.23350395*x0 + 1.22477326*x1 - 0.49412903",
+    "mse_train": 0.08435989784700498,
+    "mae_train": 0.19773728688179593,
+    "r2_train": 0.976970786062207,
+    "mse_test": 0.08074813074710886,
+    "mae_test": 0.1950685888039574,
+    "r2_test": 0.9779322803318459,
+    "simplified_symbolic_model": "0.538*0.05**(((theta1 - theta2)**2)**0.5)*x1 - 1.51*0.5**(((theta1 - theta2)**2)**0.5)*x2*log(x1) - 2.81*0.5**(((theta1 - theta2)**2)**0.5) + 1.23*x1 + 1.23*x2 - 0.494",
+    "simplified_complexity": 51,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

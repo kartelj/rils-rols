@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_14_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2928.265625,
+    "time_time": 2931.079073190689,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "k_spring*x**2/2",
+    "model_size": 56,
+    "symbolic_model": "0.49950517*x0*x1**2 + 0.48824878*x0*sin(x0**2*(x1/log(x1))**x1 + 1) + 2.55405258*sin(log(x1 - 1)*cos(2.5*(x1/log(x1))**x1/x0**2) + 1) - 1.60712444",
+    "mse_train": 5.982541863631672,
+    "mae_train": 1.9496069475749325,
+    "r2_train": 0.9639327775822453,
+    "mse_test": 2.1444490343200466,
+    "mae_test": 1.1834328357548154,
+    "r2_test": 0.9867660129722617,
+    "simplified_symbolic_model": "0.5*k_spring*x**2 + 0.488*k_spring*sin(k_spring**2*(x/log(x))**x + 1) + 2.55*sin(log(x - 1)*cos(2.5*(x/log(x))**x/k_spring**2) + 1) - 1.61",
+    "simplified_complexity": 50,
+    "symbolic_error": "-0.488*k_spring*sin(k_spring**2*(x/log(x))**x + 1) - 2.55*sin(log(x - 1)*cos(2.5*(x/log(x))**x/k_spring**2) + 1) + 1.61",
+    "symbolic_fraction": "2*(0.5*k_spring*x**2 + 0.488*k_spring*sin(k_spring**2*(x/log(x))**x + 1) + 2.55*sin(log(x - 1)*cos(2.5*(x/log(x))**x/k_spring**2) + 1) - 1.61)/(k_spring*x**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

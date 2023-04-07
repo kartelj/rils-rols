@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_43_31",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2324.890625,
+    "time_time": 2330.186940908432,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "T*kb*mob",
+    "model_size": 73,
+    "symbolic_model": "0.99024039*x0*x1*x2 + 0.07930194*x1*x1**sin(x2) - 0.07930194*x2*cos(x1)**sin(x2**2 - 2*x2) + cos(x1)**sin(x2 - 0.72) - 0.2491344*cos(x1)**sin(x2**2 - 0.5) - 0.07930194*x1*x1**sin(x2)/(x0*sin(x1*x2))",
+    "mse_train": 134.72074314657758,
+    "mae_train": 3.7028769740256697,
+    "r2_train": 0.6573927891700484,
+    "mse_test": 293.3462989354515,
+    "mae_test": 1.816267086367362,
+    "r2_test": 0.21184236663549316,
+    "simplified_symbolic_model": "0.99*T*kb*mob + 0.079*T**(sin(kb) + 1) - 0.079*T**(sin(kb) + 1)/(mob*sin(T*kb)) - 0.079*kb*cos(T)**sin(kb**2 - 2*kb) + cos(T)**sin(kb - 0.72) - 0.249*cos(T)**sin(kb**2 - 0.5)",
+    "simplified_complexity": 63,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

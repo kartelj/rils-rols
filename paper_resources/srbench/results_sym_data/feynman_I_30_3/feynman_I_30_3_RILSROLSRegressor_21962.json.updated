@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_30_3",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2995.9375,
+    "time_time": 2996.097645998001,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "Int_0*sin(n*theta/2)**2/sin(theta/2)**2",
+    "model_size": 50,
+    "symbolic_model": "x0*(-9.0e-8*x1**12*cos(x1*x2) - 0.09097104*x1**3*cos(x1*x2) + 1.00045594*x1**2/(1 - cos(x1)) - 2.09848323*cos(x1*x2))/x1**2",
+    "mse_train": 0.00048105645362262985,
+    "mae_train": 0.015463243167520681,
+    "r2_train": 0.9999284255293684,
+    "mse_test": 0.0004666177405139615,
+    "mae_test": 0.015216908280019785,
+    "r2_test": 0.9999300230988359,
+    "simplified_symbolic_model": "-Int_0*(1.0*theta**2 + (0.0909*theta**3 + 2.1)*(cos(theta) - 1)*cos(n*theta))/(theta**2*(cos(theta) - 1))",
+    "simplified_complexity": 34,
+    "symbolic_error": "Int_0*sin(n*theta/2)**2/sin(theta/2)**2 + Int_0*(1.0*theta**2 + (0.0909*theta**3 + 2.1)*(cos(theta) - 1)*cos(n*theta))/(theta**2*(cos(theta) - 1))",
+    "symbolic_fraction": "-(1.0*theta**2 + (0.0909*theta**3 + 2.1)*(cos(theta) - 1)*cos(n*theta))*sin(theta/2)**2/(theta**2*(cos(theta) - 1)*sin(n*theta/2)**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

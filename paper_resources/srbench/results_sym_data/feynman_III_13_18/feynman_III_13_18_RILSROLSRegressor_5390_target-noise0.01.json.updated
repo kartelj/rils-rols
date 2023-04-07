@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_13_18",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2624.765625,
+    "time_time": 2627.69659614563,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "12.6*E_n*d**2*k/h",
+    "model_size": 53,
+    "symbolic_model": "(12.54727378*x0*x1**2*x2 + x0 - 6.66815369*x3*cos(x1**3*x2*x3 - sin(x0*x1**3*x3 - sin(x0 + 2*x3 - 1)) + 2))/x3",
+    "mse_train": 77.63823246461723,
+    "mae_train": 7.078503015639553,
+    "r2_train": 0.9997557476566199,
+    "mse_test": 23.26946543693095,
+    "mae_test": 4.310869874396194,
+    "r2_test": 0.9999234590496114,
+    "simplified_symbolic_model": "(12.5*E_n*d**2*k + E_n - 6.67*h*cos(d**3*h*k - sin(E_n*d**3*h - sin(E_n + 2*h - 1)) + 2))/h",
+    "simplified_complexity": 44,
+    "symbolic_error": "-E_n/h + 6.67*cos(d**3*h*k - sin(E_n*d**3*h - sin(E_n + 2*h - 1)) + 2)",
+    "symbolic_fraction": "0.08*(12.6*E_n*d**2*k + E_n - 6.67*h*cos(d**3*h*k - sin(E_n*d**3*h - sin(E_n + 2*h - 1)) + 2))/(E_n*d**2*k)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

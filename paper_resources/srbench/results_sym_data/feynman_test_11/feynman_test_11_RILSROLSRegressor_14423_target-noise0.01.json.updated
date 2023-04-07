@@ -1,0 +1,27 @@
+{
+    "dataset": "feynman_test_11",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 5381.203125,
+    "time_time": 6929.56466126442,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "4*I_0*sin(alpha/2)**2*sin(delta*n/2)**2/(alpha**2*sin(delta/2)**2)",
+    "model_size": 72,
+    "symbolic_model": "0.17954977*x0**2 - 20.75691987*x0**2*log(1/x3)/(x0 + x1**0.5 + x2)**2 - 0.25690536*x0*x1*x3 - 0.77089127*x0*x3**2*log(x2)**2*sin(1/(0.5 - x1))*sin(log(1/x3)) + 0.96795861*log(x0*x3) + 0.94223683",
+    "mse_train": 0.012868928724277848,
+    "mae_train": 0.07018095391140669,
+    "r2_train": 0.9878481504322953,
+    "mse_test": 0.012214456071768444,
+    "mae_test": 0.0689224827753997,
+    "r2_test": 0.9887346933549304,
+    "simplified_symbolic_model": "0.18*I_0**2 - 20.8*I_0**2*log(1/n)/(I_0 + alpha**0.5 + delta)**2 - 0.257*I_0*alpha*n + 0.771*I_0*n**2*log(delta)**2*sin(1/(alpha - 0.5))*sin(log(1/n)) + 0.968*log(I_0*n) + 0.942",
+    "simplified_complexity": 56
+}

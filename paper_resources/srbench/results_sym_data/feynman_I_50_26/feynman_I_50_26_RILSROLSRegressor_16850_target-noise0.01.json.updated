@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_50_26",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 3716.90625,
+    "time_time": 3718.4601097106934,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "x1*(alpha*cos(omega*t)**2 + cos(omega*t))",
+    "model_size": 80,
+    "symbolic_model": "0.01109803*3**x1*x0*x2**2*x3 + 0.02639447*x0*x1*x2**x1*x3*cos(x1**2 + x2**2) - 0.000541*x0*x2**2*(3*x3)**x1 - 0.66166301 + 1.37978504*x3**2*sin(0.00738127*3**x1*x0*x2**(2.2*x1))/x2**(0.8*x1**2)",
+    "mse_train": 0.6596371785453855,
+    "mae_train": 0.5207880862465368,
+    "r2_train": 0.8305225673776222,
+    "mse_test": 0.7309883994326224,
+    "mae_test": 0.5258385953607858,
+    "r2_test": 0.8119686046012882,
+    "simplified_symbolic_model": "0.011*3**omega*alpha*t**2*x1 + 1.38*alpha**2*sin(0.00702*3**omega*t**(2.2*omega)*x1)/t**(0.8*omega**2) + 0.026*alpha*omega*t**omega*x1*cos(omega**2 + t**2) - 0.000977*t**2*x1*(3*alpha)**omega - 0.662",
+    "simplified_complexity": 63,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_predprey2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2441.1875,
+    "time_time": 2441.864967107773,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "y*(x/(x + 1) - 0.075*y)",
+    "model_size": 27,
+    "symbolic_model": "-0.07205415*x1**2 + 0.97569674*x1 + 0.09601527 - 1.02175808/(sin(x0/x1) + 1/x1)",
+    "mse_train": 0.024922415913083546,
+    "mae_train": 0.12426000535130664,
+    "r2_train": 0.9897391153278574,
+    "mse_test": 0.001754254118748124,
+    "mae_test": 0.03333590534684457,
+    "r2_test": 0.9993031238277222,
+    "simplified_symbolic_model": "-0.072*y**2 + 0.976*y + 0.0959 - 1.02/(sin(x/y) + 1/y)",
+    "simplified_complexity": 24,
+    "symbolic_error": "0.072*y**2 + y*(x/(x + 1) - 0.075*y) - 0.976*y - 0.0959 + 1.02/(sin(x/y) + 1/y)",
+    "symbolic_fraction": "(-0.072*y**2 + 0.976*y + 0.0959 - 1.02/(sin(x/y) + 1/y))/(y*(x/(x + 1) - 0.075*y))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

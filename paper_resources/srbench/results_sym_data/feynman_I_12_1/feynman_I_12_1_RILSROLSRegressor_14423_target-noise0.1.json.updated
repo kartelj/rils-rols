@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_12_1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2272.828125,
+    "time_time": 2279.7041738033295,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Nn*mu",
+    "model_size": 27,
+    "symbolic_model": "x1*(1.07189806*x0 + 0.23472436*cos(x0*(x1 - (x0 + 1/x1)**x1 + 0.8)) - 0.18777949)",
+    "mse_train": 1.3666402744556305,
+    "mae_train": 0.9332368662901,
+    "r2_train": 0.9488113983593129,
+    "mse_test": 0.35738575649337484,
+    "mae_test": 0.4717300907825851,
+    "r2_test": 0.9861265731824373,
+    "simplified_symbolic_model": "Nn*(1.07*mu + 0.235*cos(mu*(Nn - (mu + 1/Nn)**Nn + 0.8)) - 0.188)",
+    "simplified_complexity": 24,
+    "symbolic_error": "Nn*(-0.0699*mu - 0.235*cos(mu*(Nn - (mu + 1/Nn)**Nn + 0.8)) + 0.188)",
+    "symbolic_fraction": "(1.07*mu + 0.235*cos(mu*(Nn - (mu + 1/Nn)**Nn + 0.8)) - 0.188)/mu",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

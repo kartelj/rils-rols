@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_43_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 3048.9375,
+    "time_time": 3050.436979532242,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Volt*mu_drift*q/d",
+    "model_size": 74,
+    "symbolic_model": "1.02810408*x0*x1*x2/x3 + 0.14507688*x0*x1*cos(x3)*cos(2**x0*x1 - x2) - 0.25635348*x0*sin(x0 + x3) + 1.08974234 - 3.01659951/x3 - 1.06852217*x2*cos(2**x0*x1/x3 + x0**3 + 1)/x1**2",
+    "mse_train": 3.580090319838296,
+    "mae_train": 1.506848007348018,
+    "r2_train": 0.9669301213625863,
+    "mse_test": 1.2803179988954845,
+    "mae_test": 0.8663970577374648,
+    "r2_test": 0.9873083604417301,
+    "simplified_symbolic_model": "-1.07*Volt*cos(2**mu_drift*q/d + mu_drift**3 + 1)/q**2 + 1.03*Volt*mu_drift*q/d + 0.145*mu_drift*q*cos(d)*cos(2**mu_drift*q - Volt) - 0.256*mu_drift*sin(d + mu_drift) + 1.09 - 3.02/d",
+    "simplified_complexity": 58,
+    "symbolic_error": "1.07*Volt*cos(2**mu_drift*q/d + mu_drift**3 + 1)/q**2 - 0.028*Volt*mu_drift*q/d - 0.145*mu_drift*q*cos(d)*cos(2**mu_drift*q - Volt) + 0.256*mu_drift*sin(d + mu_drift) - 1.09 + 3.02/d",
+    "symbolic_fraction": "d*(-1.07*Volt*cos(2**mu_drift*q/d + mu_drift**3 + 1)/q**2 + 1.03*Volt*mu_drift*q/d + 0.145*mu_drift*q*cos(d)*cos(2**mu_drift*q - Volt) - 0.256*mu_drift*sin(d + mu_drift) + 1.09 - 3.02/d)/(Volt*mu_drift*q)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 6419.140625,
+    "time_time": 6423.336956501007,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "Z_1**2*Z_2**2*alpha**2*c**2*hbar**2/(16*E_n**2*sin(theta/2)**4)",
+    "model_size": 172,
+    "symbolic_model": "11.73776138*x0**2*x1**2*x2**3*x3**3*x4**2*sin(1/x5)**2/(x6 + 1)**5 + 109.59438012*x0**2*x1*x4*sin(1/x5)**2/(x6**5*(10 - x2)) + 4.67059932*x0**2*x5**3*sin(1/(x5 + x6))**2/x6**5 - 8.81932612*x0**2*x5**2*sin(1/x5)**2/x6**5 - 0.37784814*x1**2*x2**4*x3**3*(x4 + x5)**2*sin(1/x5)**2/(x6 + 1)**5 + 0.03100061*x1**2*x2**3*x3**3*x4**2*sin(1/x5)**2/x5**4 + 0.36615319",
+    "mse_train": 2.1048000704958096,
+    "mae_train": 0.5738925898508757,
+    "r2_train": 0.9864197940639869,
+    "mse_test": 2.1158266818233864,
+    "mae_test": 0.5753207134931144,
+    "r2_test": 0.9856323570916778,
+    "simplified_symbolic_model": "4.67*E_n**3*Z_1**2*sin(1/(E_n + theta))**2/theta**5 - 8.82*E_n**2*Z_1**2*sin(1/E_n)**2/theta**5 + 11.7*Z_1**2*Z_2**2*alpha**3*c**2*hbar**3*sin(1/E_n)**2/(theta + 1)**5 - 110.0*Z_1**2*Z_2*c*sin(1/E_n)**2/(theta**5*(alpha - 10)) - 0.378*Z_2**2*alpha**4*hbar**3*(E_n + c)**2*sin(1/E_n)**2/(theta + 1)**5 + 0.366 + 0.031*Z_2**2*alpha**3*c**2*hbar**3*sin(1/E_n)**2/E_n**4",
+    "simplified_complexity": 137,
+    "symbolic_error": "-4.67*E_n**3*Z_1**2*sin(1/(E_n + theta))**2/theta**5 + 8.82*E_n**2*Z_1**2*sin(1/E_n)**2/theta**5 - 11.7*Z_1**2*Z_2**2*alpha**3*c**2*hbar**3*sin(1/E_n)**2/(theta + 1)**5 + 110.0*Z_1**2*Z_2*c*sin(1/E_n)**2/(theta**5*(alpha - 10)) + 0.378*Z_2**2*alpha**4*hbar**3*(E_n + c)**2*sin(1/E_n)**2/(theta + 1)**5 - 0.366 + Z_1**2*Z_2**2*alpha**2*c**2*hbar**2/(16*E_n**2*sin(theta/2)**4) - 0.031*Z_2**2*alpha**3*c**2*hbar**3*sin(1/E_n)**2/E_n**4",
+    "symbolic_fraction": "16*E_n**2*(4.67*E_n**3*Z_1**2*sin(1/(E_n + theta))**2/theta**5 - 8.82*E_n**2*Z_1**2*sin(1/E_n)**2/theta**5 + 11.7*Z_1**2*Z_2**2*alpha**3*c**2*hbar**3*sin(1/E_n)**2/(theta + 1)**5 - 110.0*Z_1**2*Z_2*c*sin(1/E_n)**2/(theta**5*(alpha - 10)) - 0.378*Z_2**2*alpha**4*hbar**3*(E_n + c)**2*sin(1/E_n)**2/(theta + 1)**5 + 0.366 + 0.031*Z_2**2*alpha**3*c**2*hbar**3*sin(1/E_n)**2/E_n**4)*sin(theta/2)**4/(Z_1**2*Z_2**2*alpha**2*c**2*hbar**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

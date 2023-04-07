@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 5657.09375,
+    "time_time": 7248.863059043884,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 158,
+    "symbolic_model": "0.50706837*x0*x1**2*x4**2 + 0.49762089*x0*x1**2*x4**3*x5/x3 + 2.75969205*x0*x3*cos(x0*x5)/x1 - 0.01581582*x1*x5*exp(x4)*cos(9.8696044*x0) - 3.63783874*x2*sin(0.82644628*x5**2/(0.90909091*x4/x5 + 1)**2) - 0.00803993*x5*exp(x4)*cos(3.14159265*x0)/sin(x1) + 9.49965572 - 1.46129292*x2*x3*cos(x0**2*x5)/x1 - 5.04074887*x3*x5*cos(x0)/x1 + 24.50755913*x3*cos(x0)/x1 + 9.49740045*x3*cos(x5)*cos(x0*x5)/x1",
+    "mse_train": 2695.8206720134126,
+    "mae_train": 20.335782995672442,
+    "r2_train": 0.9988598952813553,
+    "mse_test": 1669.6643795082377,
+    "mae_test": 13.79127534919641,
+    "r2_test": 0.9992394922670501,
+    "simplified_symbolic_model": "0.498*alpha*m*omega**2*x**3/y - 0.016*alpha*omega*exp(x)*cos(9.87*m) - 0.00806*alpha*exp(x)*cos(3.14*m)/sin(omega) - 5.04*alpha*y*cos(m)/omega + 0.507*m*omega**2*x**2 + 2.76*m*y*cos(alpha*m)/omega - 3.64*p*sin(0.826*alpha**2/(1 + 0.909*x/alpha)**2) + 9.5 - 1.46*p*y*cos(alpha*m**2)/omega + 9.5*y*cos(alpha)*cos(alpha*m)/omega + 24.5*y*cos(m)/omega",
+    "simplified_complexity": 119,
+    "symbolic_error": "0.00201*alpha*m*omega**2*x**3/y + 0.016*alpha*omega*exp(x)*cos(9.87*m) + 0.00806*alpha*exp(x)*cos(3.14*m)/sin(omega) + 5.04*alpha*y*cos(m)/omega - 0.00702*m*omega**2*x**2 - 2.72*m*y*cos(alpha*m)/omega + 3.63*p*sin(0.826*alpha**4/(alpha**2 + 1.82*alpha*x + 0.826*x**2)) - 9.48 + 1.44*p*y*cos(alpha*m**2)/omega - 9.48*y*cos(alpha)*cos(alpha*m)/omega - 24.5*y*cos(m)/omega + 0.5*p**2/m",
+    "symbolic_fraction": "2*m*(0.498*alpha*m*omega**2*x**3/y - 0.016*alpha*omega*exp(x)*cos(9.87*m) - 0.00806*alpha*exp(x)*cos(3.14*m)/sin(omega) - 5.04*alpha*y*cos(m)/omega + 0.507*m*omega**2*x**2 + 2.76*m*y*cos(alpha*m)/omega - 3.64*p*sin(0.826*alpha**2/(1 + 0.909*x/alpha)**2) + 9.5 - 1.46*p*y*cos(alpha*m**2)/omega + 9.5*y*cos(alpha)*cos(alpha*m)/omega + 24.5*y*cos(m)/omega)/(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

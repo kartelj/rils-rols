@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 16850,
+        "verbose": false
+    },
+    "random_state": 16850,
+    "process_time": 2952.25,
+    "time_time": 2952.442698955536,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "0.08*q*(12.6*Volt*d*epsilon - d*q*y**3/(-d**2 + y**2)**2)/(epsilon*y**2)",
+    "model_size": 42,
+    "symbolic_model": "0.99999446*x0*x2*x3/x1**2 + 0.17012092*x3*x4*log(cos(x0/(x4*(-0.8*x1 + x3 + 1/(x1 + 0.5))**2 + x4)))",
+    "mse_train": 8.161040581044176e-07,
+    "mae_train": 0.00028857316124114975,
+    "r2_train": 0.9999999961321958,
+    "mse_test": 7.063519759436137e-07,
+    "mae_test": 0.0002898172834274989,
+    "r2_test": 0.9999999966547221,
+    "simplified_symbolic_model": "1.0*Volt*d*q/y**2 + 0.17*d*epsilon*log(cos(q/(epsilon*(d - 0.8*y + 1/(y + 0.5))**2 + epsilon)))",
+    "simplified_complexity": 35
+}

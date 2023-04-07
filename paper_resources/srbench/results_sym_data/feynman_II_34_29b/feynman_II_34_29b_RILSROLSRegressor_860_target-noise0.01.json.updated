@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_34_29b",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2514.75,
+    "time_time": 2515.532747745514,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "6.28*B*Jz*g_*mom/h",
+    "model_size": 49,
+    "symbolic_model": "6.22196791*x0*x2*x3*x4/x1 - 0.30834316*x3*log(x0)*cos(x4)/log(x1) - 1.77962303*sin(1.12168532*x2) + 1.22951938 - 0.01397052/(0.5 - log(x4))",
+    "mse_train": 922.524271644932,
+    "mae_train": 3.5723584939727546,
+    "r2_train": 0.9802945873231746,
+    "mse_test": 388.6240747394074,
+    "mae_test": 2.1355707946076583,
+    "r2_test": 0.9921079601913745,
+    "simplified_symbolic_model": "6.22*B*Jz*g_*mom/h - 0.308*mom*log(g_)*cos(B)/log(h) - 1.78*sin(1.12*Jz) + 1.23 + 0.014/(log(B) - 0.5)",
+    "simplified_complexity": 36,
+    "symbolic_error": "0.062*B*Jz*g_*mom/h + 0.308*mom*log(g_)*cos(B)/log(h) + 1.78*sin(1.12*Jz) - 1.23 - 0.014/(log(B) - 0.5)",
+    "symbolic_fraction": "0.159*h*(6.22*B*Jz*g_*mom/h - 0.308*mom*log(g_)*cos(B)/log(h) - 1.78*sin(1.12*Jz) + 1.23 + 0.014/(log(B) - 0.5))/(B*Jz*g_*mom)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

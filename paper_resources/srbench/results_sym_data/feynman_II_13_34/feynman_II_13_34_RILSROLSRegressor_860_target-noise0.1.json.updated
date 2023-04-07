@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_13_34",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2112.6875,
+    "time_time": 2113.553806781769,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "rho_c_0*v/sqrt(1 - v**2/c**2)",
+    "model_size": 17,
+    "symbolic_model": "0.97900368*x0*x1 + 8.81078342*x0*log(x1)/x2**2",
+    "mse_train": 0.28792971482406693,
+    "mae_train": 0.4292671033432578,
+    "r2_train": 0.9380681173698413,
+    "mse_test": 0.012972372701647314,
+    "mae_test": 0.07382042602393504,
+    "r2_test": 0.9970734066696179,
+    "simplified_symbolic_model": "0.979*rho_c_0*v + 8.81*rho_c_0*log(v)/c**2",
+    "simplified_complexity": 13,
+    "symbolic_error": "-0.979*rho_c_0*v + rho_c_0*v/sqrt(1 - v**2/c**2) - 8.81*rho_c_0*log(v)/c**2",
+    "symbolic_fraction": "sqrt(1 - v**2/c**2)*(0.979*rho_c_0*v + 8.81*rho_c_0*log(v)/c**2)/(rho_c_0*v)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

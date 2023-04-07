@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_bacres2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2238.4375,
+    "time_time": 2240.593125104904,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "-x*y/(0.5*x**2 + 1) + 10",
+    "model_size": 33,
+    "symbolic_model": "7.25045069 - 0.00363001*(x0 - x1 + 0.5*sin(x0**2) + cos(x0) + cos(x0*x1 + x1**2 + 1))**2",
+    "mse_train": 0.25694506283022656,
+    "mae_train": 0.38698751494161754,
+    "r2_train": 0.9478380289525744,
+    "mse_test": 0.04826825734830196,
+    "mae_test": 0.17381482261072415,
+    "r2_test": 0.9901757085467825,
+    "simplified_symbolic_model": "7.25 - 0.00403*(x - y + 0.5*sin(x**2) + cos(x) + cos(x*y + y**2 + 1))**2",
+    "simplified_complexity": 28,
+    "symbolic_error": "-x*y/(0.5*x**2 + 1) + 0.00403*(x - y + 0.5*sin(x**2) + cos(x) + cos(x*y + y**2 + 1))**2 + 2.75",
+    "symbolic_fraction": "(7.25 - 0.00403*(x - y + 0.5*sin(x**2) + cos(x) + cos(x*y + y**2 + 1))**2)/(-x*y/(0.5*x**2 + 1) + 10)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_34_2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 3348.046875,
+    "time_time": 3371.2790157794952,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "q*r*v/2",
+    "model_size": 51,
+    "symbolic_model": "0.56472639*x0*x1*x2 - 1.13504747*x0 + 2.28163992*x0/x2 - 0.01787949*exp(x1)*sin(exp(x0*x1) + exp(-x1**2)*exp(x0*x1)) - 1.52772563 + 4.77825957/x1**4",
+    "mse_train": 4.580240775542833,
+    "mae_train": 1.6903005915423452,
+    "r2_train": 0.9527029216268501,
+    "mse_test": 1.8352063761839943,
+    "mae_test": 1.0637228474459002,
+    "r2_test": 0.9805683070956592,
+    "simplified_symbolic_model": "0.565*q*r*v - 1.14*q + 2.28*q/r - 0.018*exp(v)*sin(exp(q*v) + exp(q*v - v**2)) - 1.53 + 4.78/v**4",
+    "simplified_complexity": 41,
+    "symbolic_error": "-0.0649*q*r*v + 1.14*q - 2.28*q/r + 0.018*exp(v)*sin(exp(q*v) + exp(q*v - v**2)) + 1.53 - 4.78/v**4",
+    "symbolic_fraction": "2*(0.565*q*r*v - 1.14*q + 2.28*q/r - 0.018*exp(v)*sin(exp(q*v) + exp(q*v - v**2)) - 1.53 + 4.78/v**4)/(q*r*v)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

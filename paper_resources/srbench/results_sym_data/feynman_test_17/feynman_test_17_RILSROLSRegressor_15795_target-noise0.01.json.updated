@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 3702.734375,
+    "time_time": 3704.1247782707214,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 142,
+    "symbolic_model": "0.47112248*x0*x1**2*x4**2 + 0.50378744*x0*x1**2*x4**3*x5/x3 + 1.96559461*x1*cos(x0*x3 + 10*x3*x5 + x3) - 0.55971019*x2*x3*cos(x0*x3 + x3*x5) + 4.62875617*x3*x5*cos(x5) - 23.44586509*x3*cos(x5) - 0.65718285*x4*x5 + 0.15929575*exp(x0)*cos(-x0*x2 + x0*x3 + x1 + 10*x3*x5) + 8.87951795 + 61.62019857*cos(x5)/x5 - 4.7118985*x4*cos(-x0*x3 + x1 + 10*x3*x5)/x0",
+    "mse_train": 461.4293439536289,
+    "mae_train": 17.02494840292663,
+    "r2_train": 0.9997776117139207,
+    "mse_test": 193.9839023587199,
+    "mae_test": 10.78338281040021,
+    "r2_test": 0.9999093690217808,
+    "simplified_symbolic_model": "0.504*alpha*m*omega**2*x**3/y - 0.657*alpha*x + 4.63*alpha*y*cos(alpha) + 0.471*m*omega**2*x**2 + 1.97*omega*cos(10*alpha*y + m*y + y) - 0.56*p*y*cos(alpha*y + m*y) - 23.4*y*cos(alpha) + 0.159*exp(m)*cos(10*alpha*y - m*p + m*y + omega) + 8.88 - 4.71*x*cos(10*alpha*y - m*y + omega)/m + 61.6*cos(alpha)/alpha",
+    "simplified_complexity": 106,
+    "symbolic_error": "-0.00403*alpha*m*omega**2*x**3/y + 0.657*alpha*x - 4.63*alpha*y*cos(alpha) + 0.029*m*omega**2*x**2 - 1.97*omega*cos(10*alpha*y + m*y + y) + 0.56*p*y*cos(alpha*y + m*y) + 23.4*y*cos(alpha) - 0.159*exp(m)*cos(10*alpha*y - m*p + m*y + omega) - 8.88 + p**2/(2*m) + 4.71*x*cos(10*alpha*y - m*y + omega)/m - 61.6*cos(alpha)/alpha",
+    "symbolic_fraction": "2*m*(0.504*alpha*m*omega**2*x**3/y - 0.657*alpha*x + 4.63*alpha*y*cos(alpha) + 0.471*m*omega**2*x**2 + 1.97*omega*cos(10*alpha*y + m*y + y) - 0.56*p*y*cos(alpha*y + m*y) - 23.4*y*cos(alpha) + 0.159*exp(m)*cos(10*alpha*y - m*p + m*y + omega) + 8.88 - 4.71*x*cos(10*alpha*y - m*y + omega)/m + 61.6*cos(alpha)/alpha)/(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

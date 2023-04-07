@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_6_15b",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2317.5,
+    "time_time": 2322.1738448143005,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "0.239*p_d*sin(theta)*cos(theta)/(epsilon*r**3)",
+    "model_size": 36,
+    "symbolic_model": "(-0.00032661*x0*(x3 + 1/x1)**4 - 1.88664708*cos(x2)**5 + 2.21738524*cos(x2))/(x0*(x3 + 1/x1)**4)",
+    "mse_train": 5.648870426177749e-06,
+    "mae_train": 0.0012209810933336402,
+    "r2_train": 0.9935011621885025,
+    "mse_test": 5.762125830617e-06,
+    "mae_test": 0.001220512783073133,
+    "r2_test": 0.9935684232998195,
+    "simplified_symbolic_model": "-(1.89*cos(theta)**5 - 2.22*cos(theta))/(epsilon*(r + 1/p_d)**4)",
+    "simplified_complexity": 23,
+    "symbolic_error": "0.239*p_d*sin(theta)*cos(theta)/(epsilon*r**3) + (1.89*cos(theta)**5 - 2.22*cos(theta))/(epsilon*(r + 1/p_d)**4)",
+    "symbolic_fraction": "-4.18*r**3*(1.89*cos(theta)**5 - 2.22*cos(theta))/(p_d*(r + 1/p_d)**4*sin(theta)*cos(theta))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2903.546875,
+    "time_time": 2903.8819427490234,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 66,
+    "symbolic_model": "0.50025074*x0*x1**2*x4**2 + 0.50056618*x0*x1**2*x4**3*x5/x3 - 2.0e-8*x1*(x0 + x5)**8 + 1.0e-8*x2**2*(x0 + x5)**8 - 0.45772174*x4 - 0.31907721 + 2.43244031*x2/x0",
+    "mse_train": 6.4455797443808125,
+    "mae_train": 1.8372737727688917,
+    "r2_train": 0.9999972737494864,
+    "mse_test": 3.287497073119245,
+    "mae_test": 0.9908484435179173,
+    "r2_test": 0.9999985025931099,
+    "sympy_exception": "invalid syntax (<string>, line 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

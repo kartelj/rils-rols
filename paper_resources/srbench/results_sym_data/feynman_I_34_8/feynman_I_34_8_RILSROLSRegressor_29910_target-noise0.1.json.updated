@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_34_8",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2760.421875,
+    "time_time": 2795.9169578552246,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "B*q*v/p",
+    "model_size": 54,
+    "symbolic_model": "0.99351237*x0*x1*x2/x3 - 0.66589946*sin(x1) - 1.01876997*sin(x0**(-x3 - 1)*x1**3) + 0.58767419 - 0.3610885*x1**2/x0**x3 + 3.61088501/x0**x3",
+    "mse_train": 2.8295194649939956,
+    "mae_train": 1.3404953189993598,
+    "r2_train": 0.9751061856818328,
+    "mse_test": 0.47971823985388545,
+    "mae_test": 0.474804503938804,
+    "r2_test": 0.9953675761242341,
+    "simplified_symbolic_model": "0.994*B*q*v/p - 0.666*sin(v) - 1.02*sin(q**(-p - 1)*v**3) + 0.588 - 0.361*v**2/q**p + 3.61/q**p",
+    "simplified_complexity": 45,
+    "symbolic_error": "0.00598*B*q*v/p + 0.666*sin(v) + 1.02*sin(q**(-p - 1)*v**3) - 0.588 + 0.361*v**2/q**p - 3.61/q**p",
+    "symbolic_fraction": "p*(0.994*B*q*v/p - 0.666*sin(v) - 1.02*sin(q**(-p - 1)*v**3) + 0.588 - 0.361*v**2/q**p + 3.61/q**p)/(B*q*v)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

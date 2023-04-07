@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_44_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2426.203125,
+    "time_time": 2427.1836285591125,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "T*kb*n*log(V2/V1)",
+    "model_size": 26,
+    "symbolic_model": "-0.99196898*x0*x1*x2*log(x3/x4) + 2.39948783*x0 + 4.3011814*sin(x0) - 7.64520295",
+    "mse_train": 4.902426443291809,
+    "mae_train": 1.7609562748812975,
+    "r2_train": 0.9885378745910254,
+    "mse_test": 0.7909957819312348,
+    "mae_test": 0.7855001797724581,
+    "r2_test": 0.9981541352351148,
+    "simplified_symbolic_model": "-0.992*T*kb*n*log(V1/V2) + 2.4*n + 4.3*sin(n) - 7.64",
+    "simplified_complexity": 20,
+    "symbolic_error": "T*kb*n*log(V2/V1) + 0.992*T*kb*n*log(V1/V2) - 2.4*n - 4.3*sin(n) + 7.64",
+    "symbolic_fraction": "(-0.992*T*kb*n*log(V1/V2) + 2.4*n + 4.3*sin(n) - 7.64)/(T*kb*n*log(V2/V1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

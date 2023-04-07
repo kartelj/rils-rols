@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_34_29b",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2837.953125,
+    "time_time": 2838.5383257865906,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "6.28*B*Jz*g_*mom/h",
+    "model_size": 63,
+    "symbolic_model": "6.26055653*x0*x2*x3*x4/x1 + 0.33624857*x4**2*log(x3) - 2.32345019*x4 - 0.04699879*exp(x3) + 1.82202158*log(x3)*sin(x1 + 1) + 6.35002993 + 76.67692711*exp(-x4)*sin(x1**2)*cos(x4)/x1",
+    "mse_train": 14.597556054913253,
+    "mae_train": 2.9898874694451982,
+    "r2_train": 0.9996920461202315,
+    "mse_test": 6.063139267202266,
+    "mae_test": 1.7878725393059047,
+    "r2_test": 0.9998708554001463,
+    "simplified_symbolic_model": "0.336*B**2*log(mom) + 6.26*B*Jz*g_*mom/h - 2.32*B - 0.047*exp(mom) + 1.82*log(mom)*sin(h + 1) + 6.35 + 76.7*exp(-B)*sin(h**2)*cos(B)/h",
+    "simplified_complexity": 48,
+    "symbolic_error": "-0.336*B**2*log(mom) + 0.022*B*Jz*g_*mom/h + 2.32*B + 0.047*exp(mom) - 1.82*log(mom)*sin(h + 1) - 6.35 - 76.7*exp(-B)*sin(h**2)*cos(B)/h",
+    "symbolic_fraction": "0.159*h*(0.336*B**2*log(mom) + 6.26*B*Jz*g_*mom/h - 2.32*B - 0.047*exp(mom) + 1.82*log(mom)*sin(h + 1) + 6.35 + 76.7*exp(-B)*sin(h**2)*cos(B)/h)/(B*Jz*g_*mom)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

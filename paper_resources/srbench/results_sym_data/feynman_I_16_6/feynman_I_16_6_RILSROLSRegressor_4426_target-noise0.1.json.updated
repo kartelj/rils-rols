@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_16_6",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2756.1875,
+    "time_time": 2772.833322763443,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "(u + v)/(1 + u*v/c**2)",
+    "model_size": 35,
+    "symbolic_model": "1.40133367*x0 - 1.75118066*x0/x2 + 1.0489109*x1*cos(3.14159265/x0)/x2**2 - 0.92990327 + 3.68880626/x2",
+    "mse_train": 0.1613715261734894,
+    "mae_train": 0.307560188200438,
+    "r2_train": 0.8829699297243518,
+    "mse_test": 0.07119963731960009,
+    "mae_test": 0.17915648177091745,
+    "r2_test": 0.9447879850387007,
+    "simplified_symbolic_model": "1.4*c - 1.75*c/u - 0.93 + 3.69/u + 1.05*v*cos(3.14/c)/u**2",
+    "simplified_complexity": 28,
+    "symbolic_error": "-1.4*c + 1.75*c/u + 0.93 + (u + v)/(1 + u*v/c**2) - 3.69/u - 1.05*v*cos(3.14/c)/u**2",
+    "symbolic_fraction": "(1 + u*v/c**2)*(1.4*c - 1.75*c/u - 0.93 + 3.69/u + 1.05*v*cos(3.14/c)/u**2)/(u + v)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

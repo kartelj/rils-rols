@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_13_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 2462.65625,
+    "time_time": 2468.354926586151,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "m*(u**2 + v**2 + w**2)/2",
+    "model_size": 26,
+    "symbolic_model": "0.49598888*x0*x1**2 + 0.49887799*x0*x2**2 + 0.49865316*x0*x3**2 + 0.1533175",
+    "mse_train": 0.30044043745288146,
+    "mae_train": 0.43824112378553165,
+    "r2_train": 0.9995644674525949,
+    "mse_test": 0.017642414481447304,
+    "mae_test": 0.09806087747563748,
+    "r2_test": 0.9999745379633381,
+    "simplified_symbolic_model": "0.499*m*u**2 + 0.496*m*v**2 + 0.499*m*w**2 + 0.153",
+    "simplified_complexity": 20,
+    "symbolic_error": "0.00101*m*u**2 + 0.00403*m*v**2 + 0.00101*m*w**2 - 0.153",
+    "symbolic_fraction": "2*(0.499*m*u**2 + 0.496*m*v**2 + 0.499*m*w**2 + 0.153)/(m*(u**2 + v**2 + w**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

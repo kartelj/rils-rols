@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_15_3x",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2446.296875,
+    "time_time": 2447.091234445572,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "(-t*u + x)/sqrt(1 - u**2/c**2)",
+    "model_size": 34,
+    "symbolic_model": "0.05772263*x0**2 + 2.637e-5*x1**2*exp(x0)*sin((x2 + x3)**0.5) + 4.16950504 - 6.62474283*x1*x3/x0",
+    "mse_train": 0.37960297131461096,
+    "mae_train": 0.49005541247832934,
+    "r2_train": 0.8685358236587997,
+    "mse_test": 0.06260740847705477,
+    "mae_test": 0.16137692486248273,
+    "r2_test": 0.9755518087604363,
+    "simplified_symbolic_model": "-6.63*t*u/x + 0.058*x**2 + 4.17",
+    "simplified_complexity": 14,
+    "symbolic_error": "6.61*t*u/x - 0.058*x**2 - 4.17 - (t*u - x)/sqrt(1 - u**2/c**2)",
+    "symbolic_fraction": "sqrt(1 - u**2/c**2)*(-6.61*t*u/x + 0.058*x**2 + 4.17)/(-t*u + x)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

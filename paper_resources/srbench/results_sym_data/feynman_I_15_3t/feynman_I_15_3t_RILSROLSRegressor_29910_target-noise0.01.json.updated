@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_15_3t",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 1972.890625,
+    "time_time": 1973.5243031978607,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "(t - u*x/c**2)/sqrt(1 - u**2/c**2)",
+    "model_size": 16,
+    "symbolic_model": "-1.16305142*x0**1.57079633/(x1 + x3)**2 + 1.02065244*x3",
+    "mse_train": 0.005346006771989029,
+    "mae_train": 0.045908634540048066,
+    "r2_train": 0.9963725549718638,
+    "mse_test": 0.004286313171546809,
+    "mae_test": 0.03530078782528012,
+    "r2_test": 0.9970830667965739,
+    "simplified_symbolic_model": "1.02*t - 1.16*x**1.57/(c + t)**2",
+    "simplified_complexity": 14,
+    "symbolic_error": "-1.02*t + 1.16*x**1.57/(c + t)**2 + (t - u*x/c**2)/sqrt(1 - u**2/c**2)",
+    "symbolic_fraction": "sqrt(1 - u**2/c**2)*(1.02*t - 1.16*x**1.57/(c + t)**2)/(t - u*x/c**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

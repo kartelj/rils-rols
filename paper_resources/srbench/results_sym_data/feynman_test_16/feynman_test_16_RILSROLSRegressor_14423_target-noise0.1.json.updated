@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 3068.3125,
+    "time_time": 3069.620889902115,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2)",
+    "model_size": 45,
+    "symbolic_model": "0.04578342*2**x4*x1*x3**2/x0 + 0.90772314*x0*x1**2 - 0.13812856*(0.5*x1)**x4 + 19.29186639*log(x1 + x3*x5 + x4) - 36.23881849",
+    "mse_train": 49.40891740940519,
+    "mae_train": 5.482615485209363,
+    "r2_train": 0.9408962187221973,
+    "mse_test": 19.33044551596838,
+    "mae_test": 3.1862769482572575,
+    "r2_test": 0.9763141152015863,
+    "simplified_symbolic_model": "0.046*2**A_vec*c*q**2/m + 0.908*c**2*m - 0.138*(0.5*c)**A_vec + 19.3*log(A_vec + Volt*q + c) - 36.2",
+    "simplified_complexity": 36,
+    "symbolic_error": "-0.046*2**A_vec*c*q**2/m + Volt*q - 0.908*c**2*m + 0.138*(0.5*c)**A_vec + sqrt(c**4*m**2 + c**2*(A_vec*q - p)**2) - 19.3*log(A_vec + Volt*q + c) + 36.2",
+    "symbolic_fraction": "(0.046*2**A_vec*c*q**2/m + 0.908*c**2*m - 0.138*(0.5*c)**A_vec + 19.3*log(A_vec + Volt*q + c) - 36.2)/(Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

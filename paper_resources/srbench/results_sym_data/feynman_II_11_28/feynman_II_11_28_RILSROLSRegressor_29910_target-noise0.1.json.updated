@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_11_28",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 1812.96875,
+    "time_time": 1813.4906015396118,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "alpha*n/(-alpha*n/3 + 1) + 1",
+    "model_size": 23,
+    "symbolic_model": "0.06653622*log(x0*x1) + 1.29194227 + 3.42703803*exp(-1/(x0*sin(x1)))",
+    "mse_train": 0.020235781591785105,
+    "mae_train": 0.11340583758586138,
+    "r2_train": 0.8060345349693216,
+    "mse_test": 0.0017809760015560737,
+    "mae_test": 0.030520398956636392,
+    "r2_test": 0.9788924025069091,
+    "simplified_symbolic_model": "0.0667*log(alpha*n) + 1.3 + 3.42*exp(-1/(n*sin(alpha)))",
+    "simplified_complexity": 20,
+    "symbolic_error": "-alpha*n/(alpha*n/3 - 1) - 0.067*log(alpha*n) - 0.296 - 3.41*exp(-1/(n*sin(alpha)))",
+    "symbolic_fraction": "(0.067*log(alpha*n) + 1.3 + 3.41*exp(-1/(n*sin(alpha))))/(alpha*n/(-alpha*n/3 + 1) + 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

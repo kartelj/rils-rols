@@ -1,0 +1,25 @@
+{
+    "dataset": "strogatz_glider1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 1728.75,
+    "time_time": 1729.85799908638,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": " -0.05 * x**2 - sin(y)",
+    "model_size": 11,
+    "symbolic_model": "-0.04999282*x0**2 - 1.00005935*sin(x1)",
+    "mse_train": 7.341346988855892e-07,
+    "mae_train": 0.0006838416551015397,
+    "r2_train": 0.999998818572152,
+    "mse_test": 4.503329017652685e-09,
+    "mae_test": 5.60474633313415e-05,
+    "r2_test": 0.9999999928096887
+}

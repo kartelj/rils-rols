@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_II_35_18",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 23654,
+        "verbose": false
+    },
+    "random_state": 23654,
+    "process_time": 3289.828125,
+    "time_time": 3290.209000349045,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": " n_0/(exp(mom*B/(kb*T))+exp(-mom*B/(kb*T)))",
+    "model_size": 129,
+    "symbolic_model": "1606938044258990000000000000000000000000000000000000000000000*x0*(log(x1*x2/(x3*x4)) + 0.5*sin(log(x1*x2/(x3*x4)) + 1) + 1)**200 + x0*(log(x1*x2/(x3*x4)) + sin(log(x1**2*x2**2/(x3*x4)) + 1) + 1)**2 + x0*sin(log(x1*x2/(x3*x4)))**0.5 + (log(x1*x2/(x3*x4)) + sin(log(x1*x2/(x3*x4)) + 1) + 1)**2",
+    "mse_train": Infinity,
+    "mae_train": 1.0614686393788697e+153,
+    "r2_train": -Infinity,
+    "mse_test": Infinity,
+    "mae_test": 2.763314850746311e+153,
+    "r2_test": -Infinity
+}

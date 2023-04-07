@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 4655.859375,
+    "time_time": 4656.466259717941,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2)",
+    "model_size": 91,
+    "symbolic_model": "1.01439714*x0*x1**2 - 2.4066933*x1 - 8.95470832*x1*log(x1 - 1)/(x0 + x2)**2 + 0.06561013*x3**2*x4 + 5.23356917*x3*x4*log(x1)/(x0 + x2) + 0.995774*x3*x5 - 0.76981821*x3 + 0.04095397*(-x0 + x3*x4)**2 + 2.42446349 + 0.71078863*(x1 + log(x3))**2/(x3*x4)",
+    "mse_train": 2.113075097131668,
+    "mae_train": 0.8172470203513678,
+    "r2_train": 0.9973761872989929,
+    "mse_test": 2.0232040562659437,
+    "mae_test": 0.8113607992831005,
+    "r2_test": 0.9975209377269235,
+    "simplified_symbolic_model": "0.066*A_vec*q**2 + 5.23*A_vec*q*log(c)/(m + p) + 0.996*Volt*q + 1.01*c**2*m - 2.41*c - 8.96*c*log(c - 1)/(m + p)**2 - 0.77*q + 0.041*(A_vec*q - m)**2 + 2.42 + 0.711*(c + log(q))**2/(A_vec*q)",
+    "simplified_complexity": 72,
+    "symbolic_error": "-0.066*A_vec*q**2 - 5.23*A_vec*q*log(c)/(m + p) + 0.00403*Volt*q - 1.01*c**2*m + 2.41*c + 8.96*c*log(c - 1)/(m + p)**2 + 0.77*q - 0.041*(A_vec*q - m)**2 + sqrt(c**4*m**2 + c**2*(A_vec*q - p)**2) - 2.42 - 0.711*(c + log(q))**2/(A_vec*q)",
+    "symbolic_fraction": "(0.066*A_vec*q**2 + 5.23*A_vec*q*log(c)/(m + p) + 0.996*Volt*q + 1.01*c**2*m - 2.41*c - 8.96*c*log(c - 1)/(m + p)**2 - 0.77*q + 0.041*(A_vec*q - m)**2 + 2.42 + 0.711*(c + log(q))**2/(A_vec*q))/(Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

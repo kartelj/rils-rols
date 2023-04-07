@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 4400.078125,
+    "time_time": 4400.282607316971,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2)",
+    "model_size": 102,
+    "symbolic_model": "1.0005784*x0*x1**2 - 0.0251695*x1*x2*x3*x4 - 1.02716308*x2 + 3.43039311*x2/(x3*x4) + 0.04231743*x3**2*x4**2*(log(x1) + 1)**2/(x0 + 1/x0) + 0.85668784*x3*x4 + 1.46791521*x5*log(x3)**2 + 1.20605362*x5 + 2000372.78543393*x5/(x0 + 1)**20 - 2.4468506 - 0.00122456*x1**4*x2/x0",
+    "mse_train": 1.135288177720926,
+    "mae_train": 0.6431776471026346,
+    "r2_train": 0.9986069074338307,
+    "mse_test": 1.1753145079413518,
+    "mae_test": 0.6482698267705598,
+    "r2_test": 0.9985578795828083,
+    "sympy_exception": "invalid syntax (<string>, line 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

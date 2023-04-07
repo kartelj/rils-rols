@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_8_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 2394.3125,
+    "time_time": 2395.6059997081757,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "sqrt((-x1 + x2)**2 + (-y1 + y2)**2)",
+    "model_size": 28,
+    "symbolic_model": "-2.12164101*2**cos(0.5*x0 - 0.5*x1) - 1.12434971*cos(0.80563388*log(exp(-x2 + x3))) + 6.03099602",
+    "mse_train": 0.03549746322421137,
+    "mae_train": 0.1434599092962418,
+    "r2_train": 0.963548853533975,
+    "mse_test": 0.036778955818018794,
+    "mae_test": 0.14561335821133067,
+    "r2_test": 0.9627982552357619,
+    "simplified_symbolic_model": "-2.12*2**cos(0.5*x1 - 0.5*x2) - 1.12*cos(0.806*log(exp(-y1 + y2))) + 6.03",
+    "simplified_complexity": 26,
+    "symbolic_error": "2.12*2**cos(0.5*x1 - 0.5*x2) + sqrt((x1 - x2)**2 + (y1 - y2)**2) + 1.12*cos(0.806*log(exp(-y1 + y2))) - 6.03",
+    "symbolic_fraction": "(-2.12*2**cos(0.5*x1 - 0.5*x2) - 1.12*cos(0.806*log(exp(-y1 + y2))) + 6.03)/sqrt((-x1 + x2)**2 + (-y1 + y2)**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

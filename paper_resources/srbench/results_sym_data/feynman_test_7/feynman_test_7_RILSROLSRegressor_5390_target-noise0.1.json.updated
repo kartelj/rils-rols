@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_7",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2918.46875,
+    "time_time": 2993.219319343567,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "2.89*sqrt(G*rho - 0.119*alpha*c**2/d**2)",
+    "model_size": 65,
+    "symbolic_model": "(x0**2*(0.01756842*x0**2*x1**2/x3**2 + 0.68293715*x0*x1 - 0.42813164*sin(x4*sin(x0*x1)) - 0.2992952*sin((x0 + x2)**8*(x3 + (x0 + x2)**x1)) + 2.38586944) + 0.10370218*x1*x4**2)/x0**2",
+    "mse_train": 0.48805451436494707,
+    "mae_train": 0.5549820292300585,
+    "r2_train": 0.7303825687279054,
+    "mse_test": 0.16504222474369465,
+    "mae_test": 0.31914822538466625,
+    "r2_test": 0.8918476212426243,
+    "sympy_exception": "module 'signal' has no attribute 'SIGALRM'",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

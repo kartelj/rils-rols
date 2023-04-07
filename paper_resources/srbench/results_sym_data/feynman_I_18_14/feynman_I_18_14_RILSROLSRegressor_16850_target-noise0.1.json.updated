@@ -1,0 +1,27 @@
+{
+    "dataset": "feynman_I_18_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 2925.0,
+    "time_time": 2926.5830402374268,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "m*r*v*sin(theta)",
+    "model_size": 74,
+    "symbolic_model": "1.01472246*x0*x1*x2*sin(x3) - 0.03827483*exp(x0)*sin(x0*x2**2 + 10*x1 + sin((x1 + x3)**2 - 0.5) - 0.5) + 1.80346267*sin(x0*x2**2 + x1*(x2 + x3)**2 + sin(2**x1)) + 0.2029852*exp(x0)*sin(x2)/x1**x0",
+    "mse_train": 12.761099857221783,
+    "mae_train": 2.7410477067997014,
+    "r2_train": 0.9812065924311156,
+    "mse_test": 5.783834365107045,
+    "mae_test": 1.7297278435997945,
+    "r2_test": 0.9911440611226795,
+    "simplified_symbolic_model": "1.01*m*r*v*sin(theta) - 0.038*exp(m)*sin(m*v**2 + 10*r + sin((r + theta)**2 - 0.5) - 0.5) + 1.8*sin(m*v**2 + r*(theta + v)**2 + sin(2**r)) + 0.203*exp(m)*sin(v)/r**m",
+    "simplified_complexity": 62
+}

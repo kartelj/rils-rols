@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_15",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2563.46875,
+    "time_time": 2563.9316568374634,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "omega*sqrt(1 - v**2/c**2)/(1 + v*cos(theta)/c)",
+    "model_size": 55,
+    "symbolic_model": "x2*(0.85859804*(1 - 0.58913294*cos(x3))**2/(x0/x1 + sin(1/(x0 + 1/(-x1 + x3)))) + 1.00527141 - 1.04338425/(x0/x1 + sin(1/(x0 + 1/x3))))",
+    "mse_train": 0.0050817264132694585,
+    "mae_train": 0.027778628619838423,
+    "r2_train": 0.9968521299755846,
+    "mse_test": 0.003806533535492049,
+    "mae_test": 0.026561356398345,
+    "r2_test": 0.9976179132096376,
+    "simplified_symbolic_model": "omega*(1.0 + 0.859*(0.589*cos(theta) - 1)**2/(c/v + sin(1/(c + 1/(theta - v)))) - 1.04/(c/v + sin(1/(c + 1/theta))))",
+    "simplified_complexity": 52,
+    "symbolic_error": "omega*sqrt(1 - v**2/c**2)/(1 + v*cos(theta)/c) - omega*(0.99 + 0.859*(0.589*cos(theta) - 1)**2/(c/v + sin(1/(c + 1/(theta - v)))) - 1.04/(c/v + sin(1/(c + 1/theta))))",
+    "symbolic_fraction": "(1 + v*cos(theta)/c)*(0.99 + 0.859*(0.589*cos(theta) - 1)**2/(c/v + sin(1/(c + 1/(theta - v)))) - 1.04/(c/v + sin(1/(c + 1/theta))))/sqrt(1 - v**2/c**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

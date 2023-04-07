@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_15_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 1927.9375,
+    "time_time": 1928.8609895706177,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "-B*mom*cos(theta)",
+    "model_size": 27,
+    "symbolic_model": "-0.99243214*x0*x1*cos(x2) + 0.18958118*x2 - 0.39948029*cos(23.14069263*x1*exp(-x2)) - 0.50180822",
+    "mse_train": 0.5135614151124618,
+    "mae_train": 0.5700418280424568,
+    "r2_train": 0.9815328299410268,
+    "mse_test": 0.07836180065036462,
+    "mae_test": 0.223495773911578,
+    "r2_test": 0.9971374328698293,
+    "simplified_symbolic_model": "-0.992*B*mom*cos(theta) + 0.19*theta - 0.399*cos(23.1*B*exp(-theta)) - 0.502",
+    "simplified_complexity": 21,
+    "symbolic_error": "-0.00806*B*mom*cos(theta) - 0.19*theta + 0.399*cos(23.1*B*exp(-theta)) + 0.502",
+    "symbolic_fraction": "-(-0.992*B*mom*cos(theta) + 0.19*theta - 0.399*cos(23.1*B*exp(-theta)) - 0.502)/(B*mom*cos(theta))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

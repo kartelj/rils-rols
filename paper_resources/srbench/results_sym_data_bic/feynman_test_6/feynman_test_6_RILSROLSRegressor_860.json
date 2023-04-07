@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_6",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 860,
+        "verbose": false
+    },
+    "random_state": 860,
+    "process_time": 3446.953125,
+    "time_time": 3447.1964292526245,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": " sqrt(1+2*epsilon**2*E_n*L**2/(m*(Z_1*Z_2*q**2)**2))",
+    "model_size": 112,
+    "symbolic_model": "2**x1*x0**4*x4*exp(x6)/(x3**4*x5**8) - 4*2**x1*x0**4*exp(x6)/(x3**4*x5**8) + 2**x1*x0**4*exp(x6)/(x3**4*x4**4*x5**8*(x2*x6 + log(x3))**2) + x1*log(x1)/(x4/x6 + x5)**2 + 1 + (x4/x6 + x5)**2*log(x1)/(x0*x6)",
+    "mse_train": 15203.453981337769,
+    "mae_train": 21.232314576682302,
+    "r2_train": -71175.48663945422,
+    "mse_test": 15664.862622896051,
+    "mae_test": 20.89990219420968,
+    "r2_test": -81830.05662253134
+}

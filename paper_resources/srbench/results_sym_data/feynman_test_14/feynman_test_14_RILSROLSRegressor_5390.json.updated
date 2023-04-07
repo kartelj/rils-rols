@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 5076.625,
+    "time_time": 5077.089378118515,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "Ef*(d**3*(alpha - 1)/(r**2*(alpha + 2)) - r)*cos(theta)",
+    "model_size": 115,
+    "symbolic_model": "-2.3426646*x0**3*exp(-x0*x2 + 0.5*x0 - 0.5*x1)*cos(exp(x1)) + 0.48490143*x0**2*exp(-x0*x2 + x0*cos(exp(x1)) + 0.5*x0) + 0.43543886*x0*x2*x4**0.5*cos(x1) - 1.36855045*x0*x2*cos(x1) - 0.43147517*x0*x3*x4*cos(x1) + 0.43118415*x0*x3**2*x4*cos(x1)/x2 - 0.87769352*x1*exp(-x0*x2 + x0*cos(exp(x1)))",
+    "mse_train": 18.446424482064526,
+    "mae_train": 1.171953197706585,
+    "r2_train": 0.890138508053305,
+    "mse_test": 22.9215874909549,
+    "mae_test": 1.2051136101293247,
+    "r2_test": 0.868161557601709,
+    "simplified_symbolic_model": "-2.34*Ef**3*exp(-Ef*r + 0.5*Ef - 0.5*theta)*cos(exp(theta)) + 0.485*Ef**2*exp(-Ef*r + Ef*cos(exp(theta)) + 0.5*Ef) + 0.435*Ef*alpha**0.5*r*cos(theta) + 0.431*Ef*alpha*d**2*cos(theta)/r - 0.431*Ef*alpha*d*cos(theta) - 1.37*Ef*r*cos(theta) - 0.878*theta*exp(-Ef*r + Ef*cos(exp(theta)))",
+    "simplified_complexity": 88,
+    "symbolic_error": "2.34*Ef**3*exp(-Ef*r + 0.5*Ef - 0.5*theta)*cos(exp(theta)) - 0.485*Ef**2*exp(-Ef*r + Ef*cos(exp(theta)) + 0.5*Ef) - 0.435*Ef*alpha**0.5*r*cos(theta) - 0.431*Ef*alpha*d**2*cos(theta)/r + 0.431*Ef*alpha*d*cos(theta) + 1.37*Ef*r*cos(theta) + Ef*(d**3*(alpha - 1)/(r**2*(alpha + 2)) - r)*cos(theta) + 0.878*theta*exp(-Ef*r + Ef*cos(exp(theta)))",
+    "symbolic_fraction": "(-2.34*Ef**3*exp(-Ef*r + 0.5*Ef - 0.5*theta)*cos(exp(theta)) + 0.485*Ef**2*exp(-Ef*r + Ef*cos(exp(theta)) + 0.5*Ef) + 0.435*Ef*alpha**0.5*r*cos(theta) + 0.431*Ef*alpha*d**2*cos(theta)/r - 0.431*Ef*alpha*d*cos(theta) - 1.37*Ef*r*cos(theta) - 0.878*theta*exp(-Ef*r + Ef*cos(exp(theta))))/(Ef*(d**3*(alpha - 1)/(r**2*(alpha + 2)) - r)*cos(theta))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

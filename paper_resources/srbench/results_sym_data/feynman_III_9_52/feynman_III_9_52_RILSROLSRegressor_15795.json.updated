@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_III_9_52",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 7214.5,
+    "time_time": 7215.265212059021,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "25.1*Ef*p_d*sin(t*(omega - omega_0)/2)**2/(h*t*(omega - omega_0)**2)",
+    "model_size": 218,
+    "symbolic_model": "45.55749084*x0**0.5 + 1.07486863*x0**2*x5/(2 + x4/x3) - 2.96442644*x0*x2*x4*sin(3.7459089*x5/x4)/x5 - 3.91875183*x0*x4*cos(x2)/x5 + 1.06159294*x0*x5**2/(0.5*x1 + x4/x3) - 20.79920291*x0*x5/(2 + x4/x3) - 57.61540513*x2/(x1 + x2) - 3.79418672*x2*x4*sin(0.25 + 3.7459089*x5/x4)/x3 + 1.4473701*x4*sin(0.25 + 3.7459089*x5/x4) - 0.38528082*x4*sin(3.7459089*x0*x4*x5 + 0.25) - 5.35637298 + 31.24767715*sin(3.7459089*x5/x4)/(x1 + x3) - 6.07106618*sin(1.18793503*x2 - 0.18793503*x5**2)/(0.5*x1 + x4/(-x0 + x3)) - 14.49663796*cos(x2)/x5 + 10.54311947/x3",
+    "mse_train": 6044.603273856008,
+    "mae_train": 6.133019885743952,
+    "r2_train": -28.257691067550706,
+    "mse_test": 7075.7312323249635,
+    "mae_test": 6.534896029497598,
+    "r2_test": -33.74134211191742,
+    "simplified_symbolic_model": "1.45*omega*sin(0.25 + 3.75*omega_0/omega) - 0.385*omega*sin(3.75*omega*omega_0*p_d + 0.25) - 2.96*omega*p_d*t*sin(3.75*omega_0/omega)/omega_0 - 3.92*omega*p_d*cos(t)/omega_0 + 1.06*omega_0**2*p_d/(0.5*Ef + omega/h) + 1.07*omega_0*p_d**2/(2 + omega/h) - 20.8*omega_0*p_d/(2 + omega/h) + 45.6*p_d**0.5 - 57.6*t/(Ef + t) - 5.36 + 31.2*sin(3.75*omega_0/omega)/(Ef + h) + 6.07*sin(0.188*omega_0**2 - 1.19*t)/(0.5*Ef + omega/(h - p_d)) - 14.5*cos(t)/omega_0 - 3.79*omega*t*sin(0.25 + 3.75*omega_0/omega)/h + 10.5/h",
+    "simplified_complexity": 176,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

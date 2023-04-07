@@ -1,0 +1,27 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 4335.359375,
+    "time_time": 4346.498580932617,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 109,
+    "symbolic_model": "-24.55509928*x0**2*sin(1/(x2 - x3)) + 67.83057012*x0*sin(1/(x2 - x3)) + 0.90364502*x1**2*x3*x4*sin(0.90909091/(x3 - 1.1*x5)) + 1.09361225*x1**2*(1 - x4)**2*(x0 + x5)**2*sin(1/x3) - 2.54541096*(1 - x4)**2*(-x0 + x5 + 1)**2*sin(x3/x1) + 166.52302817 - 266.22732561/x2",
+    "mse_train": 58663.41308353912,
+    "mae_train": 182.9251080351757,
+    "r2_train": 0.9739321673573433,
+    "mse_test": 28914.459097328934,
+    "mae_test": 110.5595146964936,
+    "r2_test": 0.9868120892228804,
+    "simplified_symbolic_model": "-24.6*m**2*sin(1/(p - y)) + 67.8*m*sin(1/(p - y)) - 0.904*omega**2*x*y*sin(0.909/(1.1*alpha - y)) + 1.09*omega**2*(alpha + m)**2*(x - 1)**2*sin(1/y) - 2.54*(x - 1)**2*(alpha - m + 1)**2*sin(y/omega) + 167.0 - 266.0/p",
+    "simplified_complexity": 90
+}

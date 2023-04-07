@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_11_20",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 2591.359375,
+    "time_time": 2592.5204927921295,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Ef*n_rho*p_d**2/(3*T*kb)",
+    "model_size": 42,
+    "symbolic_model": "0.34242296*x0*x1**2*x2/(x3*x4) - 0.01019198*exp(x4)*cos(x0 + x2*x3 + x4) - 0.6374951 + 0.34808629*x3/x0",
+    "mse_train": 0.958719385392625,
+    "mae_train": 0.7782549286197998,
+    "r2_train": 0.9805279059033384,
+    "mse_test": 0.22664832509248387,
+    "mae_test": 0.3510759186967099,
+    "r2_test": 0.9955109491240803,
+    "simplified_symbolic_model": "0.342*Ef*n_rho*p_d**2/(T*kb) + 0.348*kb/n_rho - 0.00999*exp(T)*cos(Ef*kb + T + n_rho) - 0.636",
+    "simplified_complexity": 32,
+    "symbolic_error": "-0.00903*Ef*n_rho*p_d**2/(T*kb) - 0.348*kb/n_rho + 0.00999*exp(T)*cos(Ef*kb + T + n_rho) + 0.636",
+    "symbolic_fraction": "3*T*kb*(0.342*Ef*n_rho*p_d**2/(T*kb) + 0.348*kb/n_rho - 0.01*exp(T)*cos(Ef*kb + T + n_rho) - 0.636)/(Ef*n_rho*p_d**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

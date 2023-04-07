@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_8_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 3112.0,
+    "time_time": 3113.569198846817,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "sqrt((-x1 + x2)**2 + (-y1 + y2)**2)",
+    "model_size": 22,
+    "symbolic_model": "0.20847119*(x0 - x1)**2 + 0.21774344*(x2 - x3)**2 + 0.99239544",
+    "mse_train": 0.12196841191649914,
+    "mae_train": 0.2685618420550707,
+    "r2_train": 0.8822738574299429,
+    "mse_test": 0.06567818500981366,
+    "mae_test": 0.18819721709180623,
+    "r2_test": 0.9336995445768939,
+    "simplified_symbolic_model": "0.208*(x1 - x2)**2 + 0.218*(y1 - y2)**2 + 0.992",
+    "simplified_complexity": 20,
+    "symbolic_error": "-0.208*(x1 - x2)**2 - 0.218*(y1 - y2)**2 + sqrt((x1 - x2)**2 + (y1 - y2)**2) - 0.992",
+    "symbolic_fraction": "(0.208*(x1 - x2)**2 + 0.218*(y1 - y2)**2 + 0.992)/sqrt((-x1 + x2)**2 + (-y1 + y2)**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

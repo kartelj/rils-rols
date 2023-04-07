@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 6251.0,
+    "time_time": 6645.827043533325,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2)",
+    "model_size": 126,
+    "symbolic_model": "0.88407324*x0*x1**2 + 0.05036553*x1**2*x2*log(x0)**2 + 0.25819129*x1**2*log(x0) - 0.07210534*x1*x2*x3*x4 + 0.06442129*x1*x3**2*x4 - 0.31902542*x1*x3*x4*log(x0*x1) + 0.92227511*x1*x3*x4 + 0.33211774*x1*x4**2*sin(0.05341236*x3**2) - 1.23787993*x1*sin(0.05341236*x3**2) - 0.20208111*x3**2 + 0.19922188*x3*x4*log(x0) + 1.03856708*x3*x5 - 4.79013326 + 5.32329889/x4",
+    "mse_train": 0.911889292922612,
+    "mae_train": 0.6769951471754696,
+    "r2_train": 0.9988684050310143,
+    "mse_test": 0.8993774626085257,
+    "mae_test": 0.6744301147709144,
+    "r2_test": 0.9989047790587673,
+    "simplified_symbolic_model": "0.332*A_vec**2*c*sin(0.053*q**2) - 0.072*A_vec*c*p*q + 0.064*A_vec*c*q**2 - 0.319*A_vec*c*q*log(c*m) + 0.922*A_vec*c*q + 0.199*A_vec*q*log(m) + 1.04*Volt*q + 0.884*c**2*m + 0.05*c**2*p*log(m)**2 + 0.258*c**2*log(m) - 1.24*c*sin(0.053*q**2) - 0.202*q**2 - 4.79 + 5.32/A_vec",
+    "simplified_complexity": 93,
+    "symbolic_error": "-0.332*A_vec**2*c*sin(0.053*q**2) + 0.072*A_vec*c*p*q - 0.064*A_vec*c*q**2 + 0.319*A_vec*c*q*log(c*m) - 0.922*A_vec*c*q - 0.199*A_vec*q*log(m) - 0.039*Volt*q - 0.884*c**2*m - 0.05*c**2*p*log(m)**2 - 0.258*c**2*log(m) + 1.24*c*sin(0.053*q**2) + 0.202*q**2 + sqrt(c**4*m**2 + c**2*(A_vec*q - p)**2) + 4.79 - 5.32/A_vec",
+    "symbolic_fraction": "(0.332*A_vec**2*c*sin(0.053*q**2) - 0.072*A_vec*c*p*q + 0.064*A_vec*c*q**2 - 0.319*A_vec*c*q*log(c*m) + 0.922*A_vec*c*q + 0.199*A_vec*q*log(m) + 1.04*Volt*q + 0.884*c**2*m + 0.05*c**2*p*log(m)**2 + 0.258*c**2*log(m) - 1.24*c*sin(0.053*q**2) - 0.202*q**2 - 4.79 + 5.32/A_vec)/(Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

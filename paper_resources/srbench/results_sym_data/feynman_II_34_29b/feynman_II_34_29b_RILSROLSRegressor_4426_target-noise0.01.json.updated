@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_II_34_29b",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2502.296875,
+    "time_time": 2504.283454179764,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "6.28*B*Jz*g_*mom/h",
+    "model_size": 65,
+    "symbolic_model": "0.78947431*x0 + 6.27907028*x0*x2*x3*x4/x1 - 0.03640906*x1/(x1 - x2) - 2.25191544 + 1.54230355*x4*sin(x0*x2 + x0*x4 + x0/(x1 + x4) - x1 + x4 + 1)/x3",
+    "mse_train": 27.425880421136135,
+    "mae_train": 3.0376529179836185,
+    "r2_train": 0.9994754428809863,
+    "mse_test": 182183.52763886456,
+    "mae_test": 4.52579974555494,
+    "r2_test": -2.7764411753956404,
+    "simplified_symbolic_model": "6.28*B*Jz*g_*mom/h + 1.54*B*sin(B*g_ + B + Jz*g_ + g_/(B + h) - h + 1)/mom + 0.789*g_ + 0.036*h/(Jz - h) - 2.25",
+    "simplified_complexity": 50,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

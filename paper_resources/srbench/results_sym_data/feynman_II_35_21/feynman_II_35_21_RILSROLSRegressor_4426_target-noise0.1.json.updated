@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_II_35_21",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 4715.453125,
+    "time_time": 4767.232024908066,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "mom*n_rho*tanh(B*mom/(T*kb))",
+    "model_size": 53,
+    "symbolic_model": "x1*(x0*(x3 - 1)*(0.52950874*sin(log(x1*log(x2)/(x3 + x4) + x1/(x3*x4) + x2/(x3*x4))) + 0.63656784) - 0.04489463)/(x3 - 1)",
+    "mse_train": 9.658908923197863,
+    "mae_train": 0.9021866866497238,
+    "r2_train": 0.6209818109351851,
+    "mse_test": 35.25170471410453,
+    "mae_test": 0.5487954741995668,
+    "r2_test": -0.3964272660373547,
+    "simplified_symbolic_model": "mom*(n_rho*(kb - 1)*(0.53*sin(log(B/(T*kb) + mom*log(B)/(T + kb) + mom/(T*kb))) + 0.637) - 0.045)/(kb - 1)",
+    "simplified_complexity": 46,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_11_19",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 2709.640625,
+    "time_time": 2711.262706518173,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "x1*y1 + x2*y2 + x3*y3",
+    "model_size": 34,
+    "symbolic_model": "0.99379107*x0*x3 + 1.00631918*x1*x4 + 1.00512952*x2*x5 + 0.1392709*cos(x1*(x2 + x4)) - 0.1122482*cos(x2*x4)",
+    "mse_train": 0.10366415399685874,
+    "mae_train": 0.2581238373992845,
+    "r2_train": 0.9986595227815359,
+    "mse_test": 0.02042344748965275,
+    "mae_test": 0.11655821865787622,
+    "r2_test": 0.999735152098679,
+    "simplified_symbolic_model": "0.994*x1*y1 + 1.01*x2*y2 + 1.0*x3*y3 + 0.139*cos(x2*(x3 + y2)) - 0.112*cos(x3*y2)",
+    "simplified_complexity": 27,
+    "symbolic_error": "0.00598*x1*y1 - 0.00598*x2*y2 - 0.005*x3*y3 - 0.139*cos(x2*(x3 + y2)) + 0.112*cos(x3*y2)",
+    "symbolic_fraction": "(0.994*x1*y1 + 1.01*x2*y2 + 0.99*x3*y3 + 0.139*cos(x2*(x3 + y2)) - 0.112*cos(x3*y2))/(x1*y1 + x2*y2 + x3*y3)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

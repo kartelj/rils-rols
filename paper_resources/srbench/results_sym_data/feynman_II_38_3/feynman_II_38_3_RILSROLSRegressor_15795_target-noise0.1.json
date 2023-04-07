@@ -1,0 +1,25 @@
+{
+    "dataset": "feynman_II_38_3",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 3256.265625,
+    "time_time": 3269.138999223709,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": " Y*A*x/d",
+    "model_size": 37,
+    "symbolic_model": "50.40118211*x0*x1*x3/(50*x2 + x3) + 1.33875692*cos(1/(-x0 + x2 - 2)) - 0.79044639 + 6.29079592/x1**5",
+    "mse_train": 3.667229646737419,
+    "mae_train": 1.4725299584142584,
+    "r2_train": 0.963977295403578,
+    "mse_test": 1.654298602148435,
+    "mae_test": 0.7943669763089533,
+    "r2_test": 0.9833448295838434
+}

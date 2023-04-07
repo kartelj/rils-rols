@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 4371.640625,
+    "time_time": 4373.712121248245,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 119,
+    "symbolic_model": "0.14199656*x1**2*x4**3*x5*sin(1/x3) + 0.14199656*x1**2*x4**3*(x0 + x5)**2*sin(1/x3) + 3.49713737*x2*x5**2 - 0.00025114*x3**3*x4**3*x5*(x1 + x3)**2*sin(x4 + 1/x5) - 1.92582183*x3*(x1 + x3)**2*sin(1/x5) - 5.43788843*x4*x5**2 - 5.49598773*(x1 + x3)**2*sin(1/(1 - x5)) + 174.33921259*x2/x1**10",
+    "mse_train": 76769.77118435624,
+    "mae_train": 198.17759417294394,
+    "r2_train": 0.9620845076603306,
+    "mse_test": 50774.463409870485,
+    "mae_test": 128.75430374121999,
+    "r2_test": 0.9769702212514462,
+    "sympy_exception": "invalid syntax (<string>, line 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

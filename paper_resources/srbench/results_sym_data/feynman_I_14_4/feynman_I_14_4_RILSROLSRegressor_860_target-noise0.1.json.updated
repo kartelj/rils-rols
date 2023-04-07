@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_14_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2188.5,
+    "time_time": 2194.415308237076,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "k_spring*x**2/2",
+    "model_size": 30,
+    "symbolic_model": "0.4783696*x0*x1**2 - 0.12783162*x0/cos(2*x0) + 0.67801706 + 6.0e-8/cos(1.8*x0)**5",
+    "mse_train": 3.861149197650919e+20,
+    "mae_train": 197406254.23475465,
+    "r2_train": -2.324344613710144e+18,
+    "mse_test": 1.9422208376884042e+28,
+    "mae_test": 881431043325.6715,
+    "r2_test": -1.18424108330784e+26,
+    "simplified_symbolic_model": "0.478*k_spring*x**2 - 0.128*k_spring/cos(2*k_spring) + 0.678",
+    "simplified_complexity": 17,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

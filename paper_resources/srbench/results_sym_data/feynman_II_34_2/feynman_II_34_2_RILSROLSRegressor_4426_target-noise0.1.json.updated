@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_34_2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 3417.828125,
+    "time_time": 3430.8182220458984,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "q*r*v/2",
+    "model_size": 74,
+    "symbolic_model": "0.48799303*x0*x1*x2 + 0.95574551*x2**0.5*sin((x1*log(x0))**x2*log(x0)**x1)*cos(x0/x1**2) + 0.48154101*x2*sin((x1*log(x0))**x2*(x0 + log(x0)**x1))*sin(x1/(x0 + 1) + 1 + x1**(x1 + 1)/x0)",
+    "mse_train": 4.259532370533217,
+    "mae_train": 1.6406627001082845,
+    "r2_train": 0.9546876945964661,
+    "mse_test": 1.5853824096780291,
+    "mae_test": 0.957023159761047,
+    "r2_test": 0.983127862145279,
+    "simplified_symbolic_model": "0.488*q*r*v + 0.956*r**0.5*sin((v*log(q))**r*log(q)**v)*cos(q/v**2) + 0.482*r*sin((v*log(q))**r*(q + log(q)**v))*sin(v/(q + 1) + 1 + v**(v + 1)/q)",
+    "simplified_complexity": 65,
+    "symbolic_error": "0.012*q*r*v - 0.956*r**0.5*sin((v*log(q))**r*log(q)**v)*cos(q/v**2) - 0.482*r*sin((v*log(q))**r*(q + log(q)**v))*sin(v/(q + 1) + 1 + v**(v + 1)/q)",
+    "symbolic_fraction": "2*(0.488*q*r*v + 0.956*r**0.5*sin((v*log(q))**r*log(q)**v)*cos(q/v**2) + 0.482*r*sin((v*log(q))**r*(q + log(q)**v))*sin(v/(q + 1) + 1 + v**(v + 1)/q))/(q*r*v)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

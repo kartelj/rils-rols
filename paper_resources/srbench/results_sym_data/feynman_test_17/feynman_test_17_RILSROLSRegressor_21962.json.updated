@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 7242.0625,
+    "time_time": 7242.5886759758,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 241,
+    "symbolic_model": "-1.13e-6*x0**2*x2*x3*x4**2*sin(x1)/(log(x3/x1) + sin(x5/x1 - 1/x1))**2 + 0.50035105*x0*x1**2*x4**2 + 2.00794059*x0*x4**3*x5**2/(x3/x1 + x5/x1)**2 + 1.0e-8*x0*x5**2*(exp(x4) + 1)**4/(x3/x1 + x5/x1)**2 - 0.0054213*x1**2*exp(0.25514532*x0*x4) + 0.6786638*x1*(x3 - x5)**2 + 8.0e-8*x1/(x3/x1 + x5/x1)**40 - 0.00148142*x2*x5*(x0*x4 - x3)**2*sin(x1)/(log(x3/x1) + sin(x5*sin(1/x1)))**2 + 8.05044774*x2/(x0 + x1) - 0.36963521*(x3 - x5)**4*sin(log(x1)) - 4.80386288 + 0.10853526*x4**3*(x3 - x5)**2*(x0 + x1 - 0.5)**2*sin(log(x1))/x3**2",
+    "mse_train": 1895670047674.0305,
+    "mae_train": 16798.588018826773,
+    "r2_train": -855196.4584581885,
+    "mse_test": 194614509696698.16,
+    "mae_test": 119891.95239358868,
+    "r2_test": -88763851.75524718,
+    "sympy_exception": "invalid syntax (<string>, line 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

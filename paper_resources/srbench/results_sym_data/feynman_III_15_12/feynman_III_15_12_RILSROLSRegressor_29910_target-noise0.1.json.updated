@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_15_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2291.09375,
+    "time_time": 2292.12983584404,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "2*U*(1 - cos(d*k))",
+    "model_size": 27,
+    "symbolic_model": "-1.96135394*x0*cos(x1*x2) + 1.98971166*x0 - 0.57603787*cos(x1**2 + sin(0.2*x0 + x1))",
+    "mse_train": 0.8385214553230744,
+    "mae_train": 0.7328011701889017,
+    "r2_train": 0.96876425766104,
+    "mse_test": 0.17283801264942789,
+    "mae_test": 0.37153672152434314,
+    "r2_test": 0.9934069639840089,
+    "simplified_symbolic_model": "-1.96*U*cos(d*k) + 1.99*U - 0.576*cos(k**2 + sin(0.2*U + k))",
+    "simplified_complexity": 24,
+    "symbolic_error": "-0.04*U*cos(d*k) + 0.00999*U + 0.576*cos(k**2 + sin(0.2*U + k))",
+    "symbolic_fraction": "(-1.96*U*cos(d*k) + 1.99*U - 0.576*cos(k**2 + sin(0.2*U + k)))/(2*U*(1 - cos(d*k)))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_shearflow1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2456.46875,
+    "time_time": 2456.9771406650543,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "cos(x)*cot(y)",
+    "model_size": 41,
+    "symbolic_model": "-0.01059366*x0**2*exp(1/(x1 - 0.5))*sin(x1) + 0.00118568*exp(x1**2) + 0.27299936*sin(x1) + 0.27508048 - 0.16682332*sin(x1)**2/x1**4",
+    "mse_train": 0.010267978319373695,
+    "mae_train": 0.05297297228745849,
+    "r2_train": 0.9693170970775548,
+    "mse_test": 0.01864798754497649,
+    "mae_test": 0.08313469660548387,
+    "r2_test": 0.9562143240222247,
+    "simplified_symbolic_model": "-0.011*x**2*exp(1/(y - 0.5))*sin(y) + 0.00101*exp(y**2) + 0.273*sin(y) + 0.275 - 0.167*sin(y)**2/y**4",
+    "simplified_complexity": 34,
+    "symbolic_error": "0.011*x**2*exp(1/(y - 0.5))*sin(y) - 0.00101*exp(y**2) - 0.273*sin(y) + cos(x)*cot(y) - 0.275 + 0.167*sin(y)**2/y**4",
+    "symbolic_fraction": "(-0.011*x**2*exp(1/(y - 0.5))*sin(y) + 0.00101*exp(y**2) + 0.273*sin(y) + 0.275 - 0.167*sin(y)**2/y**4)/(cos(x)*cot(y))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

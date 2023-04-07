@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_30_3",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 3121.78125,
+    "time_time": 3158.244681119919,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Int_0*sin(n*theta/2)**2/sin(theta/2)**2",
+    "model_size": 22,
+    "symbolic_model": "15.08358052*x0*(1 - cos(x1*x2))/(sin(0.5*x1) + 1)**5",
+    "mse_train": 0.14239109047434503,
+    "mae_train": 0.3017838757899688,
+    "r2_train": 0.9785799177493697,
+    "mse_test": 0.012371794889972086,
+    "mae_test": 0.07428360975232155,
+    "r2_test": 0.9981339197878448,
+    "simplified_symbolic_model": "-15.1*Int_0*(cos(n*theta) - 1)/(sin(0.5*theta) + 1)**5",
+    "simplified_complexity": 17,
+    "symbolic_error": "Int_0*sin(n*theta/2)**2/sin(theta/2)**2 + 15.1*Int_0*(cos(n*theta) - 1)/(sin(0.5*theta) + 1)**5",
+    "symbolic_fraction": "-15.1*(cos(n*theta) - 1)*sin(theta/2)**2/((sin(0.5*theta) + 1)**5*sin(n*theta/2)**2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

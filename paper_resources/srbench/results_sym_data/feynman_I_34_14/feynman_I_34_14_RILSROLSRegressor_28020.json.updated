@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_34_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 2228.875,
+    "time_time": 2230.7039997577667,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "omega_0*(1 + v/c)/sqrt(1 - v**2/c**2)",
+    "model_size": 18,
+    "symbolic_model": "0.90714748*x1*x2/(x0 - 0.74985913*x1) + 1.01065477*x2",
+    "mse_train": 2.2185431367289997e-05,
+    "mae_train": 0.003358130948025638,
+    "r2_train": 0.9999916573596846,
+    "mse_test": 2.202659616395177e-05,
+    "mae_test": 0.003335641371896533,
+    "r2_test": 0.999991570417662,
+    "simplified_symbolic_model": "omega_0*(1.01*c + 0.149*v)/(c - 0.75*v)",
+    "simplified_complexity": 16,
+    "symbolic_error": "-omega_0*(1.01*c + 0.149*v)/(c - 0.75*v) + omega_0*(1 + v/c)/sqrt(1 - v**2/c**2)",
+    "symbolic_fraction": "sqrt(1 - v**2/c**2)*(1.01*c + 0.149*v)/((1 + v/c)*(c - 0.75*v))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

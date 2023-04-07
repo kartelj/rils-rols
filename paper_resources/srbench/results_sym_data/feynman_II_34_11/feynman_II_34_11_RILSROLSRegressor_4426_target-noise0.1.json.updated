@@ -1,0 +1,27 @@
+{
+    "dataset": "feynman_II_34_11",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 3646.203125,
+    "time_time": 3663.7915272712708,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "B*g_*q/(2*m)",
+    "model_size": 92,
+    "symbolic_model": "0.49748593*x0*x1*x2/x3 + 0.11888443*x0*x3**cos(x0*x1**2/x3)*log(x2)*cos(x0*x1**2/x3)**4 - 0.66691013*log(x2)*cos(x0*(0.5*x1 + 1)**2/x3)**4 - 0.37934825 + 1.70387453*cos(x0*x1**2/(x2 - x3))**2/x1",
+    "mse_train": 0.8869657455900113,
+    "mae_train": 0.7469776701942503,
+    "r2_train": 0.9692051100517302,
+    "mse_test": 0.3234204519383052,
+    "mae_test": 0.43134327428194885,
+    "r2_test": 0.9870034122978899,
+    "simplified_symbolic_model": "0.497*B*g_*q/m + 0.119*g_*m**cos(g_*q**2/m)*log(B)*cos(g_*q**2/m)**4 - 0.667*log(B)*cos(g_*(0.5*q + 1)**2/m)**4 - 0.379 + 1.7*cos(g_*q**2/(B - m))**2/q",
+    "simplified_complexity": 76
+}

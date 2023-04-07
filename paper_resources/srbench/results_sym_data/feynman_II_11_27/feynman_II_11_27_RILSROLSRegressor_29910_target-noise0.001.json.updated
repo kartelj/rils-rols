@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_11_27",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2192.015625,
+    "time_time": 2192.3137497901917,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "Ef*alpha*epsilon*n/(-alpha*n/3 + 1)",
+    "model_size": 26,
+    "symbolic_model": "0.52200545*x0**2*x1**2*x2*x3 + 0.94174026*x0*x1*x2*x3 + 0.0060931",
+    "mse_train": 4.8203646116109724e-05,
+    "mae_train": 0.0049579529907401885,
+    "r2_train": 0.9999004567799181,
+    "mse_test": 4.5441384454747945e-05,
+    "mae_test": 0.0049426670584608035,
+    "r2_test": 0.9999067531217075,
+    "simplified_symbolic_model": "0.522*Ef*alpha**2*epsilon*n**2 + 0.942*Ef*alpha*epsilon*n + 0.00598",
+    "simplified_complexity": 18,
+    "symbolic_error": "-0.522*Ef*alpha**2*epsilon*n**2 - 0.942*Ef*alpha*epsilon*n - Ef*alpha*epsilon*n/(alpha*n/3 - 1) - 0.00598",
+    "symbolic_fraction": "(-alpha*n/3 + 1)*(0.522*Ef*alpha**2*epsilon*n**2 + 0.942*Ef*alpha*epsilon*n + 0.00598)/(Ef*alpha*epsilon*n)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

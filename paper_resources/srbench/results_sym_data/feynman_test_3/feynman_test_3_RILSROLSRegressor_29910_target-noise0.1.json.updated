@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_3",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2681.703125,
+    "time_time": 2683.070360183716,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "d*(1 - alpha**2)/(alpha*cos(theta1 - theta2) + 1)",
+    "model_size": 41,
+    "symbolic_model": "-0.03878672*x0*x1**2*sin(x1 + x3)**2 - 0.29401643*x0*x1*(x2 - x3)**2 - 0.53819751*x0*x1 - 0.40324343*x1 + 1.02787949",
+    "mse_train": 0.27704992671379436,
+    "mae_train": 0.41341990195493084,
+    "r2_train": 0.9233568035813502,
+    "mse_test": 0.05205992461262394,
+    "mae_test": 0.14956207712211098,
+    "r2_test": 0.9844157958330838,
+    "simplified_symbolic_model": "-0.039*alpha**2*d*sin(alpha + theta2)**2 - 0.294*alpha*d*(theta1 - theta2)**2 - 0.538*alpha*d - 0.403*alpha + 1.03",
+    "simplified_complexity": 32,
+    "symbolic_error": "0.039*alpha**2*d*sin(alpha + theta2)**2 + 0.294*alpha*d*(theta1 - theta2)**2 + 0.538*alpha*d + 0.403*alpha - d*(alpha**2 - 1)/(alpha*cos(theta1 - theta2) + 1) - 1.03",
+    "symbolic_fraction": "(alpha*cos(theta1 - theta2) + 1)*(-0.039*alpha**2*d*sin(alpha + theta2)**2 - 0.294*alpha*d*(theta1 - theta2)**2 - 0.538*alpha*d - 0.403*alpha + 1.03)/(d*(1 - alpha**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

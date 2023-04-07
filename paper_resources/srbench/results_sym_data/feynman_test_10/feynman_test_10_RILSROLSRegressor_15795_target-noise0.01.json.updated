@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_10",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2056.46875,
+    "time_time": 2056.843044757843,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "arccos((cos(theta2) - v/c)/(1 - v*cos(theta2)/c))",
+    "model_size": 21,
+    "symbolic_model": "12.28811234*x1*sin(x2)/(x0 + x2 + 1)**2 + 1.0175163*x2 - 0.03852165",
+    "mse_train": 0.0007150729369989733,
+    "mae_train": 0.021321730425136177,
+    "r2_train": 0.9968843654943583,
+    "mse_test": 0.00016005094609254148,
+    "mae_test": 0.009333422670412815,
+    "r2_test": 0.999305039754149,
+    "simplified_symbolic_model": "1.02*theta2 + 12.3*v*sin(theta2)/(c + theta2 + 1)**2 - 0.039",
+    "simplified_complexity": 16,
+    "sympy_exception": "Invalid NaN comparison",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

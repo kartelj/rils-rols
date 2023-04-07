@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_17_37",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2241.546875,
+    "time_time": 2241.8361043930054,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "beta*(alpha*cos(theta) + 1)",
+    "model_size": 25,
+    "symbolic_model": "(x0*x2**20*(1.02803328*x1*cos(x2) - 0.03010717*x2 + 1.13677464) - 1.50547293)/x2**20",
+    "mse_train": 0.29967897048983844,
+    "mae_train": 0.4364824576947619,
+    "r2_train": 0.9882069028928038,
+    "mse_test": 0.03621024732116,
+    "mae_test": 0.13564939476484542,
+    "r2_test": 0.9985540001121098,
+    "simplified_symbolic_model": "(beta*theta**20*(1.03*alpha*cos(theta) - 0.03*theta + 1.14) - 1.5)/theta**20",
+    "simplified_complexity": 21,
+    "symbolic_error": "-0.03*alpha*beta*cos(theta) + 0.03*beta*theta - 0.14*beta + 1.49/theta**20",
+    "symbolic_fraction": "(beta*theta**20*(1.03*alpha*cos(theta) - 0.03*theta + 1.14) - 1.49)/(beta*theta**20*(alpha*cos(theta) + 1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

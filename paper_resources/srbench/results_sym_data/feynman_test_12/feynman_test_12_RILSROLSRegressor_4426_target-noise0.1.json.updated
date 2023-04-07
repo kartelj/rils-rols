@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 3268.578125,
+    "time_time": 3277.6122028827667,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "0.08*q*(12.6*Volt*d*epsilon - d*q*y**3/(-d**2 + y**2)**2)/(epsilon*y**2)",
+    "model_size": 63,
+    "symbolic_model": "0.98755084*x0*x2*x3/x1**2 - 0.03077338*exp(x2)*sin(x3**2 + x3)*cos(9.8696044*(0.31830989*x4 + 1)**2) + 0.99096476*sin(x1*x3 + x3) - 0.82221915*x4*cos(169.2912488*(1 - 0.07685688*x4)**2)/x0",
+    "mse_train": 6.430694771816016,
+    "mae_train": 2.0223948291838174,
+    "r2_train": 0.9712779493156528,
+    "mse_test": 1.9414723262375824,
+    "mae_test": 1.0802171370632374,
+    "r2_test": 0.9907551171528695,
+    "simplified_symbolic_model": "0.988*Volt*d*q/y**2 - 0.822*epsilon*cos(169.0*(0.077*epsilon - 1)**2)/q - 0.031*exp(Volt)*sin(d**2 + d)*cos(9.87*(0.318*epsilon + 1)**2) + 0.991*sin(d*y + d)",
+    "simplified_complexity": 53,
+    "symbolic_error": "0.019*Volt*d*q/y**2 - 0.08*d*q**2*y/(epsilon*(d**2 - y**2)**2) + 0.822*epsilon*cos(169.0*(0.077*epsilon - 1)**2)/q + 0.031*exp(Volt)*sin(d**2 + d)*cos(9.87*(0.318*epsilon + 1)**2) - 0.991*sin(d*y + d)",
+    "symbolic_fraction": "12.5*epsilon*y**2*(0.988*Volt*d*q/y**2 - 0.822*epsilon*cos(169.0*(0.077*epsilon - 1)**2)/q - 0.031*exp(Volt)*sin(d**2 + d)*cos(9.87*(0.318*epsilon + 1)**2) + 0.991*sin(d*y + d))/(q*(12.6*Volt*d*epsilon - d*q*y**3/(-d**2 + y**2)**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_13_34",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 2092.484375,
+    "time_time": 2093.5611810684204,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "rho_c_0*v/sqrt(1 - v**2/c**2)",
+    "model_size": 34,
+    "symbolic_model": "1.03700104*x0*x1/cos(exp(x1)/x2**2) + 0.32492873*cos((1.2*sin(x2) + 2/sin(x2)**2)*exp(x1))",
+    "mse_train": 0.3303974011778163,
+    "mae_train": 0.45676418439606986,
+    "r2_train": 0.9298192036310436,
+    "mse_test": 0.060927116697775334,
+    "mae_test": 0.21473988469403438,
+    "r2_test": 0.9863111498141942,
+    "simplified_symbolic_model": "1.04*rho_c_0*v/cos(exp(v)/c**2) + 0.326*cos((1.2*sin(c) + 2.0/sin(c)**2)*exp(v))",
+    "simplified_complexity": 31,
+    "symbolic_error": "-1.04*rho_c_0*v/cos(exp(v)/c**2) + rho_c_0*v/sqrt(1 - v**2/c**2) - 0.326*cos((1.2*sin(c) + 2.0/sin(c)**2)*exp(v))",
+    "symbolic_fraction": "sqrt(1 - v**2/c**2)*(1.04*rho_c_0*v/cos(exp(v)/c**2) + 0.326*cos((1.2*sin(c) + 2.0/sin(c)**2)*exp(v)))/(rho_c_0*v)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

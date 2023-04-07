@@ -1,0 +1,25 @@
+{
+    "dataset": "strogatz_barmag1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 1894.625,
+    "time_time": 1894.7135875225067,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": " 0.5 * sin(x - y) - sin(x)",
+    "model_size": 24,
+    "symbolic_model": "-0.22474073*x0*cos(cos(x1) + 100) - 0.35838063*x0 + 3.36755107 - 747466499158.251/(x0 + x1)**18",
+    "mse_train": 0.0011995470033325125,
+    "mae_train": 0.011029057432149877,
+    "r2_train": 0.9767559640471692,
+    "mse_test": 0.001336049243663518,
+    "mae_test": 0.012821384740923319,
+    "r2_test": 0.9717393774600631
+}

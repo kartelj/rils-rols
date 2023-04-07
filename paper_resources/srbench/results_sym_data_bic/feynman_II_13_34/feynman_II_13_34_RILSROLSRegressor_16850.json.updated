@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_II_13_34",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 16850,
+        "verbose": false
+    },
+    "random_state": 16850,
+    "process_time": 3229.921875,
+    "time_time": 3230.073492050171,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "rho_c_0*v/sqrt(1 - v**2/c**2)",
+    "model_size": 54,
+    "symbolic_model": "0.10954195*x0*x1**3/x2**2 + 0.3976884*x0*x1**2/(-0.9*x1 + x2**2/x1) - 0.00239014*x0*x1**2/x2 + 1.00021675*x0*x1 - 4.025e-5",
+    "mse_train": 5.5014485333413515e-09,
+    "mae_train": 4.7314999632255825e-05,
+    "r2_train": 0.9999999987614168,
+    "mse_test": 5.636696653351223e-09,
+    "mae_test": 4.854913448040064e-05,
+    "r2_test": 0.9999999987378364,
+    "simplified_symbolic_model": "0.398*rho_c_0*v**2/(c**2/v - 0.9*v) + 1.0*rho_c_0*v - 0.00201*rho_c_0*v**2/c + 0.11*rho_c_0*v**3/c**2",
+    "simplified_complexity": 42
+}

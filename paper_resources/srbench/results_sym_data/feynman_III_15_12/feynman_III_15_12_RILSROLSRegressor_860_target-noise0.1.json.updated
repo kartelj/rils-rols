@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_15_12",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2291.59375,
+    "time_time": 2292.8208458423615,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "2*U*(1 - cos(d*k))",
+    "model_size": 24,
+    "symbolic_model": "-2.03060231*x0*cos(x1*x2) + 2.0408415*x0 + 0.4980108*cos(x0*x2/x1)",
+    "mse_train": 0.7715770970244222,
+    "mae_train": 0.7029436395000728,
+    "r2_train": 0.9713555320840251,
+    "mse_test": 0.1094377617228476,
+    "mae_test": 0.2835934967591154,
+    "r2_test": 0.9958194049113157,
+    "simplified_symbolic_model": "-2.03*U*cos(d*k) + 2.04*U + 0.498*cos(U*d/k)",
+    "simplified_complexity": 20,
+    "symbolic_error": "0.03*U*cos(d*k) - 0.04*U - 0.498*cos(U*d/k)",
+    "symbolic_fraction": "(-2.03*U*cos(d*k) + 2.04*U + 0.498*cos(U*d/k))/(2*U*(1 - cos(d*k)))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

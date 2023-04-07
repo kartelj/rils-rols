@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_15_3x",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2406.703125,
+    "time_time": 2406.8741569519043,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "(-t*u + x)/sqrt(1 - u**2/c**2)",
+    "model_size": 30,
+    "symbolic_model": "0.05876969*x0**2*x1**2/(x2**2*x3**0.5) + 0.99422481*x0 - 1.00635838*x1*x3 + 0.05350776",
+    "mse_train": 0.00047649597630688534,
+    "mae_train": 0.011117845646724743,
+    "r2_train": 0.9998118677395234,
+    "mse_test": 0.0005369740658965985,
+    "mae_test": 0.011340494193301317,
+    "r2_test": 0.9997934828832636,
+    "simplified_symbolic_model": "-1.01*t*u + 0.994*x + 0.054 + 0.059*u**2*x**2/(c**2*t**0.5)",
+    "simplified_complexity": 23,
+    "symbolic_error": "1.01*t*u - 0.994*x - 0.054 - (t*u - x)/sqrt(1 - u**2/c**2) - 0.059*u**2*x**2/(c**2*t**0.5)",
+    "symbolic_fraction": "sqrt(1 - u**2/c**2)*(-1.01*t*u + 0.994*x + 0.054 + 0.059*u**2*x**2/(c**2*t**0.5))/(-t*u + x)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_predprey1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2519.71875,
+    "time_time": 2520.0726125240326,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "x*(-x - y/(x + 1) + 4)",
+    "model_size": 26,
+    "symbolic_model": "-0.81282322*x0**2 + 3.12059395*x0 + 0.04934653*x1 - 0.15079842*(x0*x1**3)**0.5 - 0.09954218",
+    "mse_train": 0.20568868298753382,
+    "mae_train": 0.14232040976466165,
+    "r2_train": 0.9671824716882672,
+    "mse_test": 0.05782850157400539,
+    "mae_test": 0.08998264543142812,
+    "r2_test": 0.9869267849962438,
+    "simplified_symbolic_model": "-0.813*x**2 + 3.12*x + 0.049*y - 0.151*(x*y**3)**0.5 - 0.1",
+    "simplified_complexity": 22,
+    "symbolic_error": "0.813*x**2 - x*(x + y/(x + 1) - 4) - 3.12*x - 0.049*y + 0.151*(x*y**3)**0.5 + 0.1",
+    "symbolic_fraction": "(-0.813*x**2 + 3.12*x + 0.049*y - 0.151*(x*y**3)**0.5 - 0.1)/(x*(-x - y/(x + 1) + 4))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_II_35_21",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 2974.890625,
+    "time_time": 2975.7500681877136,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "mom*n_rho*tanh(B*mom/(T*kb))",
+    "model_size": 79,
+    "symbolic_model": "1.2376016*x0*x1 + 0.09140807*x0*x1/(x2/log(x3) + cos(x4/x1)) - 1.96454308*x0*x4/(x2/log(x3) + x4/x1) - 0.07208115*x1*x2/x4 + 0.88988111*cos(x0/x3**2) - 1.80301505 + 3.48247371*log(x3)/x3",
+    "mse_train": 2947.8763190034942,
+    "mae_train": 1.0724916021654767,
+    "r2_train": -114.59864544300407,
+    "mse_test": 2.6292886536329774,
+    "mae_test": 0.3376142506950475,
+    "r2_test": 0.8967663467919358,
+    "simplified_symbolic_model": "-0.072*B*mom/T - 1.97*T*n_rho/(B/log(kb) + T/mom) + 1.24*mom*n_rho + 0.0909*mom*n_rho/(B/log(kb) + cos(T/mom)) + 0.89*cos(n_rho/kb**2) - 1.8 + 3.48*log(kb)/kb",
+    "simplified_complexity": 65,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

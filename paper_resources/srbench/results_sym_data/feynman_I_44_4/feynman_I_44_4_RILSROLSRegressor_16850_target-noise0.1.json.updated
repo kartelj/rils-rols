@@ -1,0 +1,27 @@
+{
+    "dataset": "feynman_I_44_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 4622.375,
+    "time_time": 4624.556647539139,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "T*kb*n*log(V2/V1)",
+    "model_size": 93,
+    "symbolic_model": "-2.50432181*x0*x1*x2*x3*sin(1/(x3 + x4/x0)) + 0.29813587*x0*x1*x2*x4*sin(1/(x3 + x4/x0)) + 2.78079108*x0*x1*x2*x4/(0.31830989*x3 + x4 + x4/x0) - 4.27708901 + 43.104443*log(x4)/(x1*x2 + x1 + x3 + x4 - 3*x2/x0**5)",
+    "mse_train": 86.6161513244991,
+    "mae_train": 2.1699912259404104,
+    "r2_train": 0.8031843249210853,
+    "mse_test": 14.339593847431173,
+    "mae_test": 0.9717186090833456,
+    "r2_test": 0.9654757978194425,
+    "simplified_symbolic_model": "-2.5*T*V1*kb*n*sin(1/(V1 + V2/n)) + 0.298*T*V2*kb*n*sin(1/(V1 + V2/n)) + 2.78*T*V2*kb*n/(0.318*V1 + V2 + V2/n) - 4.28 + 43.1*log(V2)/(T*kb - 3*T/n**5 + V1 + V2 + kb)",
+    "simplified_complexity": 71
+}

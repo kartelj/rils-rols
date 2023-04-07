@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_predprey1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2680.578125,
+    "time_time": 2680.748810529709,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "x*(-x - y/(x + 1) + 4)",
+    "model_size": 33,
+    "symbolic_model": "-0.15944179*x0**0.5*x1 - 1.01800636*x0**2 + 4.03851758*x0 - 1.06351515*x1*cos(0.5**x0) + 0.59019728*x1 - 0.00970132",
+    "mse_train": 0.0025476520499820234,
+    "mae_train": 0.0143544125265239,
+    "r2_train": 0.9995811710800979,
+    "mse_test": 0.0019229188495535365,
+    "mae_test": 0.014480168162937599,
+    "r2_test": 0.9996163681389374,
+    "simplified_symbolic_model": "-0.159*x**0.5*y - 1.02*x**2 + 4.04*x - 1.06*y*cos(0.5**x) + 0.59*y - 0.01",
+    "simplified_complexity": 26,
+    "symbolic_error": "0.159*x**0.5*y + 1.02*x**2 - x*(x + y/(x + 1) - 4) - 4.04*x + 1.06*y*cos(0.5**x) - 0.59*y + 0.01",
+    "symbolic_fraction": "(-0.159*x**0.5*y - 1.02*x**2 + 4.04*x - 1.06*y*cos(0.5**x) + 0.59*y - 0.00999)/(x*(-x - y/(x + 1) + 4))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

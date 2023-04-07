@@ -1,0 +1,29 @@
+{
+    "dataset": "strogatz_vdp2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 29910,
+        "verbose": false
+    },
+    "random_state": 29910,
+    "process_time": 0.90625,
+    "time_time": 0.9050002098083496,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": " -(1)/(10) * x",
+    "model_size": 4,
+    "symbolic_model": "-0.1*x0",
+    "mse_train": 7.585184320662619e-33,
+    "mae_train": 2.2911089258420558e-17,
+    "r2_train": 1.0,
+    "mse_test": 8.874023145318e-34,
+    "mae_test": 1.4103301859691443e-17,
+    "r2_test": 1.0
+}

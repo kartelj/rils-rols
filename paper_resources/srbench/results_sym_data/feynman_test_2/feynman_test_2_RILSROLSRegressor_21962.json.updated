@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 3984.515625,
+    "time_time": 3984.720654964447,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "k_G*m*(sqrt(2*E_n*L**2/(k_G**2*m) + 1)*cos(theta1 - theta2) + 1)/L**2",
+    "model_size": 78,
+    "symbolic_model": "0.35983187*x0*x5*sin(x4 + 15.70796327/(x5 + 1))/x2 - 0.17073528*x4 + 0.97423046 + 0.39449206*x5*sin(x4 + 15.70796327/(x5 + 1))/x2 - 2.1407542*sin(x4 + 15.70796327/(x5 + 3.14159265))/x2 + 2.38481201*(x1**3)**0.5*log(x0)/x2**3",
+    "mse_train": 0.5571428276699482,
+    "mae_train": 0.4780614328151072,
+    "r2_train": 0.8702154698677389,
+    "mse_test": 0.5905125996805904,
+    "mae_test": 0.48772798035972775,
+    "r2_test": 0.8514304085179977,
+    "simplified_symbolic_model": "-0.171*theta1 + 0.974 + 0.36*m*theta2*sin(theta1 + 15.7/(theta2 + 1))/L + 0.394*theta2*sin(theta1 + 15.7/(theta2 + 1))/L - 2.14*sin(theta1 + 15.7/(theta2 + 3.14))/L + 2.38*(k_G**3)**0.5*log(m)/L**3",
+    "simplified_complexity": 65,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

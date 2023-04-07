@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_test_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 5608.078125,
+    "time_time": 5628.894072532654,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2)",
+    "model_size": 133,
+    "symbolic_model": "1.03028945*x0*x1**2 + 0.1412982*x0*x5 - 0.06250959*x1*x2*x4 + 0.28767066*x3**2*x4**2*log(x0)**2*log(x1)/(x0 + x2/x4 + 1)**2 + 0.15646907*x3**2*x5 - 0.24414171*x3**2 + 2.93486928*x3*x4*log(x1*x3)/(x0 + x2/x4 + 1) + 2.18288258*x4**2*log(x1)/(x0 + 1 + x4/x2)**2 - 5.36215871*x4*log(x1)/(x2/x4**2 + x4) + 0.90208812*x5 + 1.11653829",
+    "mse_train": 2.023111827024239,
+    "mae_train": 0.9858862027129933,
+    "r2_train": 0.9974077287161396,
+    "mse_test": 1.6875136158252242,
+    "mae_test": 0.8448712850739607,
+    "r2_test": 0.9979121626936225,
+    "sympy_exception": "invalid syntax (<string>, line 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

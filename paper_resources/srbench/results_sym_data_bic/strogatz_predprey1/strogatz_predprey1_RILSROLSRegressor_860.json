@@ -1,0 +1,29 @@
+{
+    "dataset": "strogatz_predprey1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 860,
+        "verbose": false
+    },
+    "random_state": 860,
+    "process_time": 3740.609375,
+    "time_time": 3740.927927494049,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": " x  * ( 4 - x - (y)/(1+x) )",
+    "model_size": 105,
+    "symbolic_model": "-0.01821313*2**(x0**0.5)*x0**0.5*x1**2 + 0.0031486*x0**0.5*x1**3 - 1.05507856*x0**0.5*x1 + 0.55849353*x0**0.5*cos(x1)**2 - 0.27479113*x0**200*x1 - 0.00961417*x0**2*x1**2 + 0.33350928*x1*(x0 + 1)**2 - 1.21377858 + 2.29359011*x0**0.5*(cos(x0) + 1)**0.5/(0.5**(3.16227766*(0.1 + 1/cos(x0))**0.5)*x1)",
+    "mse_train": Infinity,
+    "mae_train": 4.76376593423685e+161,
+    "r2_train": -Infinity,
+    "mse_test": 5.440618042851511e+302,
+    "mae_test": 2.332513246018447e+150,
+    "r2_test": -1.2299535262294532e+302
+}

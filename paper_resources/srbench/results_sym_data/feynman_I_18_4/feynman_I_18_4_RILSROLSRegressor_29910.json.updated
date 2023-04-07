@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_18_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2550.0625,
+    "time_time": 2550.2235679626465,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "(m1*r1 + m2*r2)/(m1 + m2)",
+    "model_size": 30,
+    "symbolic_model": "0.23081783*x2*log(x0/x1) + 0.49932524*x2 - 0.23141009*x3*log(x0/x1) + 0.5003683*x3",
+    "mse_train": 0.00011156886788274823,
+    "mae_train": 0.006804394136187085,
+    "r2_train": 0.9998458437976452,
+    "mse_test": 0.00010987151431769618,
+    "mae_test": 0.006807918536474953,
+    "r2_test": 0.9998471076672854,
+    "simplified_symbolic_model": "0.231*r1*log(m1/m2) + 0.499*r1 - 0.231*r2*log(m1/m2) + 0.5*r2",
+    "simplified_complexity": 25,
+    "symbolic_error": "-0.231*r1*log(m1/m2) - 0.499*r1 + 0.231*r2*log(m1/m2) - 0.5*r2 + (m1*r1 + m2*r2)/(m1 + m2)",
+    "symbolic_fraction": "(m1 + m2)*(0.231*r1*log(m1/m2) + 0.499*r1 - 0.231*r2*log(m1/m2) + 0.5*r2)/(m1*r1 + m2*r2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

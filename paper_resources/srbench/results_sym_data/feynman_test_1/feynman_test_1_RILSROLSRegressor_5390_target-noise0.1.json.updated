@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_test_1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 4692.921875,
+    "time_time": 4700.71692609787,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "Z_1**2*Z_2**2*alpha**2*c**2*hbar**2/(16*E_n**2*sin(theta/2)**4)",
+    "model_size": 70,
+    "symbolic_model": "0.28345662*x0**2*x1**2*x2**2*x3**2*x4**2/(x5**2*(x6 - 0.5)**2) + 0.31635031*x0*x4/(x6 - 0.5)**2 + 0.29960625*x3**4/x5**4 + 0.00051656*x4/(-x1 + x6 - 0.5)**2 - 0.79452557",
+    "mse_train": 492568965026.3637,
+    "mae_train": 7373.1736000941155,
+    "r2_train": -3293943123.2489357,
+    "mse_test": 1603187209575695.2,
+    "mae_test": 253339.22227156325,
+    "r2_test": -10818031965925.33,
+    "simplified_symbolic_model": "0.316*Z_1*c/(theta - 0.5)**2 + 0.00101*c/(Z_2 - theta + 0.5)**2 - 0.795 + 0.283*Z_1**2*Z_2**2*alpha**2*c**2*hbar**2/(E_n**2*(theta - 0.5)**2) + 0.3*hbar**4/E_n**4",
+    "simplified_complexity": 55,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_III_8_54",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 4077.71875,
+    "time_time": 4079.439968109131,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "sin(6.28*E_n*t/h)**2",
+    "model_size": 80,
+    "symbolic_model": "0.78834295*(1/(x0**10*(x2 + 1 + 1/(-x1 + x2) + x1**(-2))**2))**0.5 + 0.97395767*cos(x2**(-2))**2*cos(x0**5*x1**4*sin(x2**(-4))*sin(1/(x2 + 1/x1 + x1**(-2))) + 20 + x2**2/(x0**2*x1**2))**10 + 0.07757653",
+    "mse_train": 70.80801755753066,
+    "mae_train": 0.33717247054450467,
+    "r2_train": -551.5928042056975,
+    "mse_test": 8.543045960844104,
+    "mae_test": 0.2723354116004673,
+    "r2_test": -67.15530894681308,
+    "simplified_symbolic_model": "0.788*(1/(E_n**10*(h + 1 + 1/(h - t) + t**(-2))**2))**0.5 + 0.974*cos(h**(-2))**2*cos(E_n**5*t**4*sin(h**(-4))*sin(1/(h + 1/t + t**(-2))) + 20 + h**2/(E_n**2*t**2))**10 + 0.078",
+    "simplified_complexity": 70,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

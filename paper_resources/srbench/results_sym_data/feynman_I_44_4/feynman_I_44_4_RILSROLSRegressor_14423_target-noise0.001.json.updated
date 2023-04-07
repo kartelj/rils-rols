@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_44_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 4867.546875,
+    "time_time": 4868.702788591385,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "T*kb*n*log(V2/V1)",
+    "model_size": 134,
+    "symbolic_model": "-0.75491783*x0*x1*x2*x3/(x3/(x0 + 1) + 1.5*x4 + x3/(x0*(x0 + 1)**0.5) - 2*x4/(x0*(x0 + 1)**0.5)) + 0.49033272*x0*x1*x2*x4/(x3 + x4/(x0 + 0.5)) - 0.8825512*x1*x2*x3/(x3/(9 - x0) + x4/(x0 + 1)**0.5 + x4 + x4/(x0*(x0 + 1)**0.5)) + 0.95944074*x1*x2*x4/(x3 + x4/(x0 + 1))",
+    "mse_train": 0.05163228943267884,
+    "mae_train": 0.10703253211123617,
+    "r2_train": 0.9998783266335952,
+    "mse_test": 0.05303663240044342,
+    "mae_test": 0.10706224650624113,
+    "r2_test": 0.9998762339152338,
+    "simplified_symbolic_model": "-0.755*T*V1*kb*n/(V1/(n + 1) + V1/(n*(n + 1)**0.5) + 1.5*V2 - 2*V2/(n*(n + 1)**0.5)) - 0.883*T*V1*kb/(-V1/(n - 9) + V2/(n + 1)**0.5 + V2 + V2/(n*(n + 1)**0.5)) + 0.49*T*V2*kb*n/(V1 + V2/(n + 0.5)) + 0.959*T*V2*kb/(V1 + V2/(n + 1))",
+    "simplified_complexity": 108,
+    "symbolic_error": "0.755*T*V1*kb*n/(V1/(n + 1) + V1/(n*(n + 1)**0.5) + 1.5*V2 - 2*V2/(n*(n + 1)**0.5)) + 0.883*T*V1*kb/(-V1/(n - 9) + V2/(n + 1)**0.5 + V2 + V2/(n*(n + 1)**0.5)) - 0.49*T*V2*kb*n/(V1 + V2/(n + 0.5)) - 0.959*T*V2*kb/(V1 + V2/(n + 1)) + T*kb*n*log(V2/V1)",
+    "symbolic_fraction": "(-0.755*T*V1*kb*n/(V1/(n + 1) + V1/(n*(n + 1)**0.5) + 1.5*V2 - 2*V2/(n*(n + 1)**0.5)) - 0.883*T*V1*kb/(-V1/(n - 9) + V2/(n + 1)**0.5 + V2 + V2/(n*(n + 1)**0.5)) + 0.49*T*V2*kb*n/(V1 + V2/(n + 0.5)) + 0.959*T*V2*kb/(V1 + V2/(n + 1)))/(T*kb*n*log(V2/V1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

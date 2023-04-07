@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_shearflow1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 2444.484375,
+    "time_time": 2451.580029964447,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "cos(x)*cot(y)",
+    "model_size": 35,
+    "symbolic_model": "9.082e-5*x1**10 + 0.07943245 - 0.09370455/(x0*x1 + 1) - 0.45250837*cos(x1)/(x1 - 0.5) - 0.18760354/x1**2",
+    "mse_train": 0.006837276818197246,
+    "mae_train": 0.05277141006941068,
+    "r2_train": 0.9772606317122412,
+    "mse_test": 0.015447958601577908,
+    "mae_test": 0.06861394148868068,
+    "r2_test": 0.9705238496978228,
+    "simplified_symbolic_model": "0.079 - 0.094/(x*y + 1) - 0.453*cos(y)/(y - 0.5) - 0.188/y**2",
+    "simplified_complexity": 25,
+    "symbolic_error": "cos(x)*cot(y) - 0.079 + 0.094/(x*y + 1) + 0.453*cos(y)/(y - 0.5) + 0.188/y**2",
+    "symbolic_fraction": "(0.079 - 0.094/(x*y + 1) - 0.453*cos(y)/(y - 0.5) - 0.188/y**2)/(cos(x)*cot(y))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

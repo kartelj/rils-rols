@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_13",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2364.265625,
+    "time_time": 2364.9637157917023,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "0.08*q/(epsilon*sqrt(d**2 - 2*d*r*cos(alpha) + r**2))",
+    "model_size": 29,
+    "symbolic_model": "0.00206244*x0*cos(x3) + 0.0138307*x0/x4 + 0.00130441 + 39801.97817315/(x2**9*(x3 + x4)**2)",
+    "mse_train": 3.199404253616294e-05,
+    "mae_train": 0.0036191903577746615,
+    "r2_train": 0.8654872059373133,
+    "mse_test": 2.7549227568561444e-05,
+    "mae_test": 0.0028707749223032975,
+    "r2_test": 0.8839119744150615,
+    "simplified_symbolic_model": "0.00201*q*cos(alpha) + 0.00101 + 0.014*q/epsilon + 3.98e+4/(d**9*(alpha + epsilon)**2)",
+    "simplified_complexity": 23,
+    "symbolic_error": "-0.00201*q*cos(alpha) - 0.00101 - 0.014*q/epsilon + 0.08*q/(epsilon*sqrt(d**2 - 2*d*r*cos(alpha) + r**2)) - 3.98e+4/(d**9*(alpha + epsilon)**2)",
+    "symbolic_fraction": "12.5*epsilon*sqrt(d**2 - 2*d*r*cos(alpha) + r**2)*(0.00201*q*cos(alpha) + 0.00101 + 0.014*q/epsilon + 3.98e+4/(d**9*(alpha + epsilon)**2))/q",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

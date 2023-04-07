@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_2_42",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 3085.71875,
+    "time_time": 3086.1793150901794,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "A*kappa*(-T1 + T2)/d",
+    "model_size": 39,
+    "symbolic_model": "(-0.9263236*x0*x1*x3 + 0.93481717*x0*x2*x3 + x4*(-0.06952829*x0*x1 + 0.28476391*x2 + 0.00951407*exp(x0) - 0.72354086))/x4",
+    "mse_train": 0.726532754379271,
+    "mae_train": 0.6746763347245119,
+    "r2_train": 0.9873886615743103,
+    "mse_test": 0.14343846012610198,
+    "mae_test": 0.2708026424693275,
+    "r2_test": 0.9974397218420193,
+    "simplified_symbolic_model": "(-0.926*A*T1*kappa + 0.935*A*T2*kappa - d*(0.0699*T1*kappa - 0.285*T2 - 0.01*exp(kappa) + 0.724))/d",
+    "simplified_complexity": 31,
+    "symbolic_error": "-0.074*A*T1*kappa/d + 0.0649*A*T2*kappa/d + 0.0699*T1*kappa - 0.285*T2 - 0.01*exp(kappa) + 0.724",
+    "symbolic_fraction": "(-0.926*A*T1*kappa + 0.935*A*T2*kappa - d*(0.0699*T1*kappa - 0.285*T2 - 0.00999*exp(kappa) + 0.724))/(A*kappa*(-T1 + T2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_24_6",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2511.796875,
+    "time_time": 2514.4479818344116,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "m*x**2*(omega**2 + omega_0**2)/4",
+    "model_size": 29,
+    "symbolic_model": "0.24949271*x0*x1**2*x3**2 + 0.24789168*x0*x2**2*x3**2 - 0.15865565*cos(x1)",
+    "mse_train": 0.07064154472977605,
+    "mae_train": 0.21236652233595252,
+    "r2_train": 0.9996689045209887,
+    "mse_test": 0.012202007929159117,
+    "mae_test": 0.08595330809542145,
+    "r2_test": 0.9999414428352658,
+    "simplified_symbolic_model": "0.249*m*omega**2*x**2 + 0.248*m*omega_0**2*x**2 - 0.159*cos(omega)",
+    "simplified_complexity": 23,
+    "symbolic_error": "0.00101*m*omega**2*x**2 + 0.00201*m*omega_0**2*x**2 + 0.159*cos(omega)",
+    "symbolic_fraction": "4*(0.249*m*omega**2*x**2 + 0.248*m*omega_0**2*x**2 - 0.159*cos(omega))/(m*x**2*(omega**2 + omega_0**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

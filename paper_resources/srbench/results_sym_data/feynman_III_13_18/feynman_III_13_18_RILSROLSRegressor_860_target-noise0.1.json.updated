@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_III_13_18",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 3304.109375,
+    "time_time": 3306.0829157829285,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "12.6*E_n*d**2*k/h",
+    "model_size": 101,
+    "symbolic_model": "-6.66847421*x0**2*sin(x1*x3 - 10*x3)/x1 + 12.52762844*x0*x1**2*x2/x3 - 23.22212869*x3*sin(x1*x3 + 10*x1 - 10*x3)/x2 + 7.88752989*x3*sin(x1*x3 - 10*x3)/(x0*(2 - x2)) + 0.11711597*x3*exp(x1)*sin(x0)/(x0*(2 - 1.2*x2))",
+    "mse_train": 1138347627.943699,
+    "mae_train": 467.1941599151209,
+    "r2_train": -3665.800623401734,
+    "mse_test": 183490.57657307832,
+    "mae_test": 54.77767595907841,
+    "r2_test": 0.42015305046914764,
+    "simplified_symbolic_model": "-6.67*E_n**2*sin(d*h - 10*h)/d + 12.5*E_n*d**2*k/h - 23.2*h*sin(d*h + 10*d - 10*h)/k - 0.117*h*exp(d)*sin(E_n)/(E_n*(1.2*k - 2)) - 7.89*h*sin(d*h - 10*h)/(E_n*(k - 2))",
+    "simplified_complexity": 80,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

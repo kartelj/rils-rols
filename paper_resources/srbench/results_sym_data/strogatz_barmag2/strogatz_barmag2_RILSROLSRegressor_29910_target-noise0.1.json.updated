@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_barmag2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 29910
+    },
+    "random_state": 29910,
+    "process_time": 2487.328125,
+    "time_time": 2488.109222173691,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "-sin(y) - 0.5*sin(x - y)",
+    "model_size": 27,
+    "symbolic_model": "-3.51136967*x0 + 45.98730908 - 1423.73297505/(-10*x0 + cos(x1 + 1) + 11) - 324.94690534/x0",
+    "mse_train": 0.0012601982553941448,
+    "mae_train": 0.026590194372066462,
+    "r2_train": 0.9852139031349028,
+    "mse_test": 0.00026894239225286895,
+    "mae_test": 0.006297126756722009,
+    "r2_test": 0.9956155454628127,
+    "simplified_symbolic_model": "-3.51*x + 46.0 - 1.42e+3/(-10*x + cos(y + 1) + 11) - 325.0/x",
+    "simplified_complexity": 23,
+    "symbolic_error": "3.51*x - sin(y) - 0.5*sin(x - y) - 46.0 + 1.42e+3/(-10*x + cos(y + 1) + 11) + 325.0/x",
+    "symbolic_fraction": "(-3.51*x + 46.0 - 1.42e+3/(-10*x + cos(y + 1) + 11) - 325.0/x)/(-sin(y) - 0.5*sin(x - y))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

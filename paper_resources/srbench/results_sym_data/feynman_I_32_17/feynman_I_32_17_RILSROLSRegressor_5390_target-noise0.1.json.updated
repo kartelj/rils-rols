@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_32_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 3956.28125,
+    "time_time": 4314.663009405136,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "4.19*Ef**2*c*epsilon*omega**4*r**2/(omega**2 - omega_0**2)**2",
+    "model_size": 60,
+    "symbolic_model": "-0.17465594*x0*x1*x2*x3*x4**2/(x4 - x5 + 1) + 11.9039642*x0*sin(x2*x3*x4/(-x4 + 2*x5 - 1) - 2) + 37.39740647*x0 + 26.81753224*cos(x0) - 40.45478298",
+    "mse_train": 8.573429595302736,
+    "mae_train": 0.7414651391077913,
+    "r2_train": 0.6229081360200176,
+    "mse_test": 74.30065727927914,
+    "mae_test": 0.5603254972205693,
+    "r2_test": -2.4167702913522278,
+    "simplified_symbolic_model": "-0.175*Ef*c*epsilon*omega**2*r/(omega - omega_0 + 1) - 11.9*epsilon*sin(Ef*omega*r/(omega - 2*omega_0 + 1) + 2) + 37.4*epsilon + 26.8*cos(epsilon) - 40.5",
+    "simplified_complexity": 44,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

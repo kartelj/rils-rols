@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_4_32",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2489.1875,
+    "time_time": 2502.9414541721344,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "1/(exp(0.159*h*omega/(T*kb)) - 1)",
+    "model_size": 32,
+    "symbolic_model": "-0.63589183*log(x1) + 0.70884983*sin(1/sin(6.85840735*x1 - 0.14580645)) + 6.69259655*x2*x3*sin(1/x1)/x0",
+    "mse_train": 2.1220396782531585,
+    "mae_train": 1.1607677301779717,
+    "r2_train": 0.976182915977177,
+    "mse_test": 0.5225641255140901,
+    "mae_test": 0.6018042954475933,
+    "r2_test": 0.9939485213138493,
+    "simplified_symbolic_model": "6.69*T*kb*sin(1/omega)/h - 0.636*log(omega) + 0.709*sin(1/sin(6.86*omega - 0.146))",
+    "simplified_complexity": 27,
+    "symbolic_error": "-6.69*T*kb*sin(1/omega)/h + 0.636*log(omega) - 0.709*sin(1/sin(6.86*omega - 0.146)) + 1/(exp(0.159*h*omega/(T*kb)) - 1)",
+    "symbolic_fraction": "(exp(0.159*h*omega/(T*kb)) - 1)*(6.69*T*kb*sin(1/omega)/h - 0.636*log(omega) + 0.709*sin(1/sin(6.86*omega - 0.146)))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

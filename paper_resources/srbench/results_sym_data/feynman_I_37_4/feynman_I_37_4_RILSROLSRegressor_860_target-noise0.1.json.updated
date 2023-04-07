@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_37_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2447.90625,
+    "time_time": 2460.7298109531403,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "I1 + I2 + 2*sqrt(I1*I2)*cos(delta)",
+    "model_size": 21,
+    "symbolic_model": "1.93379687*(x0*x1)**0.5*cos(x2) + 4.68117234*(x0 + x1)**0.5 - 5.41118998",
+    "mse_train": 0.23287477717397345,
+    "mae_train": 0.3855932463027148,
+    "r2_train": 0.9725239084211232,
+    "mse_test": 0.028013066026162842,
+    "mae_test": 0.1343157207564175,
+    "r2_test": 0.9965928358547635,
+    "simplified_symbolic_model": "1.93*(I1*I2)**0.5*cos(delta) + 4.68*(I1 + I2)**0.5 - 5.41",
+    "simplified_complexity": 18,
+    "symbolic_error": "I1 + I2 - 1.93*(I1*I2)**0.5*cos(delta) + 2*sqrt(I1*I2)*cos(delta) - 4.68*(I1 + I2)**0.5 + 5.41",
+    "symbolic_fraction": "(1.93*(I1*I2)**0.5*cos(delta) + 4.68*(I1 + I2)**0.5 - 5.41)/(I1 + I2 + 2*sqrt(I1*I2)*cos(delta))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

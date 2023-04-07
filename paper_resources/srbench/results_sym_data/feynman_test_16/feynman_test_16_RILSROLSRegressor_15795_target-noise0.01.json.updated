@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 4676.296875,
+    "time_time": 4677.853270292282,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2)",
+    "model_size": 98,
+    "symbolic_model": "0.99769804*x0*x1**2 - 0.12290045*x0*x3 - 0.02369701*x1*x3**2*x4**2*log(log(x0) + 1) + 0.03192127*x1*x3**2*x4**2 - 0.00189975*x2**2*exp(x1) + 0.53468185*x2**2/x3**2 + 0.02889066*x2*x4**2*log(log(x0) + 1) - 1.57292872*x2*log(x4) + 1.07022569*x3*x4 + 1.02375607*x3*x5 - 2.03881869",
+    "mse_train": 1.826704456573516,
+    "mae_train": 0.9590720742249581,
+    "r2_train": 0.9977604347467858,
+    "mse_test": 1.5851808777105822,
+    "mae_test": 0.8209727430248013,
+    "r2_test": 0.9980549702286137,
+    "simplified_symbolic_model": "-0.024*A_vec**2*c*q**2*log(log(m) + 1) + 0.032*A_vec**2*c*q**2 + 0.029*A_vec**2*p*log(log(m) + 1) + 1.07*A_vec*q + 1.02*Volt*q + 0.998*c**2*m - 0.123*m*q - 0.00201*p**2*exp(c) + 0.535*p**2/q**2 - 1.57*p*log(A_vec) - 2.04",
+    "simplified_complexity": 74,
+    "symbolic_error": "0.024*A_vec**2*c*q**2*log(log(m) + 1) - 0.032*A_vec**2*c*q**2 - 0.029*A_vec**2*p*log(log(m) + 1) - 1.07*A_vec*q - 0.024*Volt*q - 0.998*c**2*m + 0.123*m*q + 0.00201*p**2*exp(c) - 0.535*p**2/q**2 + 1.57*p*log(A_vec) + sqrt(c**4*m**2 + c**2*(A_vec*q - p)**2) + 2.04",
+    "symbolic_fraction": "(-0.024*A_vec**2*c*q**2*log(log(m) + 1) + 0.032*A_vec**2*c*q**2 + 0.029*A_vec**2*p*log(log(m) + 1) + 1.07*A_vec*q + 1.02*Volt*q + 0.998*c**2*m - 0.123*m*q - 0.00201*p**2*exp(c) + 0.535*p**2/q**2 - 1.57*p*log(A_vec) - 2.04)/(Volt*q + sqrt(c**4*m**2 + c**2*(-A_vec*q + p)**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

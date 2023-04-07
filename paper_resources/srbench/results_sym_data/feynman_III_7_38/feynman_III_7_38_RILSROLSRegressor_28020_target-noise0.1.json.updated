@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_7_38",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 2373.96875,
+    "time_time": 2374.971133708954,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "12.6*B*mom/h",
+    "model_size": 47,
+    "symbolic_model": "-0.05567103*x0**2/(x1**2*cos(x0)) + 11.99489977*x0*x1/x2 + 5.45523659*x0*cos(x0)/x1**2 - 0.94567145*x1 - 4.57911392*cos(x0) + 4.09331993",
+    "mse_train": 1946.589215690314,
+    "mae_train": 6.216442196679256,
+    "r2_train": -0.49091012463008643,
+    "mse_test": 418.1460083714896,
+    "mae_test": 2.653229834512607,
+    "r2_test": 0.6741582631854984,
+    "simplified_symbolic_model": "-0.947*B + 12.0*B*mom/h - 4.57*cos(mom) + 4.11 - 0.0556*mom**2/(B**2*cos(mom)) + 5.45*mom*cos(mom)/B**2",
+    "simplified_complexity": 36,
+    "symbolic_error": "0.948*B + 0.564*B*mom/h + 4.57*cos(mom) - 4.12 + 0.056*mom**2/(B**2*cos(mom)) - 5.45*mom*cos(mom)/B**2",
+    "symbolic_fraction": "0.08*h*(-0.947*B + 12.0*B*mom/h - 4.57*cos(mom) + 4.11 - 0.056*mom**2/(B**2*cos(mom)) + 5.45*mom*cos(mom)/B**2)/(B*mom)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

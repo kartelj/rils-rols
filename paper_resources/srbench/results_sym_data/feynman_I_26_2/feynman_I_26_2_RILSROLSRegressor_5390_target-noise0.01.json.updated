@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_26_2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 1873.546875,
+    "time_time": 1874.0173976421356,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "arcsin(n*sin(theta2))",
+    "model_size": 16,
+    "symbolic_model": "2.35734513*x0*sin(x1) - 1.56408451*sin(x0)*sin(sin(x1))",
+    "mse_train": 0.00042399666649879517,
+    "mae_train": 0.013352887690081625,
+    "r2_train": 0.9983160118657047,
+    "mse_test": 0.0003829255370440448,
+    "mae_test": 0.012516202943560682,
+    "r2_test": 0.9984559623411187,
+    "simplified_symbolic_model": "2.36*n*sin(theta2) - 1.56*sin(n)*sin(sin(theta2))",
+    "simplified_complexity": 13,
+    "symbolic_error": "-2.36*n*sin(theta2) + arcsin(n*sin(theta2)) + 1.56*sin(n)*sin(sin(theta2))",
+    "symbolic_fraction": "(2.36*n*sin(theta2) - 1.56*sin(n)*sin(sin(theta2)))/arcsin(n*sin(theta2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

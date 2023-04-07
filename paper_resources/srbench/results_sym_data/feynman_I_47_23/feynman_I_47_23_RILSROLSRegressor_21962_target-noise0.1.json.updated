@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_47_23",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 1985.484375,
+    "time_time": 1986.9514696598053,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "sqrt(gamma*pr/rho)",
+    "model_size": 21,
+    "symbolic_model": "-0.00032134*x0**x1 + 1.13370774*(x0*x1*sin(1/x2))**0.5 - 0.15269294",
+    "mse_train": 0.04188900881513862,
+    "mae_train": 0.16247735234578595,
+    "r2_train": 0.9175208127034209,
+    "mse_test": 0.004850709109341339,
+    "mae_test": 0.04502716016050412,
+    "r2_test": 0.989171327037564,
+    "simplified_symbolic_model": "1.13*(gamma*pr*sin(1/rho))**0.5 - 0.153",
+    "simplified_complexity": 13,
+    "symbolic_error": "sqrt(gamma*pr/rho) - 1.13*(gamma*pr*sin(1/rho))**0.5 + 0.153",
+    "symbolic_fraction": "(1.13*(gamma*pr*sin(1/rho))**0.5 - 0.153)/sqrt(gamma*pr/rho)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

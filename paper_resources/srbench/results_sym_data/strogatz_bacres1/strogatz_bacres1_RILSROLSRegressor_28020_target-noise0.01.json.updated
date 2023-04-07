@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_bacres1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 1909.625,
+    "time_time": 1910.1275026798248,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "-x*y/(0.5*x**2 + 1) - x + 20",
+    "model_size": 20,
+    "symbolic_model": "9.84385824*0.5**x0 - 1.00594172*x0 + 20.05931998 - 1.97070298*x1/x0",
+    "mse_train": 0.0007356606189849618,
+    "mae_train": 0.02155867339595118,
+    "r2_train": 0.9998842879684346,
+    "mse_test": 9.756718855808375e-05,
+    "mae_test": 0.007291270834250649,
+    "r2_test": 0.999985714173337,
+    "simplified_symbolic_model": "9.84*0.5**x - 1.01*x + 20.1 - 1.97*y/x",
+    "simplified_complexity": 16,
+    "symbolic_error": "-9.84*0.5**x - x*y/(0.5*x**2 + 1) + 0.00598*x - 0.059 + 1.97*y/x",
+    "symbolic_fraction": "(9.84*0.5**x - 1.01*x + 20.1 - 1.97*y/x)/(-x*y/(0.5*x**2 + 1) - x + 20)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

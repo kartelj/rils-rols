@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_29_16",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 4286.8125,
+    "time_time": 4287.760577201843,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "sqrt(x1**2 - 2*x1*x2*cos(theta1 - theta2) + x2**2)",
+    "model_size": 129,
+    "symbolic_model": "-0.08461617*x0*x1 - 0.72398411*x0*x2 + 1.14486973*x0*log(x2)**2 + 1.96718583*x0 + 245.72826465*x1**2/(x2/x3 + x3/x2)**10 - 230.00018405*x1*x2/(x2/x3 + x3/x2)**10 + 0.29011622*x1*x3 - 237.55003415*x1*x3/(x2/x3 + x3/x2)**10 - 793.13501883*x1*log(x0)/(x2/x3 + x3/x2)**10 + 1.02888462*x1*log(x2)**2/(x3 + 2) - 0.65855325",
+    "mse_train": 0.1194558516940102,
+    "mae_train": 0.25450269553869287,
+    "r2_train": 0.9672563973063496,
+    "mse_test": 0.11744226803866814,
+    "mae_test": 0.2511360465738738,
+    "r2_test": 0.9678554194655395,
+    "simplified_symbolic_model": "(theta1**10*theta2**10*x2*(theta2 + 2)*(-230.0*theta1 - 238.0*theta2 + 246.0*x2 - 793.0*log(x1)) + 1.03*x2*(theta1**2 + theta2**2)**10*log(theta1)**2 + (theta1**2 + theta2**2)**10*(theta2 + 2)*(-0.724*theta1*x1 + 0.29*theta2*x2 - 0.085*x1*x2 + 1.15*x1*log(theta1)**2 + 1.97*x1 - 0.659))/((theta1**2 + theta2**2)**10*(theta2 + 2))",
+    "simplified_complexity": 94,
+    "symbolic_error": "sqrt(x1**2 - 2*x1*x2*cos(theta1 - theta2) + x2**2) + (theta1**10*theta2**10*x2*(theta2 + 2)*(230.0*theta1 + 238.0*theta2 - 246.0*x2 + 793.0*log(x1)) - 1.03*x2*(theta1**2 + theta2**2)**10*log(theta1)**2 + (theta1**2 + theta2**2)**10*(theta2 + 2)*(0.724*theta1*x1 - 0.29*theta2*x2 + 0.085*x1*x2 - 1.13*x1*log(theta1)**2 - 1.97*x1 + 0.659))/((theta1**2 + theta2**2)**10*(theta2 + 2))",
+    "symbolic_fraction": "(theta1**10*theta2**10*x2*(theta2 + 2)*(-230.0*theta1 - 238.0*theta2 + 246.0*x2 - 793.0*log(x1)) + 1.03*x2*(theta1**2 + theta2**2)**10*log(theta1)**2 + (theta1**2 + theta2**2)**10*(theta2 + 2)*(-0.724*theta1*x1 + 0.29*theta2*x2 - 0.085*x1*x2 + 1.13*x1*log(theta1)**2 + 1.97*x1 - 0.659))/((theta1**2 + theta2**2)**10*(theta2 + 2)*sqrt(x1**2 - 2*x1*x2*cos(theta1 - theta2) + x2**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

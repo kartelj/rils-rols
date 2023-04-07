@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_11_3",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2860.40625,
+    "time_time": 2894.1320917606354,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "Ef*q/(m*(-omega**2 + omega_0**2))",
+    "model_size": 18,
+    "symbolic_model": "0.81068932*x0*x1/(x2*(x3 - 0.45*x4)**2)",
+    "mse_train": 2.0213290213916352e-05,
+    "mae_train": 0.0031527367513921956,
+    "r2_train": 0.9986326539059446,
+    "mse_test": 1.5109187017722791e-05,
+    "mae_test": 0.0024989338859691627,
+    "r2_test": 0.9989986061633771,
+    "simplified_symbolic_model": "0.811*Ef*q/(m*(0.45*omega - omega_0)**2)",
+    "simplified_complexity": 16,
+    "symbolic_error": "-Ef*q/(m*(omega**2 - omega_0**2)) - 0.811*Ef*q/(m*(0.45*omega - omega_0)**2)",
+    "symbolic_fraction": "0.811*(-omega**2 + omega_0**2)/(0.45*omega - omega_0)**2",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

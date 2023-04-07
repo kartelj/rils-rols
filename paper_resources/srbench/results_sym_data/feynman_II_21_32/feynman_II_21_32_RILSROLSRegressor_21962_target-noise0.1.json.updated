@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_21_32",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2338.6875,
+    "time_time": 2339.9577090740204,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "0.08*q/(epsilon*r*(1 - v/c))",
+    "model_size": 27,
+    "symbolic_model": "0.10462411*x0*sin(1/x2)/x1 + 0.10349112*x3/(x2**0.5*x4) - 0.01297022",
+    "mse_train": 0.00015504329611205173,
+    "mae_train": 0.007791371928955718,
+    "r2_train": 0.93720380924679,
+    "mse_test": 0.00011763027044259873,
+    "mae_test": 0.004101072406032839,
+    "r2_test": 0.9515896237559481,
+    "simplified_symbolic_model": "-0.013 + 0.105*q*sin(1/r)/epsilon + 0.103*v/(c*r**0.5)",
+    "simplified_complexity": 21,
+    "symbolic_error": "0.013 - 0.105*q*sin(1/r)/epsilon + 0.08*q/(epsilon*r*(1 - v/c)) - 0.103*v/(c*r**0.5)",
+    "symbolic_fraction": "12.5*epsilon*r*(1 - v/c)*(-0.013 + 0.105*q*sin(1/r)/epsilon + 0.103*v/(c*r**0.5))/q",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

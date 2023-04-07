@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_35_18",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 2531.0,
+    "time_time": 2532.036549806595,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "n_0/(exp(B*mom/(T*kb)) + exp(-B*mom/(T*kb)))",
+    "model_size": 25,
+    "symbolic_model": "x0*(-0.33093588*x3**0.5*sin(x4/(x1*x2)) - 0.04568494*x3 + 0.64092528)",
+    "mse_train": 0.0020818145352005293,
+    "mae_train": 0.028073047193893353,
+    "r2_train": 0.9789876020689045,
+    "mse_test": 0.002097492444167189,
+    "mae_test": 0.027328069584704896,
+    "r2_test": 0.9791802713986434,
+    "simplified_symbolic_model": "n_0*(-0.331*mom**0.5*sin(B/(T*kb)) - 0.046*mom + 0.641)",
+    "simplified_complexity": 21,
+    "symbolic_error": "n_0*(0.331*mom**0.5*sin(B/(T*kb)) + 0.046*mom - 0.641) + n_0/(exp(B*mom/(T*kb)) + exp(-B*mom/(T*kb)))",
+    "symbolic_fraction": "(exp(B*mom/(T*kb)) + exp(-B*mom/(T*kb)))*(-0.331*mom**0.5*sin(B/(T*kb)) - 0.046*mom + 0.641)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

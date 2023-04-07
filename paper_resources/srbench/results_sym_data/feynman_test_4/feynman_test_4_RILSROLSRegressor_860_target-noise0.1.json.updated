@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_4",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 2782.84375,
+    "time_time": 2784.067401409149,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "sqrt(2)*sqrt((E_n - L**2/(2*m*r**2) - U)/m)",
+    "model_size": 28,
+    "symbolic_model": "-0.35313477*x0 + 0.10849323*x1 + 0.17104601*x3*cos(x2) + 2.19356607 + 0.67309695*x3*sin(x3)/x0**2",
+    "mse_train": 0.11757674620216496,
+    "mae_train": 0.2719935189772444,
+    "r2_train": 0.6441086196084951,
+    "mse_test": 0.03521296791432088,
+    "mae_test": 0.141187003438027,
+    "r2_test": 0.8582594806328593,
+    "simplified_symbolic_model": "0.108*E_n + 0.171*L*cos(U) + 0.673*L*sin(L)/m**2 - 0.353*m + 2.19",
+    "simplified_complexity": 21,
+    "symbolic_error": "(-0.673*L*sin(L) + m**2*(-0.108*E_n - 0.171*L*cos(U) + 0.353*m + 1.0*sqrt((2*E_n - L**2/(m*r**2) - 2*U)/m) - 2.19))/m**2",
+    "symbolic_fraction": "sqrt(2)*(0.108*E_n + 0.171*L*cos(U) + 0.673*L*sin(L)/m**2 - 0.353*m + 2.19)/(2*sqrt((E_n - L**2/(2*m*r**2) - U)/m))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

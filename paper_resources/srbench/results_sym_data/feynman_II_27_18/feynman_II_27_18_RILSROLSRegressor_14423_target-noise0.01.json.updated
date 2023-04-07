@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_27_18",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2382.703125,
+    "time_time": 2383.966139793396,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "Ef**2*epsilon",
+    "model_size": 28,
+    "symbolic_model": "1.00778268*x0*x1**2 - 0.18689343*x0*sin(2*x0)*cos(x0/(x1 + 0.5)) - 0.2229933",
+    "mse_train": 0.22286617977191303,
+    "mae_train": 0.3751602640020459,
+    "r2_train": 0.9996550932221705,
+    "mse_test": 0.0629966730443395,
+    "mae_test": 0.1997900220881623,
+    "r2_test": 0.9999032025011154,
+    "simplified_symbolic_model": "1.01*Ef**2*epsilon - 0.187*epsilon*sin(2*epsilon)*cos(epsilon/(Ef + 0.5)) - 0.223",
+    "simplified_complexity": 23,
+    "symbolic_error": "-0.00806*Ef**2*epsilon + 0.187*epsilon*sin(2*epsilon)*cos(epsilon/(Ef + 0.5)) + 0.223",
+    "symbolic_fraction": "(1.01*Ef**2*epsilon - 0.187*epsilon*sin(2*epsilon)*cos(epsilon/(Ef + 0.5)) - 0.223)/(Ef**2*epsilon)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

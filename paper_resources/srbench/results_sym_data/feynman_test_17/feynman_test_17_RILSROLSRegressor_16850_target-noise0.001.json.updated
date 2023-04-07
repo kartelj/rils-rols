@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_17",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 7223.71875,
+    "time_time": 7225.944454431534,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2)/(2*m)",
+    "model_size": 197,
+    "symbolic_model": "(-0.01066624*x0**5*x3*x5**2*log(x1)**2*log(x4**2) + x0*x3**3*(0.18709036*(x1**6*x4**5 + x5**6)**0.5 - 0.19083549*(x0*x4 + x1 + x4)**2*sin(x0) + 17.65894644*sin(x0) + 40.71864517) + x0*x3**2*(5.29831364*x0*x1*x5*(x4 - 0.5)**2 - 2.256339*x0*x4**2*x5*log(x1) - 4.42949145*x0*x4**2*x5 - 3.80117808*x0*x4*x5*log(x1) + 0.14385322*x1**2*x5*(0.83333333*x4 + 1)**4*log(x0)**2 + 2.86582176*x1*x4**2*x5 + 0.62298074*x4*(0.5*x0*x4 - x0 + 0.5*x1*x4 + 0.5*x4)**2*log(x5)*sin(x0)) - 68.3625552*x3**3)/(x0*x3**3)",
+    "mse_train": 2285.1018653498963,
+    "mae_train": 19.899866859988787,
+    "r2_train": 0.9989029029443983,
+    "mse_test": 3467.8727076832247,
+    "mae_test": 21.7179973342377,
+    "r2_test": 0.9984817696737207,
+    "simplified_symbolic_model": "(-0.011*alpha**2*m**5*log(omega)**2*log(x**2) + m*y**2*(0.187*(alpha**6 + omega**6*x**5)**0.5 - 0.191*(m*x + omega + x)**2*sin(m) + 17.7*sin(m) + 40.7) + m*y*(5.3*alpha*m*omega*(x - 0.5)**2 - 2.26*alpha*m*x**2*log(omega) - 4.43*alpha*m*x**2 - 3.8*alpha*m*x*log(omega) + 0.144*alpha*omega**2*(0.833*x + 1)**4*log(m)**2 + 2.87*alpha*omega*x**2 + 0.623*x*(0.5*m*x - m + 0.5*omega*x + 0.5*x)**2*log(alpha)*sin(m)) - 68.4*y**2)/(m*y**2)",
+    "simplified_complexity": 152,
+    "symbolic_error": "(0.011*alpha**2*m**5*log(omega)**2*log(x**2) - m*y**2*(0.187*(alpha**6 + omega**6*x**5)**0.5 - 0.191*(m*x + omega + x)**2*sin(m) + 17.7*sin(m) + 40.7) - m*y*(5.3*alpha*m*omega*(x - 0.5)**2 - 2.26*alpha*m*x**2*log(omega) - 4.43*alpha*m*x**2 - 3.8*alpha*m*x*log(omega) + 0.144*alpha*omega**2*(0.833*x + 1)**4*log(m)**2 + 2.87*alpha*omega*x**2 + 0.623*x*(0.5*m*x - m + 0.5*omega*x + 0.5*x)**2*log(alpha)*sin(m)) + 68.4*y**2 + y*(m**2*omega**2*x**2*(alpha*x + y) + p**2*y)/2)/(m*y**2)",
+    "symbolic_fraction": "2*(-0.011*alpha**2*m**5*log(omega)**2*log(x**2) + m*y**2*(0.187*(alpha**6 + omega**6*x**5)**0.5 - 0.191*(m*x + omega + x)**2*sin(m) + 17.7*sin(m) + 40.7) + m*y*(5.3*alpha*m*omega*(x - 0.5)**2 - 2.26*alpha*m*x**2*log(omega) - 4.43*alpha*m*x**2 - 3.8*alpha*m*x*log(omega) + 0.144*alpha*omega**2*(0.833*x + 1)**4*log(m)**2 + 2.87*alpha*omega*x**2 + 0.623*x*(0.5*m*x - m + 0.5*omega*x + 0.5*x)**2*log(alpha)*sin(m)) - 68.4*y**2)/(y**2*(m**2*omega**2*x**2*(alpha*x/y + 1) + p**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

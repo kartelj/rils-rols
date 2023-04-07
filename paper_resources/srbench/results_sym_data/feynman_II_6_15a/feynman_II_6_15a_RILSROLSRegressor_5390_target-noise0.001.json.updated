@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_6_15a",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2785.03125,
+    "time_time": 2785.9225249290466,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "0.239*p_d*z*sqrt(x**2 + y**2)/(epsilon*r**5)",
+    "model_size": 22,
+    "symbolic_model": "0.0014091 + 0.34306237*x1*x5*(x3*x4)**0.5/(x0*x2**5)",
+    "mse_train": 0.0005832402904036538,
+    "mae_train": 0.007295830304879463,
+    "r2_train": 0.9959902275578103,
+    "mse_test": 0.0005116264291492531,
+    "mae_test": 0.006975983502416173,
+    "r2_test": 0.9963193063842491,
+    "simplified_symbolic_model": "0.00101 + 0.343*p_d*z*(x*y)**0.5/(epsilon*r**5)",
+    "simplified_complexity": 17,
+    "symbolic_error": "(-0.00101*epsilon*r**5 - 0.343*p_d*z*(x*y)**0.5 + 0.239*p_d*z*sqrt(x**2 + y**2))/(epsilon*r**5)",
+    "symbolic_fraction": "4.18*epsilon*r**5*(0.00101 + 0.343*p_d*z*(x*y)**0.5/(epsilon*r**5))/(p_d*z*sqrt(x**2 + y**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

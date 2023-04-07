@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_17_37",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 5390
+    },
+    "random_state": 5390,
+    "process_time": 2390.5,
+    "time_time": 2391.5970549583435,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "beta*(alpha*cos(theta) + 1)",
+    "model_size": 36,
+    "symbolic_model": "1.0954443*x0*x1*cos(x2) + 1.07398281*x0 + 0.00386776*x1**4*cos(x2)**4 + 0.00147904*x1*exp(x0)*cos(x1 + x2)",
+    "mse_train": 0.3955279939094202,
+    "mae_train": 0.4922647882099174,
+    "r2_train": 0.9843704033893604,
+    "mse_test": 0.12784521813380853,
+    "mae_test": 0.24937405387089476,
+    "r2_test": 0.9948303660062436,
+    "simplified_symbolic_model": "0.00403*alpha**4*cos(theta)**4 + 1.09*alpha*beta*cos(theta) + 0.00101*alpha*exp(beta)*cos(alpha + theta) + 1.07*beta",
+    "simplified_complexity": 28,
+    "symbolic_error": "-0.00403*alpha**4*cos(theta)**4 - 0.1*alpha*beta*cos(theta) - 0.00101*alpha*exp(beta)*cos(alpha + theta) - 0.0699*beta",
+    "symbolic_fraction": "(0.00403*alpha**4*cos(theta)**4 + 1.1*alpha*beta*cos(theta) + 0.00101*alpha*exp(beta)*cos(alpha + theta) + 1.07*beta)/(beta*(alpha*cos(theta) + 1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

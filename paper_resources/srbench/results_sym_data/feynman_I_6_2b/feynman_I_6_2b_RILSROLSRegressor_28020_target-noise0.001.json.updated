@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_6_2b",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 3190.21875,
+    "time_time": 4653.288517475128,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "0.399*exp(-(theta - theta1)**2/(2*sigma**2))/sigma",
+    "model_size": 23,
+    "symbolic_model": "(0.40125503 - 0.22698881*log(1 + (x1 - x2)**2/x0**2))/x0",
+    "mse_train": 1.163438459220927e-06,
+    "mae_train": 0.0008260370551298301,
+    "r2_train": 0.9996736133132408,
+    "mse_test": 1.1390997777070342e-06,
+    "mae_test": 0.0008181306694521647,
+    "r2_test": 0.9996848582041149,
+    "simplified_symbolic_model": "(0.401 - 0.227*log((sigma**2 + (theta - theta1)**2)/sigma**2))/sigma",
+    "simplified_complexity": 24,
+    "symbolic_error": "0.227*log(1 + (theta - theta1)**2/sigma**2)/sigma - 0.401/sigma + 0.399*exp(-(theta - theta1)**2/(2*sigma**2))/sigma",
+    "symbolic_fraction": "2.51*(0.401 - 0.227*log((sigma**2 + (theta - theta1)**2)/sigma**2))*exp((theta - theta1)**2/(2*sigma**2))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

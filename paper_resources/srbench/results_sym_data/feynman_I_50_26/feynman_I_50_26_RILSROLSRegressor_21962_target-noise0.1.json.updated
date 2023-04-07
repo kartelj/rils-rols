@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_I_50_26",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 21962
+    },
+    "random_state": 21962,
+    "process_time": 2382.0625,
+    "time_time": 2383.4281816482544,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "x1*(alpha*cos(omega*t)**2 + cos(omega*t))",
+    "model_size": 35,
+    "symbolic_model": "0.97525228*x0*x3*cos(x1*x2)**2 + 1.00587218*x0*cos(x1*x2) + 0.13916423*cos(x0**2 - 2*x1) + 0.09053467",
+    "mse_train": 0.07485028753519973,
+    "mae_train": 0.21880500723833346,
+    "r2_train": 0.9811679104341542,
+    "mse_test": 0.012710263378582005,
+    "mae_test": 0.09489050976040969,
+    "r2_test": 0.9967270389541402,
+    "simplified_symbolic_model": "0.975*alpha*x1*cos(omega*t)**2 + 1.01*x1*cos(omega*t) + 0.139*cos(2*omega - x1**2) + 0.0909",
+    "simplified_complexity": 31,
+    "symbolic_error": "0.025*alpha*x1*cos(omega*t)**2 - 0.00999*x1*cos(omega*t) - 0.139*cos(2*omega - x1**2) - 0.0909",
+    "symbolic_fraction": "(0.975*alpha*x1*cos(omega*t)**2 + 1.01*x1*cos(omega*t) + 0.139*cos(2*omega - x1**2) + 0.0909)/(x1*(alpha*cos(omega*t)**2 + cos(omega*t)))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_III_14_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 1205.796875,
+    "time_time": 1205.846976518631,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "I_0*(exp(Volt*q/(T*kb)) - 1)",
+    "model_size": 23,
+    "symbolic_model": "x0*(exp((x1**2*x2**2/(x3**2*x4**2))**0.5) - 1)",
+    "mse_train": 2.85776412333002e-29,
+    "mae_train": 2.4093949058112683e-15,
+    "r2_train": 1.0,
+    "mse_test": 3.045219661123492e-29,
+    "mae_test": 2.4831114942003297e-15,
+    "r2_test": 1.0,
+    "simplified_symbolic_model": "I_0*(exp((Volt**2*q**2/(T**2*kb**2))**0.5) - 1)",
+    "simplified_complexity": 20,
+    "symbolic_error": "I_0*(-exp((Volt**2*q**2/(T**2*kb**2))**0.5) + exp(Volt*q/(T*kb)))",
+    "symbolic_fraction": "(exp((Volt**2*q**2/(T**2*kb**2))**0.5) - 1)/(exp(Volt*q/(T*kb)) - 1)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

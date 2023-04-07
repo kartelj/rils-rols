@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_II_36_38",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 4272.5,
+    "time_time": 4323.896662712097,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "H*mom/(T*kb) + M*alpha*mom/(T*c**2*epsilon*kb)",
+    "model_size": 62,
+    "symbolic_model": "1.06350385*x0*x1/(x2*x3) + 0.55737191*x0*x4/(x2*x6**2) - 0.17743987 - 0.00682008/cos(x3) + 1.32946522*x7**2*sin(x4**2/x3**3)/(x5**2*(x6 + 1)**2)",
+    "mse_train": 1.7829531723944103,
+    "mae_train": 0.2821773327502778,
+    "r2_train": -0.37420632229904216,
+    "mse_test": 3.608792514327238,
+    "mae_test": 0.1969324391466118,
+    "r2_test": -1.9304846713807713,
+    "simplified_symbolic_model": "1.06*H*mom/(T*kb) + 1.33*M**2*sin(alpha**2/T**3)/(epsilon**2*(c + 1)**2) + 0.557*alpha*mom/(c**2*kb) - 0.177 - 0.00702/cos(T)",
+    "simplified_complexity": 49,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

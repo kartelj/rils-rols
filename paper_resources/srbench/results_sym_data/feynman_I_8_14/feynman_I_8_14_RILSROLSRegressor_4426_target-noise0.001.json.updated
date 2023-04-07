@@ -1,0 +1,31 @@
+{
+    "dataset": "feynman_I_8_14",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 4426
+    },
+    "random_state": 4426,
+    "process_time": 3243.953125,
+    "time_time": 3244.2946281433105,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "sqrt((-x1 + x2)**2 + (-y1 + y2)**2)",
+    "model_size": 64,
+    "symbolic_model": "-86169.2065394*x2**9*x3**8*sin((x2 + x3)**(-2))**8 - 0.13758501*x2 - 5043.58976549*x3**9*(x2 + 0.31830989*x3)**8*sin((x2 + x3)**(-2))**8 + 2.19596787*x3 + 0.71140348*((x0 - x1)**2)**0.5 + 0.18223016",
+    "mse_train": 0.06885835232810879,
+    "mae_train": 0.1838196734307619,
+    "r2_train": 0.9317708520453256,
+    "mse_test": 0.06905990883376308,
+    "mae_test": 0.1845170814047826,
+    "r2_test": 0.930228781643837,
+    "simplified_symbolic_model": "-8.62e+4*y1**9*y2**8*sin((y1 + y2)**(-2))**8 - 0.138*y1 - 5.04e+3*y2**9*(y1 + 0.318*y2)**8*sin((y1 + y2)**(-2))**8 + 2.2*y2 + 0.711*((x1 - x2)**2)**0.5 + 0.182",
+    "simplified_complexity": 55,
+    "sympy_exception": "Model isnt accurate enough to check",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

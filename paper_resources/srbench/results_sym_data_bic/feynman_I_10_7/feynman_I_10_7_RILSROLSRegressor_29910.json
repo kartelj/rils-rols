@@ -1,0 +1,29 @@
+{
+    "dataset": "feynman_I_10_7",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "fitness_type": "FitnessType.BIC",
+        "initial_sample_size": 0.01,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_perturbations_order": false,
+        "random_state": 29910,
+        "verbose": false
+    },
+    "random_state": 29910,
+    "process_time": 4865.65625,
+    "time_time": 4866.127125263214,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": " m_0/sqrt(1-v**2/c**2)",
+    "model_size": 133,
+    "symbolic_model": "4264.50645802*x0*x1**2/x2**2 + 2.90543193 - 0.14978114*exp(x1)/((x1 - x2 + 0.5)*cos(0.04800814*x0*exp(x1)/(x1 - x2 + 0.5) + 0.04800814*exp(x1)/(x1 - x2 + 0.5) + 0.15082202/(x1 - x2 + 0.5))**0.5) + 0.00116955/((x1 - x2 + 0.5)*cos(0.04800814*x0*exp(x1)/(x1 - x2 + 0.5) + 0.07541101*x1 - 0.07541101*x2 + 0.03770550621915 + 0.04800814*exp(x1)/(x1 - x2 + 0.5))**100)",
+    "mse_train": Infinity,
+    "mae_train": 6.9282358426594e+288,
+    "r2_train": -Infinity,
+    "mse_test": Infinity,
+    "mae_test": 9.679173631095824e+267,
+    "r2_test": -Infinity
+}

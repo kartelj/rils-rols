@@ -1,0 +1,32 @@
+{
+    "dataset": "strogatz_predprey2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 16850
+    },
+    "random_state": 16850,
+    "process_time": 2395.421875,
+    "time_time": 2396.100175857544,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "y*(x/(x + 1) - 0.075*y)",
+    "model_size": 22,
+    "symbolic_model": "-0.06820186*x1**2 + 0.90795462*x1 - 0.98830164*x1/(x0 + 1) + 0.18807814",
+    "mse_train": 0.030949276911651693,
+    "mae_train": 0.14154525315689148,
+    "r2_train": 0.9872379987432032,
+    "mse_test": 0.0025688773526210368,
+    "mae_test": 0.04071431014058281,
+    "r2_test": 0.9989683400736575,
+    "simplified_symbolic_model": "-0.068*y**2 + 0.908*y - 0.988*y/(x + 1) + 0.188",
+    "simplified_complexity": 18,
+    "symbolic_error": "0.068*y**2 + y*(x/(x + 1) - 0.075*y) - 0.908*y + 0.988*y/(x + 1) - 0.188",
+    "symbolic_fraction": "(-0.068*y**2 + 0.908*y - 0.988*y/(x + 1) + 0.188)/(y*(x/(x + 1) - 0.075*y))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

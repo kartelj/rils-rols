@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_36_38",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 15795
+    },
+    "random_state": 15795,
+    "process_time": 2856.3125,
+    "time_time": 2856.893222808838,
+    "target_noise": 0.01,
+    "feature_noise": 0.0,
+    "true_model": "H*mom/(T*kb) + M*alpha*mom/(T*c**2*epsilon*kb)",
+    "model_size": 38,
+    "symbolic_model": "0.99965805*x0*x1/(x2*x3) + 1.00134369*x0*x4*x7/(x2*x3*x5*x6**2)",
+    "mse_train": 0.00038150145920420013,
+    "mae_train": 0.015589805801922527,
+    "r2_train": 0.9996798735006879,
+    "mse_test": 4.5789120643636656e-07,
+    "mae_test": 0.0003672311995975894,
+    "r2_test": 0.9999996339309456,
+    "simplified_symbolic_model": "mom*(1.0*H*c**2*epsilon + 1.0*M*alpha)/(T*c**2*epsilon*kb)",
+    "simplified_complexity": 26,
+    "symbolic_error": "H*mom/(T*kb) + M*alpha*mom/(T*c**2*epsilon*kb) - mom*(1.0*H*c**2*epsilon + 1.0*M*alpha)/(T*c**2*epsilon*kb)",
+    "symbolic_fraction": "mom*(1.0*H*c**2*epsilon + 1.0*M*alpha)/(T*c**2*epsilon*kb*(H*mom/(T*kb) + M*alpha*mom/(T*c**2*epsilon*kb)))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": true,
+    "symbolic_fraction_is_constant": null
+}

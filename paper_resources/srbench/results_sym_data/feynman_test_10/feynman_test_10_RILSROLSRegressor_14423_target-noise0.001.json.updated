@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_10",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 14423
+    },
+    "random_state": 14423,
+    "process_time": 2146.109375,
+    "time_time": 2146.2454509735107,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": "arccos((cos(theta2) - v/c)/(1 - v*cos(theta2)/c))",
+    "model_size": 24,
+    "symbolic_model": "1.74741811*x1/(x0 + x2**2)**0.5 - 0.42442612*x1 + 2.92447665*x2**0.5 - 2.10348506",
+    "mse_train": 0.00015856144884759352,
+    "mae_train": 0.00911924665846571,
+    "r2_train": 0.9993062133117612,
+    "mse_test": 0.00014356152672726245,
+    "mae_test": 0.0087077091747915,
+    "r2_test": 0.9993671809256331,
+    "simplified_symbolic_model": "2.92*theta2**0.5 + 1.75*v/(c + theta2**2)**0.5 - 0.424*v - 2.1",
+    "simplified_complexity": 20,
+    "symbolic_error": "-2.92*theta2**0.5 - 1.75*v/(c + theta2**2)**0.5 + 0.424*v + arccos((cos(theta2) - v/c)/(1 - v*cos(theta2)/c)) + 2.1",
+    "symbolic_fraction": "(2.92*theta2**0.5 + 1.75*v/(c + theta2**2)**0.5 - 0.424*v - 2.1)/arccos((cos(theta2) - v/c)/(1 - v*cos(theta2)/c))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

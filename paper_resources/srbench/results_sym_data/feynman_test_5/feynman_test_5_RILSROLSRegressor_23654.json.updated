@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_5",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 74.28125,
+    "time_time": 74.28376126289368,
+    "target_noise": 0.0,
+    "feature_noise": 0.0,
+    "true_model": "6.28*d**(3/2)/sqrt(G*(m1 + m2))",
+    "model_size": 18,
+    "symbolic_model": "6.28318531*(x0**3/(x1*(x2 + x3)))**0.5",
+    "mse_train": 1.1331392486117322e-17,
+    "mae_train": 3.0461281571581012e-09,
+    "r2_train": 1.0,
+    "mse_test": 1.1499527609432359e-17,
+    "mae_test": 3.075930922165071e-09,
+    "r2_test": 1.0,
+    "simplified_symbolic_model": "6.28*(d**3/(G*(m1 + m2)))**0.5",
+    "simplified_complexity": 16,
+    "symbolic_error": "6.28*d**(3/2)/sqrt(G*(m1 + m2)) - 6.28*(d**3/(G*(m1 + m2)))**0.5",
+    "symbolic_fraction": "1.0*sqrt(G*(m1 + m2))*(d**3/(G*(m1 + m2)))**0.5/d**(3/2)",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": null
+}

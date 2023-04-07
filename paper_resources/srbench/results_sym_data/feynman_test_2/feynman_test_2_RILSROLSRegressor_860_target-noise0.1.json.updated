@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_test_2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 860
+    },
+    "random_state": 860,
+    "process_time": 4152.484375,
+    "time_time": 4154.959481477737,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "k_G*m*(sqrt(2*E_n*L**2/(k_G**2*m) + 1)*cos(theta1 - theta2) + 1)/L**2",
+    "model_size": 98,
+    "symbolic_model": "1.69270164*x0*log(x5)*cos(3.14159265*log(x4/x5))/x2**2 + 1.80428041*x0/x2**2 + 0.41964196*x1 + 2.26743526*sin(-x4*sin(1/x5) + x5*sin(sin(1/(x4**0.5*x5)) + 0.5/x5) + 1)/x2**0.5 + 0.39464266*x3*sin(x5) - 0.15311993*x4*log(x5)*cos(3.14159265*x4/x5) - 0.18018271*x5 - 1.21595794",
+    "mse_train": 1.889448529350318,
+    "mae_train": 0.8253255403321397,
+    "r2_train": 0.5362445785122663,
+    "mse_test": 1.7502898192111274,
+    "mae_test": 0.7790035779026575,
+    "r2_test": 0.5721492211603706,
+    "simplified_symbolic_model": "0.395*E_n*sin(theta2) + 1.69*m*log(theta2)*cos(3.14*log(theta1/theta2))/L**2.0 + 1.8*m/L**2.0 + 2.27*sin(-theta1*sin(1/theta2) + theta2*sin(sin(1/(theta1**0.5*theta2)) + 0.5/theta2) + 1)/L**0.5 + 0.42*k_G - 0.153*theta1*log(theta2)*cos(3.14*theta1/theta2) - 0.18*theta2 - 1.22",
+    "simplified_complexity": 80,
+    "symbolic_error": "-0.395*E_n*sin(theta2) - 1.69*m*log(theta2)*cos(3.14*log(theta1/theta2))/L**2.0 - 1.8*m/L**2.0 - 2.27*sin(-theta1*sin(1/theta2) + theta2*sin(sin(1/(theta1**0.5*theta2)) + 0.5/theta2) + 1)/L**0.5 - 0.42*k_G + 0.153*theta1*log(theta2)*cos(3.14*theta1/theta2) + 0.18*theta2 + 1.22 + k_G*m*(sqrt(2*E_n*L**2/(k_G**2*m) + 1)*cos(theta1 - theta2) + 1)/L**2",
+    "symbolic_fraction": "L**2*(0.395*E_n*sin(theta2) + 1.69*m*log(theta2)*cos(3.14*log(theta1/theta2))/L**2.0 + 1.8*m/L**2.0 + 2.27*sin(-theta1*sin(1/theta2) + theta2*sin(sin(1/(theta1**0.5*theta2)) + 0.5/theta2) + 1)/L**0.5 + 0.42*k_G - 0.153*theta1*log(theta2)*cos(3.14*theta1/theta2) - 0.18*theta2 - 1.22)/(k_G*m*(sqrt(2*E_n*L**2/(k_G**2*m) + 1)*cos(theta1 - theta2) + 1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}

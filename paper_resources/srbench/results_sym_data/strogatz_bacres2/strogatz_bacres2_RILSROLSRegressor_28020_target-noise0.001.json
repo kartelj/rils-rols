@@ -1,0 +1,25 @@
+{
+    "dataset": "strogatz_bacres2",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 28020
+    },
+    "random_state": 28020,
+    "process_time": 1844.546875,
+    "time_time": 1845.5400002002716,
+    "target_noise": 0.001,
+    "feature_noise": 0.0,
+    "true_model": " 10 - (x * y)/(1+0.5 * x**2)",
+    "model_size": 16,
+    "symbolic_model": "-1.99932802*x1/(x0 + 2/x0) + 9.99778818",
+    "mse_train": 2.4854037054574926e-05,
+    "mae_train": 0.003959975176053298,
+    "r2_train": 0.9999947751598581,
+    "mse_test": 6.178050384840112e-07,
+    "mae_test": 0.0006915484494989466,
+    "r2_test": 0.9999998679568006
+}

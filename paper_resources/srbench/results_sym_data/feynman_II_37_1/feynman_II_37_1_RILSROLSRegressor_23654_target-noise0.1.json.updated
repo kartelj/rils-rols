@@ -1,0 +1,32 @@
+{
+    "dataset": "feynman_II_37_1",
+    "algorithm": "RILSROLSRegressor",
+    "params": {
+        "complexity_penalty": 0.001,
+        "error_tolerance": 1e-16,
+        "max_fit_calls": 1000000,
+        "max_seconds": 7200,
+        "random_state": 23654
+    },
+    "random_state": 23654,
+    "process_time": 2635.34375,
+    "time_time": 2635.8728787899017,
+    "target_noise": 0.1,
+    "feature_noise": 0.0,
+    "true_model": "B*mom*(chi + 1)",
+    "model_size": 53,
+    "symbolic_model": "-5.9e-7*x0**10 + 1.25815833*x0*x1*x2 - 2.37108547*x2 + 1.91479973*sin(x1*(x0*x1)**x0) + 9.11474728 + 35.27505701/x2**5 - 387.05408141/(x1*x2**5*(x0 + x2))",
+    "mse_train": 38.004649672177734,
+    "mae_train": 4.333692538579525,
+    "r2_train": 0.9356118078525261,
+    "mse_test": 18.329502275424318,
+    "mae_test": 2.335346604303308,
+    "r2_test": 0.9670560513892575,
+    "simplified_symbolic_model": "1.26*B*chi*mom - 2.37*chi + 1.92*sin(B*(B*mom)**mom) + 9.12 + 35.3/chi**5 - 387.0/(B*chi**5*(chi + mom))",
+    "simplified_complexity": 38,
+    "symbolic_error": "-1.26*B*chi*mom + B*mom*(chi + 1) + 2.37*chi - 1.92*sin(B*(B*mom)**mom) - 9.12 - 35.3/chi**5 + 387.0/(B*chi**5*(chi + mom))",
+    "symbolic_fraction": "(1.26*B*chi*mom - 2.37*chi + 1.92*sin(B*(B*mom)**mom) + 9.12 + 35.3/chi**5 - 387.0/(B*chi**5*(chi + mom)))/(B*mom*(chi + 1))",
+    "symbolic_error_is_zero": false,
+    "symbolic_error_is_constant": false,
+    "symbolic_fraction_is_constant": false
+}
