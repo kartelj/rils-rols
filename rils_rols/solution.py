@@ -8,6 +8,7 @@ from sympy.core.numbers import ImaginaryUnit
 from sympy.core.symbol import Symbol
 import numpy as np
 import statsmodels.api as sma
+import hashlib
 
 class Solution:
 
@@ -28,7 +29,16 @@ class Solution:
 
     def __str__(self) -> str:
         return "+".join([str(x) for x in self.factors])
-
+    
+    def __eq__(self, other):
+        return str(self) == str(other)
+    
+    def __hash__(self):
+        # Stable hash (same for different runs, unlike standard hash() method)
+        h = hashlib.sha1(str(self).encode("ascii"))
+        return int(h.hexdigest(), 16)
+        #return hash(str(self))
+    
     def evaluate_all(self,X, cache):
         yp = np.zeros(len(X))
         for fact in self.factors:

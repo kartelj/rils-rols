@@ -23,10 +23,14 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
         self.parallelism = parallelism
         self.verbose = verbose
         self.fitness_type = fitness_type
+        self.initial_sample_size = initial_sample_size
         rg = Random(random_state)
         random_states = [rg.randint(10000, 99999) for i in range(self.parallelism)]
-        self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, fitness_type=fitness_type, complexity_penalty=complexity_penalty, initial_sample_size=initial_sample_size,
-            error_tolerance=error_tolerance, random_perturbations_order=True, verbose=verbose, random_state=rgs) for rgs in random_states]
+        self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, fitness_type=fitness_type, 
+                                                  complexity_penalty=complexity_penalty, initial_sample_size=initial_sample_size,
+                                                  error_tolerance=error_tolerance, random_perturbations_order=True, verbose=verbose, 
+                                                  perturbations_hash_divisions=self.parallelism, perturbations_hash_remainder = i, random_state=random_states[i]) 
+                                                  for i in range(len(random_states))]
 
     def fit(self, X, y):
         # now run each base regressor (RILSROLSRegressor) as a separate process
@@ -63,8 +67,8 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
-        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), 0, 0, 0,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance)
+        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}\sample_size={14}".format(
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), 0, 0, 0,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance, self.initial_sample_size)
 
     def complexity(self):
         c=0
