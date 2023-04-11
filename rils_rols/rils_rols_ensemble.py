@@ -28,8 +28,7 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
         random_states = [rg.randint(10000, 99999) for i in range(self.parallelism)]
         self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, fitness_type=fitness_type, 
                                                   complexity_penalty=complexity_penalty, initial_sample_size=initial_sample_size,
-                                                  error_tolerance=error_tolerance, random_perturbations_order=True, verbose=verbose, 
-                                                  perturbations_hash_divisions=self.parallelism, perturbations_hash_remainder = i, random_state=random_states[i]) 
+                                                  error_tolerance=error_tolerance, random_perturbations_order=True, verbose=verbose, random_state=random_states[i]) 
                                                   for i in range(len(random_states))]
 
     def fit(self, X, y):

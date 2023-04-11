@@ -22,7 +22,7 @@ class FitnessType(Enum):
 class RILSROLSRegressor(BaseEstimator):
 
     def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01, error_tolerance=1e-16,  
-                 random_perturbations_order = False, perturbations_hash_divisions = 10, perturbations_hash_remainder = 0,  verbose=False, random_state=0):
+                 random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.fitness_type = fitness_type
@@ -31,8 +31,6 @@ class RILSROLSRegressor(BaseEstimator):
         self.error_tolerance = error_tolerance
         self.verbose = verbose
         self.random_perturbations_order = random_perturbations_order
-        self.perturbations_hash_divisions = perturbations_hash_divisions
-        self.perturbations_hash_remainder = perturbations_hash_remainder
         self.random_state = random_state
 
     def __reset(self):
@@ -83,12 +81,6 @@ class RILSROLSRegressor(BaseEstimator):
             all_perturbations = self.all_perturbations(start_solution, len(X[0]))
             pret_fits = {}
             for pret in all_perturbations: 
-                pret_hash = hash(pret)
-                if pret_hash%self.perturbations_hash_divisions!=self.perturbations_hash_remainder:
-                    #print("Skipping perturbation "+str(pret)+" with hash "+str(pret_hash))
-                    continue
-                if self.verbose:
-                    print("Keeping perturbation "+str(pret)+" with hash "+str(pret_hash))
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
                 pret_ols_fit = pret_ols.fitness(X, y)
