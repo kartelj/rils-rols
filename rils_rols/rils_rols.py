@@ -21,14 +21,14 @@ class FitnessType(Enum):
 
 class RILSROLSRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01, error_tolerance=1e-16,  
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01,  
                  random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.fitness_type = fitness_type
         self.complexity_penalty = complexity_penalty
         self.initial_sample_size = initial_sample_size
-        self.error_tolerance = error_tolerance
+        self.error_tolerance = 1e-16
         self.verbose = verbose
         self.random_perturbations_order = random_perturbations_order
         self.random_state = random_state
@@ -149,8 +149,8 @@ class RILSROLSRegressor(BaseEstimator):
                     Node.reset_node_value_cache()
 
             self.time_elapsed = time.time()-self.start
-            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d sizenl=%d sizeop=%d fittype=%s factors=%d mathErr=%d fitCalls=%d fitFails=%d cHits=%d cTries=%d cPerc=%.1f cSize=%d\n                                                                          expr=%s"
-            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(),best_solution.size_non_linear(),best_solution.size_operators_only(), self.fitness_type, len(best_solution.factors), Solution.math_error_count, Solution.fit_calls, Solution.fit_fails, Node.cache_hits, Node.cache_tries, Node.cache_hits*100.0/Node.cache_tries, len(Node.node_value_cache), best_solution))
+            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
+            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
             self.main_it+=1
             if best_fitness[0]<=self.error_tolerance and best_fitness[1] <= pow(self.error_tolerance, 0.125):
                 break
@@ -193,12 +193,12 @@ class RILSROLSRegressor(BaseEstimator):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
-        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}\tfitType={14}\tinitSampleSize={15}\trandomPert={16}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance, self.fitness_type, self.initial_sample_size, self.random_perturbations_order)
+        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\tfitType={13}\tinitSampleSize={14}\trandomPert={15}".format(
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(self.model_simp), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.fitness_type, self.initial_sample_size, self.random_perturbations_order)
 
-    def complexity(self):
+    def complexity(self, sm):
         c=0
-        for arg in preorder_traversal(self.model_simp):
+        for arg in preorder_traversal(sm):
             c += 1
         return c
 

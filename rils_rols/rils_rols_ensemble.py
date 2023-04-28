@@ -1,7 +1,7 @@
 import math
 from random import Random
+import time
 from sklearn.base import BaseEstimator
-import copy
 from sympy import *
 from .node import Node
 from .rils_rols import RILSROLSRegressor, FitnessType
@@ -14,12 +14,11 @@ warnings.filterwarnings("ignore")
 
 class RILSROLSEnsembleRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01,error_tolerance=1e-16, parallelism = 8, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01, parallelism = 8, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
         self.random_state = random_state
-        self.error_tolerance = error_tolerance
         self.parallelism = parallelism
         self.verbose = verbose
         self.fitness_type = fitness_type
@@ -28,10 +27,11 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
         random_states = [rg.randint(10000, 99999) for i in range(self.parallelism)]
         self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, fitness_type=fitness_type, 
                                                   complexity_penalty=complexity_penalty, initial_sample_size=initial_sample_size,
-                                                  error_tolerance=error_tolerance, random_perturbations_order=True, verbose=verbose, random_state=random_states[i]) 
+                                                  random_perturbations_order=True, verbose=verbose, random_state=random_states[i]) 
                                                   for i in range(len(random_states))]
 
     def fit(self, X, y):
+        self.start = time.time()
         # now run each base regressor (RILSROLSRegressor) as a separate process
         results = Parallel(n_jobs=len(self.base_regressors))(delayed(reg.fit)(X, y) for reg in self.base_regressors)
         print("All regressors have finished now")
@@ -44,9 +44,10 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
                 best_model = model
                 best_model_simp = model_simp
             print('Model '+str(model)+'\t'+str(model_fit))
+        self.time_elapsed = time.time()-self.start
         self.model = best_model
         self.model_simp = best_model_simp
-        print('Best model is '+str(self.model) + ' with '+str(best_fit))
+        print('Best simplified model is '+str(self.model_simp) + ' with '+str(best_fit))
 
     def predict(self, X):
         Node.reset_node_value_cache()
@@ -66,8 +67,8 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
         fitness = self.model.fitness(X,y, False)
-        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\terrTol={13}\sample_size={14}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), 0, 0, 0,Solution.fit_calls, self.model, self.model_simp, self.error_tolerance, self.initial_sample_size)
+        return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\texpr={8}\texprSimp={9}\fitType={10}\tinitSampleSize={11}".format(
+            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(), self.time_elapsed, self.model, self.model_simp, self.fitness_type, self.initial_sample_size)
 
     def complexity(self):
         c=0
