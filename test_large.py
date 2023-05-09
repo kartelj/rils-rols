@@ -8,16 +8,16 @@ from os.path import isfile, join
 
 from rils_rols.rils_rols_ensemble import RILSROLSEnsembleRegressor
 
-instances_dir = "paper_resources/random_large_data" 
+instances_dir = "paper_resources/srbench_2023" 
 random_state = 23654
 train_perc = 0.75
 time = 86400
 max_fit = 1000000
-noise_level = 0.5
+noise_level = 0
 complexity_penalty = 0.001 # 0.001 default
-parallelism = 10
-initial_sample_sizes = [0.0001, 0.001, 0.01]
-verbose = False
+parallelism = 1
+initial_sample_sizes = [1] #0.0001, 0.001, 0.01]
+verbose = True
 
  
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]

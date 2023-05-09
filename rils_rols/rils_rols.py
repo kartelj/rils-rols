@@ -6,10 +6,13 @@ from random import Random, shuffle
 from sklearn.base import BaseEstimator
 import copy
 from sympy import *
+
+from .utils import R2, RMSE, ResidualVariance
 from .node import Node, NodeConstant, NodeVariable, NodePlus, NodeMinus, NodeMultiply, NodeDivide, NodeSqr, NodeSqrt, NodeLn, NodeExp, NodeSin, NodeCos
 from enum import Enum
 import warnings
 from .solution import Solution
+from numpy.linalg import norm
 
 warnings.filterwarnings("ignore")
 
@@ -19,9 +22,15 @@ class FitnessType(Enum):
     SRM = 2 # structural risk minimization
     PENALTY = 3 # penalty based fitness function
 
+class MonotonicityType(Enum):
+    NON_DECREASING = 1
+    NON_INCREASING = 2
+    INCREASING = 3
+    DECREASING = 4
+
 class RILSROLSRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01,  
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, monotonicity = (0, MonotonicityType.INCREASING, False), lipschitz_continuity_eps=0.01, initial_sample_size=0.01,  
                  random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
@@ -32,6 +41,8 @@ class RILSROLSRegressor(BaseEstimator):
         self.verbose = verbose
         self.random_perturbations_order = random_perturbations_order
         self.random_state = random_state
+        self.monotoncity = monotonicity
+        self.lipschitz_continuity_eps = lipschitz_continuity_eps
 
     def __reset(self):
         self.model = None
@@ -41,6 +52,8 @@ class RILSROLSRegressor(BaseEstimator):
         self.time_start = 0
         self.time_elapsed = 0
         self.rg = Random(self.random_state)
+        self.lipschitz_sets = {}
+        self.lipschitz_constants = {}
         Solution.clearStats()
         Node.reset_node_value_cache()
 
@@ -51,6 +64,9 @@ class RILSROLSRegressor(BaseEstimator):
         self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
 
     def fit(self, X, y):
+        self.__reset()
+        self.start = time.time()
+
         x_all = copy.deepcopy(X)
         y_all = copy.deepcopy(y)
         # take 1% of points or at least 100 points initially 
@@ -61,17 +77,31 @@ class RILSROLSRegressor(BaseEstimator):
         X = x_all[:self.n]
         y = y_all[:self.n]
 
+        # this is used for lipshitz continuity, for each point forming neighborhoods of other points w.r.t. L2 (close means that it is inside some eps neighb.)
+        for i in range(len(X)):
+            C = -inf
+            for j in range(i):
+                dist = norm([X[i][k]-X[j][k] for k in range(len(X[0]))], 2)
+                if dist<self.lipschitz_continuity_eps and dist!=0:
+                    if i not in self.lipschitz_sets:
+                        self.lipschitz_sets[i] = []
+                    self.lipschitz_sets[i].append((j, dist))
+                    dist_f = abs(y[i]-y[j])
+                    if dist_f/dist>C:
+                        C = dist_f/dist
+            if i in self.lipschitz_sets:
+                self.lipschitz_constants[i] = C
+        print("There are "+str(len(self.lipschitz_constants))+ " lipschitz constants.")
+
         size_increased_main_it = 0
 
-        self.__reset()
-        self.start = time.time()
         if len(X) == 0:
             raise Exception("Input feature data set (X) cannot be empty.")
         if len(X)!=len(y):
             raise Exception("Numbers of feature vectors (X) and target values (y) must be equal.")
         self.__setup_nodes(len(X[0]))
         best_solution =  Solution([NodeConstant(0)], self.complexity_penalty)
-        best_fitness = best_solution.fitness(X, y)
+        best_fitness = self.fitness(best_solution, X, y)
         self.main_it = 0
         checked_perturbations = set([])
         start_solutions = set([])
@@ -83,7 +113,7 @@ class RILSROLSRegressor(BaseEstimator):
             for pret in all_perturbations: 
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
-                pret_ols_fit = pret_ols.fitness(X, y)
+                pret_ols_fit = self.fitness(pret_ols, X, y)
                 pret_fits[pret]=pret_ols_fit[0]
 
             sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
@@ -106,9 +136,9 @@ class RILSROLSRegressor(BaseEstimator):
                     print(str(p)+"/"+str(len(sorted_pret_fits))+". "+str(pret))
                 new_solution = pret 
                 new_solution.simplify_whole(len(X[0]))
-                new_fitness = new_solution.fitness(X, y)
+                new_fitness = self.fitness(new_solution, X, y)
                 new_solution = self.LS_best(new_solution, X, y)
-                new_fitness = new_solution.fitness(X, y, False)
+                new_fitness = self.fitness(new_solution, X, y, False)
                 if self.compare_fitness(new_fitness, best_fitness)<0:
                     if self.verbose:
                         print("perturbation "+str(pret)+" produced global improvement.")
@@ -149,8 +179,8 @@ class RILSROLSRegressor(BaseEstimator):
                     Node.reset_node_value_cache()
 
             self.time_elapsed = time.time()-self.start
-            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
-            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
+            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f MONO=%.7f LIPS=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
+            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1], best_fitness[6], best_fitness[7], best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
             self.main_it+=1
             if best_fitness[0]<=self.error_tolerance and best_fitness[1] <= pow(self.error_tolerance, 0.125):
                 break
@@ -192,7 +222,7 @@ class RILSROLSRegressor(BaseEstimator):
     def fit_report_string(self, X, y):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
-        fitness = self.model.fitness(X,y, False)
+        fitness = self.fitness(self.model, X,y, False)
         return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\tfitType={13}\tinitSampleSize={14}\trandomPert={15}".format(
             self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(self.model_simp), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.fitness_type, self.initial_sample_size, self.random_perturbations_order)
 
@@ -243,7 +273,7 @@ class RILSROLSRegressor(BaseEstimator):
         return all
     
     def LS_best(self, solution: Solution, X, y):
-        best_fitness = solution.fitness(X, y)
+        best_fitness = self.fitness(solution, X, y)
         best_solution = copy.deepcopy(solution)
         impr = True
         while impr or impr2:
@@ -258,7 +288,7 @@ class RILSROLSRegressor(BaseEstimator):
             impr, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True)
             if impr or impr2:
                 best_solution.simplify_whole(len(X[0]))
-                best_fitness = best_solution.fitness(X, y, False)
+                best_fitness = self.fitness(best_solution, X, y, False)
                 if self.compare_fitness(best_fitness, old_best_fitness)>=0:
                     impr = False
                     impr2 = False
@@ -273,7 +303,7 @@ class RILSROLSRegressor(BaseEstimator):
         return best_solution
 
     def LS_best_change_iteration(self, solution: Solution, X, y, cache, joined=False):
-        best_fitness = solution.fitness(X, y, False)
+        best_fitness = self.fitness(solution, X, y, False)
         best_solution = copy.deepcopy(solution)
         if joined:
             print("JOINING SOLUTION IN LS")
@@ -298,7 +328,7 @@ class RILSROLSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = self.fitness(new_solution, X, y, cache)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
@@ -313,7 +343,7 @@ class RILSROLSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = self.fitness(new_solution, X, y, cache)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
@@ -328,7 +358,7 @@ class RILSROLSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = self.fitness(new_solution, X, y, cache)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
@@ -496,6 +526,53 @@ class RILSROLSRegressor(BaseEstimator):
         candidates = sorted(candidates, key=lambda x: str(x))
         return candidates
     
+    def monotonicity_score(self, yp, X):
+        var_idx, monotonicity_type, _ = self.monotoncity
+        # order w.r.t. var_idx and check lineary if yp follows the given monotonicity
+        Xyp = zip(X, yp)
+        Xyp_sorted = sorted(Xyp, key=lambda x: x[0][var_idx])
+
+        incorrect = 0
+        # now simply count how many y values do not follow given monotonicity
+        for i in range(1, len(Xyp_sorted)):
+            ypi_prev = Xyp_sorted[i-1][1]
+            ypi = Xyp_sorted[i][1]
+            if monotonicity_type==MonotonicityType.NON_DECREASING and ypi<ypi_prev:
+                incorrect+=1
+            elif monotonicity_type==MonotonicityType.NON_INCREASING and ypi>ypi_prev:
+                incorrect+=1
+            elif monotonicity_type==MonotonicityType.INCREASING and ypi<=ypi_prev:
+                incorrect+=1
+            elif monotonicity_type==MonotonicityType.DECREASING and ypi>=ypi_prev:
+                incorrect+=1
+        score = incorrect*1.0/(len(Xyp_sorted)-1)
+        return score
+    
+    def lipschitz_continuity_score(self, yp, X):
+        score = 0.0
+        for i, pts in self.lipschitz_sets.items():
+            Cp = -inf
+            for j, dist in pts:
+                dist_f = abs(yp[i]-yp[j])
+                if dist_f/dist>Cp:
+                    Cp = dist_f/dist
+            if Cp > self.lipschitz_constants[i]:
+                score+=1
+        score/=max(1, len(self.lipschitz_sets)) # to avoid division by zero
+        return score
+
+    def fitness(self,solution : Solution, X, y, cache=True):
+        try:
+            Solution.fit_calls+=1
+            yp = solution.evaluate_all(X, cache) 
+            size = solution.size()
+            return (1-R2(y, yp), RMSE(y, yp), size, ResidualVariance(y, yp, size), solution.size_non_linear(), solution.size_operators_only(), self.monotonicity_score(yp,X), self.lipschitz_continuity_score(yp, X))
+        except Exception as e:
+            #print(e)
+            Solution.math_error_count+=1
+            Solution.fit_fails+=1
+            return (inf, inf, inf, inf, inf, inf, inf, inf)
+    
     def compare_fitness(self, new_fit, old_fit):
         if self.fitness_type == FitnessType.BIC:
             return self.compare_fitness_bic(new_fit, old_fit)
@@ -545,8 +622,19 @@ class RILSROLSRegressor(BaseEstimator):
     def compare_fitness_penalty(self, new_fit, old_fit):
         if math.isnan(new_fit[0]):
             return 1
-        new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1]) 
+        new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1])
         old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[1]) 
+
+        if self.monotoncity[2]:
+            # monotonicity is used
+            new_fit_wo_size_pen*=(1+new_fit[6])
+            old_fit_wo_size_pen*=(1+old_fit[6])
+
+        if False and self.lipschitz_continuity_eps>0:
+            # lipshitz continuity is used
+            new_fit_wo_size_pen*=(1+new_fit[7])
+            old_fit_wo_size_pen*=(1+old_fit[7])
+
         if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
             if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it
                 return -1

@@ -1,3 +1,4 @@
+from enum import Enum
 from math import nan, sqrt
 from statistics import mean
 from numpy.random import RandomState
