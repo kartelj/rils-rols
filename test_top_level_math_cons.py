@@ -28,7 +28,7 @@ f5 = ("f5", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2)*cos(
 f6 = ("f6", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2)/cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
 
 if scenario==1:
-    distribution_fits = [False]
+    distribution_fits_penalties = [0]
     monotonicities = [False, True]
     lipschitz_continuities = [(0, 0)]
     X = [[rg.random(), rg.random(), rg.random()] for _ in range(200)]
@@ -38,7 +38,7 @@ if scenario==1:
     #assert(corr>=0.999999)
     noise_levels = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99]
 elif scenario==2:
-    distribution_fits = [False]
+    distribution_fits_penalties = [0]
     monotonicities = [False]
     lipschitz_continuities = [(0, 0), (0.01, 10), (0.01, 100)]
     X = []
@@ -50,7 +50,7 @@ elif scenario==2:
     formulas = [f2, f3, f4, f5, f6]
     noise_levels = [0]
 elif scenario==3:
-    distribution_fits = [False, True]
+    distribution_fits_penalties = [10, 100] # [False, True]
     monotonicities = [False]
     lipschitz_continuities = [(0, 0)]
     X = []
@@ -74,8 +74,8 @@ for name, formula in formulas:
         #corr, _ = pearsonr([x[0] for x in X], y_train)
         for mono_use in monotonicities:
             for lipschitz_conf in lipschitz_continuities:
-                for distribution_fit in distribution_fits:
-                    regressor = RILSROLSRegressor(verbose=True, max_seconds=max_seconds, max_fit_calls=max_fit_calls, initial_sample_size=1, monotonicity=(0, MonotonicityType.INCREASING, mono_use), lipschitz_continuity=lipschitz_conf, distribution_fit=distribution_fit)
+                for distribution_fit_penalty in distribution_fits_penalties:
+                    regressor = RILSROLSRegressor(verbose=True, max_seconds=max_seconds, max_fit_calls=max_fit_calls, initial_sample_size=1, monotonicity=(0, MonotonicityType.INCREASING, mono_use), lipschitz_continuity=lipschitz_conf, distribution_fit_penalty=distribution_fit_penalty)
                     regressor.fit(X_train, y_train_noisy)
                     # this prints out the learned simplified model
                     print("Final model is:\t"+str(regressor.model_simp))
@@ -92,4 +92,4 @@ for name, formula in formulas:
                     except Exception as ex:
                         print("ERROR during test "+str(ex))
                     with open("results.txt", "a") as f:
-                        f.write("scenario={0}\tformula={1}\tnoise_level={2}\tmono_use={3}\tlipschitz_eps={4}\tlipshitz_pen={5}\tdistribution_fit={6}\tTestR2={7:.8f}\tTestRMSE={8:.8f}\t{9}\n".format(scenario, name, noise_level, mono_use, lipschitz_conf[0], lipschitz_conf[1], distribution_fit, r2, rmse, output_string))
+                        f.write("scenario={0}\tformula={1}\tnoise_level={2}\tmono_use={3}\tlipschitz_eps={4}\tlipshitz_pen={5}\tdistribution_fit_pen={6}\tTestR2={7:.8f}\tTestRMSE={8:.8f}\t{9}\n".format(scenario, name, noise_level, mono_use, lipschitz_conf[0], lipschitz_conf[1], distribution_fit_penalty, r2, rmse, output_string))

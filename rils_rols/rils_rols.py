@@ -31,7 +31,7 @@ class MonotonicityType(Enum):
 
 class RILSROLSRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, monotonicity = (0, MonotonicityType.INCREASING, False), lipschitz_continuity=(0.01, 0), distribution_fit=False, initial_sample_size=0.01,  
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, monotonicity = (0, MonotonicityType.INCREASING, False), lipschitz_continuity=(0.01, 0), distribution_fit_penalty=0, initial_sample_size=0.01,  
                  random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
@@ -44,7 +44,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.random_state = random_state
         self.monotoncity = monotonicity
         self.lipschitz_continuity = lipschitz_continuity
-        self.distribution_fit = distribution_fit
+        self.distribution_fit_penalty = distribution_fit_penalty
 
     def __reset(self):
         self.model = None
@@ -660,9 +660,11 @@ class RILSROLSRegressor(BaseEstimator):
         new_fit_wo_size_pen*=(1+lipschitz_penalty*new_fit[7])
         old_fit_wo_size_pen*=(1+lipschitz_penalty*old_fit[7])
 
-        if self.distribution_fit:
-            new_fit_wo_size_pen*=(1+ new_fit[8])
-            old_fit_wo_size_pen*=(1+ old_fit[8])
+
+        #new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[8])
+        #old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[8])
+        new_fit_wo_size_pen*=(1+ self.distribution_fit_penalty*new_fit[8])
+        old_fit_wo_size_pen*=(1+ self.distribution_fit_penalty*old_fit[8])
 
         if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
             if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it

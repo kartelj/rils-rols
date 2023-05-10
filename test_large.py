@@ -18,7 +18,7 @@ complexity_penalty = 0.001 # 0.001 default
 parallelism = 1
 initial_sample_sizes = [1] #0.0001, 0.001, 0.01]
 verbose = True
-lipschitz_continuity = (2, 0) ##(2, 10)
+lipschitz_continuity = (15, 0) ##(2, 10)
 random_perturbations = False
 distribution_fit = True
  
