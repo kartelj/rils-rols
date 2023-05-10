@@ -620,8 +620,10 @@ class RILSROLSRegressor(BaseEstimator):
 
         if self.lipschitz_continuity_eps>0:
             # lipshitz continuity is used
-            new_fit_wo_size_pen*=(1+10*new_fit[7])
-            old_fit_wo_size_pen*=(1+10*old_fit[7])
+            new_fit_wo_size_pen = new_fit[7]
+            old_fit_wo_size_pen = old_fit[7]
+            #new_fit_wo_size_pen*=(1+10*new_fit[7])
+            #old_fit_wo_size_pen*=(1+10*old_fit[7])
 
         if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
             if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it
