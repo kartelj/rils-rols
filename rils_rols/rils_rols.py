@@ -13,6 +13,7 @@ from enum import Enum
 import warnings
 from .solution import Solution
 from numpy.linalg import norm
+from numpy import linspace, zeros
 
 warnings.filterwarnings("ignore")
 
@@ -30,7 +31,7 @@ class MonotonicityType(Enum):
 
 class RILSROLSRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, monotonicity = (0, MonotonicityType.INCREASING, False), lipschitz_continuity_eps=0.01, initial_sample_size=0.01,  
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, monotonicity = (0, MonotonicityType.INCREASING, False), lipschitz_continuity=(0.01, 0), distribution_fit=False, initial_sample_size=0.01,  
                  random_perturbations_order = False, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
@@ -42,7 +43,8 @@ class RILSROLSRegressor(BaseEstimator):
         self.random_perturbations_order = random_perturbations_order
         self.random_state = random_state
         self.monotoncity = monotonicity
-        self.lipschitz_continuity_eps = lipschitz_continuity_eps
+        self.lipschitz_continuity = lipschitz_continuity
+        self.distribution_fit = distribution_fit
 
     def __reset(self):
         self.model = None
@@ -53,6 +55,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.time_elapsed = 0
         self.rg = Random(self.random_state)
         self.close_points_derivatives = []
+        self.true_target_dist = None
         Solution.clearStats()
         Node.reset_node_value_cache()
 
@@ -61,6 +64,24 @@ class RILSROLSRegressor(BaseEstimator):
         for i in range(variableCount):
             self.allowed_nodes.append(NodeVariable(i))
         self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
+
+    def empirical_cumulative_distribution(self, vals, bins=None):
+        # preparing in advance bins for real target values
+        tail_size = round(0.05*len(vals))
+        vals_sorted = sorted(vals)[tail_size:len(vals)-tail_size]
+
+        if bins is None:
+            min = vals_sorted[0]
+            max = vals_sorted[len(vals_sorted)-1]
+            bins = linspace(min, max+0.0001, 20) # to include it in the the bin
+
+        bin_cnts = zeros(len(bins))
+        for v in vals_sorted:
+            b = 1
+            while v>=bins[b] and b<len(bins):
+                b+=1
+            bin_cnts[b-1]+=1
+        return (bins, bin_cnts)
 
     def fit(self, X, y):
         self.__reset()
@@ -76,13 +97,18 @@ class RILSROLSRegressor(BaseEstimator):
         X = x_all[:self.n]
         y = y_all[:self.n]
 
+        # preparing things for lipshitz continuity
+        lipschitz_eps, _ = self.lipschitz_continuity
         for i in range(len(X)):
             for j in range(i):
                 dist = norm([X[i][k]-X[j][k] for k in range(len(X[0]))], 2)
-                if dist<self.lipschitz_continuity_eps and dist!=0:
+                if dist<lipschitz_eps and dist!=0:
                     dist_f = abs(y[i]-y[j])
                     self.close_points_derivatives.append((i, j, dist, dist_f/dist))
         print("There are "+str(len(self.close_points_derivatives))+ " relevant partial derivatives.")
+
+        # preparing things for target variable distribution comparison
+        self.true_target_dist = self.empirical_cumulative_distribution(y)
 
         size_increased_main_it = 0
 
@@ -170,8 +196,8 @@ class RILSROLSRegressor(BaseEstimator):
                     Node.reset_node_value_cache()
 
             self.time_elapsed = time.time()-self.start
-            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f MONO=%.7f LIPS=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
-            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1], best_fitness[6], best_fitness[7], best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
+            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f MONO=%.7f LIPS=%.7f DIST=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
+            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1], best_fitness[6], best_fitness[7], best_fitness[8], best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
             self.main_it+=1
             if best_fitness[0]<=self.error_tolerance and best_fitness[1] <= pow(self.error_tolerance, 0.125):
                 break
@@ -539,7 +565,7 @@ class RILSROLSRegressor(BaseEstimator):
         score = incorrect*1.0/(len(Xyp_sorted)-1)
         return score
     
-    def lipschitz_continuity_score(self, yp, X):
+    def lipschitz_continuity_score(self, yp):
         score = 0.0
         for i, j, dist, deriv in self.close_points_derivatives:
             dist_fp = abs(yp[i]-yp[j])
@@ -548,18 +574,28 @@ class RILSROLSRegressor(BaseEstimator):
             score+=(err*err)
         score = sqrt(score/max(1, len(self.close_points_derivatives))) # to avoid division by zero
         return score
+    
+    def distribution_fit_score(self, yp):
+        score = 0.0
+        y_bins, y_cnts = self.true_target_dist
+        _, yp_cnts = self.empirical_cumulative_distribution(yp, bins=y_bins)
+        n = len(yp)
+        #Bhattacharyya coefficient
+        for b in range(len(y_bins)):
+            score+=sqrt(y_cnts[b]*yp_cnts[b]/n/n)
+        return 1-score
 
     def fitness(self,solution : Solution, X, y, cache=True):
         try:
             Solution.fit_calls+=1
             yp = solution.evaluate_all(X, cache) 
             size = solution.size()
-            return (1-R2(y, yp), RMSE(y, yp), size, ResidualVariance(y, yp, size), solution.size_non_linear(), solution.size_operators_only(), self.monotonicity_score(yp,X), self.lipschitz_continuity_score(yp, X))
+            return (1-R2(y, yp), RMSE(y, yp), size, ResidualVariance(y, yp, size), solution.size_non_linear(), solution.size_operators_only(), self.monotonicity_score(yp,X), self.lipschitz_continuity_score(yp), self.distribution_fit_score(yp))
         except Exception as e:
             #print(e)
             Solution.math_error_count+=1
             Solution.fit_fails+=1
-            return (inf, inf, inf, inf, inf, inf, inf, inf)
+            return (inf, inf, inf, inf, inf, inf, inf, inf, inf)
     
     def compare_fitness(self, new_fit, old_fit):
         if self.fitness_type == FitnessType.BIC:
@@ -608,7 +644,9 @@ class RILSROLSRegressor(BaseEstimator):
         return 0
 
     def compare_fitness_penalty(self, new_fit, old_fit):
-        if math.isnan(new_fit[0]):
+        if math.isnan(old_fit[0]) or old_fit[0]==inf:
+            return -1
+        if math.isnan(new_fit[0]) or new_fit[0]==inf:
             return 1
         new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[1])
         old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[1]) 
@@ -618,12 +656,13 @@ class RILSROLSRegressor(BaseEstimator):
             new_fit_wo_size_pen*=(1+new_fit[6])
             old_fit_wo_size_pen*=(1+old_fit[6])
 
-        if self.lipschitz_continuity_eps>0:
-            # lipshitz continuity is used
-            new_fit_wo_size_pen = new_fit[7]
-            old_fit_wo_size_pen = old_fit[7]
-            #new_fit_wo_size_pen*=(1+10*new_fit[7])
-            #old_fit_wo_size_pen*=(1+10*old_fit[7])
+        _, lipschitz_penalty = self.lipschitz_continuity
+        new_fit_wo_size_pen*=(1+lipschitz_penalty*new_fit[7])
+        old_fit_wo_size_pen*=(1+lipschitz_penalty*old_fit[7])
+
+        if self.distribution_fit:
+            new_fit_wo_size_pen*=(1+ new_fit[8])
+            old_fit_wo_size_pen*=(1+ old_fit[8])
 
         if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
             if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it

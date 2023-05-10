@@ -18,8 +18,9 @@ complexity_penalty = 0.001 # 0.001 default
 parallelism = 1
 initial_sample_sizes = [1] #0.0001, 0.001, 0.01]
 verbose = True
-lipshitz_eps = 2
-
+lipschitz_continuity = (2, 0) ##(2, 10)
+random_perturbations = False
+distribution_fit = True
  
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 
@@ -54,7 +55,7 @@ for fpath in instance_files:
 
     for sample_size in initial_sample_sizes:
         if parallelism==1:
-            rils = RILSROLSRegressor(max_fit_calls=max_fit, lipschitz_continuity_eps=lipshitz_eps, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, initial_sample_size=sample_size, verbose=verbose)
+            rils = RILSROLSRegressor(max_fit_calls=max_fit, lipschitz_continuity=lipschitz_continuity, distribution_fit=distribution_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, initial_sample_size=sample_size, random_perturbations_order=random_perturbations, verbose=verbose)
         elif parallelism>1:
             rils = RILSROLSEnsembleRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, parallelism=parallelism, initial_sample_size=sample_size, verbose=verbose)
         else:

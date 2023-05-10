@@ -5,8 +5,14 @@ from math import cos, log, sqrt, sin, exp
 from scipy.stats import pearsonr
 from rils_rols.utils import R2, RMSE, noisefy
 import inspect
+import sys
 
-scenario = 2 # CHANGE THIS FOR SCENARIO
+if len(sys.argv)<2:
+    print("You must select scenario: 1, 2 or 3.")
+    sys.exit(1)
+
+scenario = int(sys.argv[1])
+
 max_seconds = 1000
 max_fit_calls = 100000
 rseed = 42
@@ -14,46 +20,62 @@ train_perc = 0.75
 
 rg = Random(rseed)
 
-for scenario in [2, 1]:
-    if scenario==1:
-        monotonicities = [False, True]
-        lipschitz_epss = [0]
-        X = [[rg.random(), rg.random(), rg.random()] for _ in range(200)]
-        formulas = [lambda x0, x1, x2: 1000*x0+sqrt(200+x1+x2)]
-        # test if it is really monotone
-        #corr, _ = pearsonr([x[0] for x in X], y)
-        #assert(corr>=0.999999)
-        noise_levels = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99]
-    elif scenario==2:
-        monotonicities = [False]
-        lipschitz_epss = [0, 0.01]
-        X = []
-        for _ in range(100):
-            c = [rg.random(), rg.random(), rg.random()]
-            c_neighbor = [c[0]+rg.random()*0.02-0.01]+c[1:]
-            X.append(c)
-            X.append(c_neighbor)
-        formulas = [
-            lambda x0, x1, x2: sin(x0)*exp(-cos(x0+x1)*cos(cos(x1*x2)))/(sin(x1)+sin(x2)*sin(x2)),
-            lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2),
-            lambda x0, x1, x2: pow(sin(x0*x1+x2*x2)*sin(x1+1000*sin(x2))*sin(x2),2)/sin(x0*x1*x2)
-        ]
-        noise_levels = [0]
+f1 = ("f1", lambda x0, x1, x2: 1000*x0+sqrt(200+x1+x2))
+f2 = ("f2", lambda x0, x1, x2: cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
+f3 = ("f3", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2))
+f4 = ("f4", lambda x0, x1, x2: pow(cos(x0+x1)*sin(x1*x2), 4))
+f5 = ("f5", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2)*cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
+f6 = ("f6", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2)/cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
 
-    train_cnt = round(len(X)*train_perc)
+if scenario==1:
+    distribution_fits = [False]
+    monotonicities = [False, True]
+    lipschitz_continuities = [(0, 0)]
+    X = [[rg.random(), rg.random(), rg.random()] for _ in range(200)]
+    formulas = [f1]
+    # test if it is really monotone
+    #corr, _ = pearsonr([x[0] for x in X], y)
+    #assert(corr>=0.999999)
+    noise_levels = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99]
+elif scenario==2:
+    distribution_fits = [False]
+    monotonicities = [False]
+    lipschitz_continuities = [(0, 0), (0.01, 10), (0.01, 100)]
+    X = []
+    for _ in range(100):
+        c = [rg.random(), rg.random(), rg.random()]
+        c_neighbor = [c[0]+rg.random()*0.02-0.01]+c[1:]
+        X.append(c)
+        X.append(c_neighbor)
+    formulas = [f2, f3, f4, f5, f6]
+    noise_levels = [0]
+elif scenario==3:
+    distribution_fits = [False, True]
+    monotonicities = [False]
+    lipschitz_continuities = [(0, 0)]
+    X = []
+    X = [[rg.random(), rg.random(), rg.random()] for _ in range(200)]
+    formulas = [f2, f3, f4, f5, f6]
+    noise_levels = [0]
+else:
+    print("Scenario "+str(scenario)+"does not exist.")
+    sys.exit(1)
 
-    for formula in formulas:
-        y = [formula(x0, x1, x2) for x0, x1, x2 in X]    
-        X_train = X[:train_cnt]
-        y_train = y[:train_cnt]
-        X_test = X[train_cnt:]
-        y_test = y[train_cnt:]
-        for noise_level in noise_levels:
-            y_train_noisy = noisefy(y_train, noise_level, rseed)
-            #corr, _ = pearsonr([x[0] for x in X], y_train)
-            for mono_use in monotonicities:
-                for lipschitz_continuity_eps in lipschitz_epss:
-                    regressor = RILSROLSRegressor(verbose=True, max_seconds=max_seconds, max_fit_calls=max_fit_calls, initial_sample_size=1, monotonicity=(0, MonotonicityType.INCREASING, mono_use), lipschitz_continuity_eps=lipschitz_continuity_eps)
+train_cnt = round(len(X)*train_perc)
+
+for name, formula in formulas:
+    y = [formula(x0, x1, x2) for x0, x1, x2 in X]    
+    X_train = X[:train_cnt]
+    y_train = y[:train_cnt]
+    X_test = X[train_cnt:]
+    y_test = y[train_cnt:]
+    for noise_level in noise_levels:
+        y_train_noisy = noisefy(y_train, noise_level, rseed)
+        #corr, _ = pearsonr([x[0] for x in X], y_train)
+        for mono_use in monotonicities:
+            for lipschitz_conf in lipschitz_continuities:
+                for distribution_fit in distribution_fits:
+                    regressor = RILSROLSRegressor(verbose=True, max_seconds=max_seconds, max_fit_calls=max_fit_calls, initial_sample_size=1, monotonicity=(0, MonotonicityType.INCREASING, mono_use), lipschitz_continuity=lipschitz_conf, distribution_fit=distribution_fit)
                     regressor.fit(X_train, y_train_noisy)
                     # this prints out the learned simplified model
                     print("Final model is:\t"+str(regressor.model_simp))
@@ -70,6 +92,4 @@ for scenario in [2, 1]:
                     except Exception as ex:
                         print("ERROR during test "+str(ex))
                     with open("results.txt", "a") as f:
-                        formula_string = str(inspect.getsourcelines(formula)[0])
-                        formula_string = formula_string.strip("['\\n']").split(": ")[1]
-                        f.write("{0}\tnoise_level={1}\tmono_use={2}\tlipshitz_eps={3}\tTestR2={4:.8f}\tTestRMSE={5:.8f}\t{6}\n".format(formula_string, noise_level, mono_use, lipschitz_continuity_eps, r2, rmse, output_string))
+                        f.write("scenario={0}\tformula={1}\tnoise_level={2}\tmono_use={3}\tlipschitz_eps={4}\tlipshitz_pen={5}\tdistribution_fit={6}\tTestR2={7:.8f}\tTestRMSE={8:.8f}\t{9}\n".format(scenario, name, noise_level, mono_use, lipschitz_conf[0], lipschitz_conf[1], distribution_fit, r2, rmse, output_string))
