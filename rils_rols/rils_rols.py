@@ -52,8 +52,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.time_start = 0
         self.time_elapsed = 0
         self.rg = Random(self.random_state)
-        self.lipschitz_sets = {}
-        self.lipschitz_constants = {}
+        self.close_points_derivatives = []
         Solution.clearStats()
         Node.reset_node_value_cache()
 
@@ -77,21 +76,13 @@ class RILSROLSRegressor(BaseEstimator):
         X = x_all[:self.n]
         y = y_all[:self.n]
 
-        # this is used for lipshitz continuity, for each point forming neighborhoods of other points w.r.t. L2 (close means that it is inside some eps neighb.)
         for i in range(len(X)):
-            C = -inf
             for j in range(i):
                 dist = norm([X[i][k]-X[j][k] for k in range(len(X[0]))], 2)
                 if dist<self.lipschitz_continuity_eps and dist!=0:
-                    if i not in self.lipschitz_sets:
-                        self.lipschitz_sets[i] = []
-                    self.lipschitz_sets[i].append((j, dist))
                     dist_f = abs(y[i]-y[j])
-                    if dist_f/dist>C:
-                        C = dist_f/dist
-            if i in self.lipschitz_sets:
-                self.lipschitz_constants[i] = C
-        print("There are "+str(len(self.lipschitz_constants))+ " lipschitz constants.")
+                    self.close_points_derivatives.append((i, j, dist, dist_f/dist))
+        print("There are "+str(len(self.close_points_derivatives))+ " relevant partial derivatives.")
 
         size_increased_main_it = 0
 
@@ -298,7 +289,7 @@ class RILSROLSRegressor(BaseEstimator):
                         print("REVERTING back to old best "+str(best_solution))
                 else:
                     if self.verbose:
-                        print("IMPROVED with LS-change impr="+str(impr)+" impr2="+str(impr2)+" "+str(1-best_fitness[0])+"  "+str(best_solution))
+                        print("IMPROVED with LS-change "+str(best_fitness)+"  "+str(best_solution))
                 continue  
         return best_solution
 
@@ -550,15 +541,12 @@ class RILSROLSRegressor(BaseEstimator):
     
     def lipschitz_continuity_score(self, yp, X):
         score = 0.0
-        for i, pts in self.lipschitz_sets.items():
-            Cp = -inf
-            for j, dist in pts:
-                dist_f = abs(yp[i]-yp[j])
-                if dist_f/dist>Cp:
-                    Cp = dist_f/dist
-            if Cp > self.lipschitz_constants[i]:
-                score+=1
-        score/=max(1, len(self.lipschitz_sets)) # to avoid division by zero
+        for i, j, dist, deriv in self.close_points_derivatives:
+            dist_fp = abs(yp[i]-yp[j])
+            derivp = dist_fp/dist 
+            err = deriv-derivp
+            score+=(err*err)
+        score = sqrt(score/max(1, len(self.close_points_derivatives))) # to avoid division by zero
         return score
 
     def fitness(self,solution : Solution, X, y, cache=True):
@@ -630,10 +618,10 @@ class RILSROLSRegressor(BaseEstimator):
             new_fit_wo_size_pen*=(1+new_fit[6])
             old_fit_wo_size_pen*=(1+old_fit[6])
 
-        if False and self.lipschitz_continuity_eps>0:
+        if self.lipschitz_continuity_eps>0:
             # lipshitz continuity is used
-            new_fit_wo_size_pen*=(1+new_fit[7])
-            old_fit_wo_size_pen*=(1+old_fit[7])
+            new_fit_wo_size_pen*=(1+10*new_fit[7])
+            old_fit_wo_size_pen*=(1+10*old_fit[7])
 
         if new_fit_wo_size_pen*old_fit_wo_size_pen!=1: # otherwise, if they are both 1 (perfect), code bellow will return better based on the size
             if new_fit_wo_size_pen==1: # if this one is perfrect solution, return it
