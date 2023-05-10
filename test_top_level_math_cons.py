@@ -20,19 +20,17 @@ train_perc = 0.75
 
 rg = Random(rseed)
 
-f1 = ("f1", lambda x0, x1, x2: 1000*x0+sqrt(200+x1+x2))
-f2 = ("f2", lambda x0, x1, x2: cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
-f3 = ("f3", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2))
-f4 = ("f4", lambda x0, x1, x2: pow(cos(x0+x1)*sin(x1*x2), 4))
-f5 = ("f5", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2)*cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
-f6 = ("f6", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2)/cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
+f0 = ("f0", lambda x0, x1, x2: 1000*x0+sqrt(200+x1+x2))
+f1 = ("f1", lambda x0, x1, x2: cos((exp(x0)+exp(2))*exp(x2*cos(x1))))
+f2 = ("f2", lambda x0, x1, x2: pow(sin(x0)*cos(x1)*sin(x2),3)*sin(x0*x1*x2))
+f3 = ("f3", lambda x0, x1, x2: pow(cos(x0+x1)*sin(x1*x2), 4))
 
 if scenario==1:
     distribution_fits_penalties = [0]
     monotonicities = [False, True]
     lipschitz_continuities = [(0, 0)]
     X = [[rg.random(), rg.random(), rg.random()] for _ in range(200)]
-    formulas = [f1]
+    formulas = [f0]
     # test if it is really monotone
     #corr, _ = pearsonr([x[0] for x in X], y)
     #assert(corr>=0.999999)
@@ -40,23 +38,23 @@ if scenario==1:
 elif scenario==2:
     distribution_fits_penalties = [0]
     monotonicities = [False]
-    lipschitz_continuities = [(0, 0), (0.01, 10), (0.01, 100)]
+    lipschitz_continuities = [(0, 0), (0.01, 1), (0.01, 10), (0.01, 100)]
     X = []
     for _ in range(100):
         c = [rg.random(), rg.random(), rg.random()]
         c_neighbor = [c[0]+rg.random()*0.02-0.01]+c[1:]
         X.append(c)
         X.append(c_neighbor)
-    formulas = [f2, f3, f4, f5, f6]
+    formulas = [f1, f2, f3]
     noise_levels = [0]
 elif scenario==3:
-    distribution_fits_penalties = [10, 100] # [False, True]
-    monotonicities = [False]
+    distribution_fits_penalties = [1, 10] 
+    monotonicities = [False, True]
     lipschitz_continuities = [(0, 0)]
     X = []
     X = [[rg.random(), rg.random(), rg.random()] for _ in range(200)]
-    formulas = [f2, f3, f4, f5, f6]
-    noise_levels = [0]
+    formulas = [f0] 
+    noise_levels = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99] 
 else:
     print("Scenario "+str(scenario)+"does not exist.")
     sys.exit(1)

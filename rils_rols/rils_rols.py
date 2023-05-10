@@ -583,6 +583,9 @@ class RILSROLSRegressor(BaseEstimator):
         #Bhattacharyya coefficient
         for b in range(len(y_bins)):
             score+=sqrt(y_cnts[b]*yp_cnts[b]/n/n)
+        #for b in range(len(y_bins)):
+        #    score+=abs(y_cnts[b]*1.0/n - yp_cnts[b]*1.0/n)
+        #return score
         return 1-score
 
     def fitness(self,solution : Solution, X, y, cache=True):
