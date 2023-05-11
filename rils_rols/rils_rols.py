@@ -663,9 +663,6 @@ class RILSROLSRegressor(BaseEstimator):
         new_fit_wo_size_pen*=(1+lipschitz_penalty*new_fit[7])
         old_fit_wo_size_pen*=(1+lipschitz_penalty*old_fit[7])
 
-
-        #new_fit_wo_size_pen = (1+new_fit[0])*(1+new_fit[8])
-        #old_fit_wo_size_pen = (1+old_fit[0])*(1+old_fit[8])
         new_fit_wo_size_pen*=(1+ self.distribution_fit_penalty*new_fit[8])
         old_fit_wo_size_pen*=(1+ self.distribution_fit_penalty*old_fit[8])
 
