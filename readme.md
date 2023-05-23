@@ -72,6 +72,11 @@ for regressor in regressors:
 @article{kartelj2022rils,
   title={RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares},
   author={Kartelj, Aleksandar and Djukanovi{\'c}, Marko},
-  year={2022}
+  journal={Journal of Big Data},
+  volume={10},
+  number={71},
+  year={2023},
+  publisher={Springer}, 
+  doi = {10.1186/s40537-023-00743-2},
 }
 ```
