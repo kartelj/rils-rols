@@ -86,12 +86,7 @@ class Solution:
         try:
             for i in range(len(new_factors)):
                 fiX = new_factors[i].evaluate_all(X, True)
-                for j in range(len(fiX)):
-                    if math.isnan(fiX[j]):
-                        raise Exception("nan happened")
-                    if isinstance(fiX[j], complex):
-                        raise Exception("complex happened")
-                    Xnew[j, i]=fiX[j]
+                Xnew[:, i] = fiX
             X2_new = sma.add_constant(Xnew)
             est = sma.OLS(y, X2_new)
             fit_info = est.fit()
