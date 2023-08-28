@@ -23,6 +23,22 @@ class Node:
         self.symmetric = True
 
     @abstractmethod
+    def __deepcopy__(self, memodict={}):
+        pass
+
+    def deepcopy(self, dst, memodict={}):
+        dst.arity = self.arity
+        if self.left is None:
+            dst.left = None
+        else:
+            dst.left = copy.deepcopy(self.left, memodict)
+        if self.right is None:
+            dst.right = None
+        else:
+            dst.right = copy.deepcopy(self.right, memodict)
+        dst.symmetric = self.symmetric
+
+    @abstractmethod
     def evaluate_inner(self,X, a=None, b=None):
         pass
 
@@ -162,6 +178,11 @@ class NodeConstant(Node):
         self.arity = 0
         self.value = round(value,13)
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeConstant(self.value)
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return self.value
 
@@ -173,6 +194,11 @@ class NodeVariable(Node):
         super().__init__()
         self.arity = 0
         self.index = index
+    
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeVariable(self.index)
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         # I am not sure if this check is important, can be removed
@@ -188,6 +214,11 @@ class NodePlus(Node):
     def __init__(self):
         super().__init__()
         self.arity = 2
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodePlus()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return a+b
@@ -208,6 +239,11 @@ class NodeMinus(Node):
         super().__init__()
         self.arity = 2
         self.symmetric = False
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeMinus()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return a - b
@@ -244,6 +280,11 @@ class NodeMultiply(Node):
         super().__init__()
         self.arity = 2
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeMultiply()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return a*b
 
@@ -263,6 +304,11 @@ class NodeDivide(Node):
         super().__init__()
         self.arity = 2
         self.symmetric = False
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeDivide()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         if type(b) is np.ndarray:
@@ -301,6 +347,11 @@ class NodeMax(Node):
         self.arity = 2
         self.symmetric = True
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeMax()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.maximum(a, b)
 
@@ -313,6 +364,11 @@ class NodeMin(Node):
         self.arity = 2
         self.symmetric = True
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeMin()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.minimum(a, b)
 
@@ -324,6 +380,11 @@ class NodePow(Node):
         super().__init__()
         self.arity = 2
         self.symmetric = False
+    
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodePow()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         if a==0 and b<=0:
@@ -352,6 +413,11 @@ class NodeCos(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeCos()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.cos(a)
 
@@ -367,6 +433,11 @@ class NodeArcCos(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeArcCos()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return np.arccos(a)
@@ -386,6 +457,11 @@ class NodeSin(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeSin()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.sin(a)
     
@@ -402,6 +478,11 @@ class NodeTan(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeTan()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def is_allowed_left_argument(self, node_arg):
         if type(node_arg) == type(NodeConstant(0)) and (node_arg.value<-1 or node_arg.value>1):
             return False
@@ -417,6 +498,11 @@ class NodeArcSin(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeArcSin()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return np.arcsin(a)
@@ -436,6 +522,11 @@ class NodeArcTan(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeArcTan()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.arctan(a)
 
@@ -446,6 +537,11 @@ class NodeExp(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeExp()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return np.exp(a)
@@ -462,6 +558,11 @@ class NodeLn(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeLn()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         if type(a) is np.ndarray:
@@ -495,6 +596,11 @@ class NodeInv(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeInv()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         if type(a) is np.ndarray:
             _a = np.copy(a)
@@ -524,6 +630,11 @@ class NodeSgn(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeSgn()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         if type(a) is np.ndarray:
             res = np.copy(a)
@@ -546,6 +657,11 @@ class NodeSqr(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeSqr()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.power(a, 2) # abs(a)
 
@@ -556,6 +672,11 @@ class NodeSqrt(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeSqrt()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return np.sqrt(a) #abs(a)
@@ -573,6 +694,11 @@ class NodeUnaryMinus(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeUnaryMinus()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return -a
 
@@ -583,6 +709,11 @@ class NodeAbs(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeAbs()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return np.absolute(a)
@@ -595,6 +726,11 @@ class NodeTan(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeTan()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.tan(a)
 
@@ -605,6 +741,11 @@ class NodeFloor(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeFloor()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return np.floor(a)
@@ -617,6 +758,11 @@ class NodeCeil(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeCeil()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return np.ceil(a)
 
@@ -628,6 +774,11 @@ class NodeInc(Node):
         super().__init__()
         self.arity = 1
 
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeInc()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
+
     def evaluate_inner(self,X, a, b):
         return a+1
 
@@ -638,6 +789,11 @@ class NodeDec(Node):
     def __init__(self):
         super().__init__()
         self.arity = 1
+
+    def __deepcopy__(self, memodict={}):
+        copy_object = NodeDec()
+        super().deepcopy(copy_object, memodict)
+        return copy_object
 
     def evaluate_inner(self,X, a, b):
         return a-1
