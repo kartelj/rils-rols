@@ -43,8 +43,9 @@ class Solution:
         yp = np.zeros(len(X))
         for fact in self.factors:
             fyp = fact.evaluate_all(X, cache)
-            for i in range(len(fyp)):
-                yp[i]+=fyp[i]
+            if type(fyp) is not np.ndarray:
+                fyp = np.full((len(X)), fyp)
+            yp = yp + fyp
         return yp
 
     def fitness(self, X, y, cache=True):

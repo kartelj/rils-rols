@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import copy
-from math import acos, asin, atan, ceil, cos, exp, floor, log, sin, sqrt, tan
+import numpy as np
 
 class Node:
     tmp = -1
@@ -51,18 +51,12 @@ class Node:
             if self.arity==2:
                 left_yp = self.left.evaluate_all(X, cache)
                 right_yp = self.right.evaluate_all(X, cache)
-                for i in range(len(X)):
-                    ypi = self.evaluate_inner(X[i], left_yp[i], right_yp[i])
-                    yp.append(ypi)
+                yp = self.evaluate_inner(X, left_yp, right_yp)
             elif self.arity==1:
                 left_yp = self.left.evaluate_all(X, cache)
-                for i in range(len(X)):
-                    ypi = self.evaluate_inner(X[i], left_yp[i], None)
-                    yp.append(ypi)
+                yp = self.evaluate_inner(X, left_yp, None)
             elif self.arity==0:
-                for i in range(len(X)):
-                    ypi = self.evaluate_inner(X[i],None, None)
-                    yp.append(ypi)
+                yp = self.evaluate_inner(X, None, None)
             if cache and not isinstance(self, NodeConstant):
                 Node.node_value_cache[key]=yp
                 if len(Node.node_value_cache)==5000:
@@ -181,9 +175,11 @@ class NodeVariable(Node):
         self.index = index
 
     def evaluate_inner(self,X, a, b):
-        if self.index>=len(X):
-            raise Exception("Variable with index "+str(self.index)+" does not exist.")
-        return X[self.index]
+        # I am not sure if this check is important, can be removed
+        if self.index >= np.shape(X)[1]:
+            raise Exception("Variable with index " +
+                            str(self.index)+" does not exist.")
+        return X[:, self.index]
 
     def __str__(self):
         return "x"+str(self.index)
@@ -269,8 +265,19 @@ class NodeDivide(Node):
         self.symmetric = False
 
     def evaluate_inner(self,X, a, b):
-        if b==0:
-            b= Node.VERY_SMALL
+        if type(b) is np.ndarray:
+            _b = np.copy(b)
+            _b[np.abs(_b) < Node.VERY_SMALL] = Node.VERY_SMALL
+            return a / _b
+        
+        # I am not sure if code:
+        # if b==0:
+        #   b = Node.VERY_SMALL
+        # its good idea, if for example b == 1e-15 its not changed
+        # but if its zero it changed to 0.0001
+        if np.abs(b) < Node.VERY_SMALL:
+            b = Node.VERY_SMALL
+        
         return a/b
 
     def is_allowed_left_argument(self, node_arg):
@@ -295,7 +302,7 @@ class NodeMax(Node):
         self.symmetric = True
 
     def evaluate_inner(self,X, a, b):
-        return max(a, b)
+        return np.maximum(a, b)
 
     def __str__(self):
         return "max("+str(self.left)+","+str(self.right)+")"
@@ -307,7 +314,7 @@ class NodeMin(Node):
         self.symmetric = True
 
     def evaluate_inner(self,X, a, b):
-        return min(a, b)
+        return np.minimum(a, b)
 
     def __str__(self):
         return "min("+str(self.left)+","+str(self.right)+")"
@@ -321,7 +328,7 @@ class NodePow(Node):
     def evaluate_inner(self,X, a, b):
         if a==0 and b<=0:
             a = Node.VERY_SMALL
-        return pow(a, b)
+        return np.power(a, b)
 
     def is_allowed_right_argument(self, node_arg):
         if type(node_arg)!=type(NodeConstant(0)):
@@ -346,7 +353,7 @@ class NodeCos(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return cos(a)
+        return np.cos(a)
 
     def is_allowed_left_argument(self, node_arg): # avoid complicated expression
         if node_arg.contains_type(type(NodeCos())) or node_arg.contains_type(type(NodeSin())) or node_arg.contains_type(type(NodeArcSin())) or node_arg.contains_type(type(NodeArcCos())):
@@ -362,7 +369,7 @@ class NodeArcCos(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return acos(a)
+        return np.arccos(a)
 
     def is_allowed_left_argument(self, node_arg):
         if type(node_arg) == type(NodeConstant(0)) and (node_arg.value<-1 or node_arg.value>1):
@@ -380,7 +387,7 @@ class NodeSin(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return sin(a)
+        return np.sin(a)
     
     def is_allowed_left_argument(self, node_arg):
         if node_arg.contains_type(type(NodeCos())) or node_arg.contains_type(type(NodeSin())) or node_arg.contains_type(type(NodeArcSin())) or node_arg.contains_type(type(NodeArcCos())):
@@ -401,7 +408,7 @@ class NodeTan(Node):
         return True
 
     def evaluate_inner(self,X, a, b):
-        return tan(a)
+        return np.tan(a)
 
     def __str__(self):
         return "tan("+str(self.left)+")"
@@ -412,7 +419,7 @@ class NodeArcSin(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return asin(a)
+        return np.arcsin(a)
 
     def is_allowed_left_argument(self, node_arg):
         if type(node_arg) == type(NodeConstant(0)) and (node_arg.value<-1 or node_arg.value>1):
@@ -430,7 +437,7 @@ class NodeArcTan(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return atan(a)
+        return np.arctan(a)
 
     def __str__(self):
         return "atan("+str(self.left)+")"
@@ -441,7 +448,7 @@ class NodeExp(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return exp(a)
+        return np.exp(a)
 
     def is_allowed_left_argument(self, node_arg): # avoid complicated expressions
         if node_arg.contains_type(type(NodeCos())) or node_arg.contains_type(type(NodeSin())) or node_arg.contains_type(type(NodeArcSin())) or node_arg.contains_type(type(NodeArcCos())) or node_arg.contains_type(type(NodeExp())) or node_arg.contains_type(type(NodeLn())) or node_arg.contains_type(type(NodePow())):
@@ -457,9 +464,21 @@ class NodeLn(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        if a==0:
+        if type(a) is np.ndarray:
+            _a = np.copy(a)
+            _a[np.abs(_a) < Node.VERY_SMALL] = Node.VERY_SMALL
+            return np.log(_a)
+        
+        # I am not sure if code:
+        # if a==0:
+        #   a = Node.VERY_SMALL
+        # its good idea, if for example a == 1e-15 its not changed
+        # but if its zero it changed to 0.0001
+        if np.abs(a) < Node.VERY_SMALL:
             a = Node.VERY_SMALL
-        return log(a)#abs(a))
+
+        # abs?
+        return np.log(a)
 
     def is_allowed_left_argument(self, node_arg):
         if type(node_arg) == type(NodeConstant(0)) and node_arg.value<=0:
@@ -477,8 +496,19 @@ class NodeInv(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        if a==0:
+        if type(a) is np.ndarray:
+            _a = np.copy(a)
+            _a[np.abs(_a) < Node.VERY_SMALL] = Node.VERY_SMALL
+            return 1.0/_a
+
+        # I am not sure if code:
+        # if a==0:
+        #   a = Node.VERY_SMALL
+        # its good idea, if for example a == 1e-15 its not changed
+        # but if its zero it changed to 0.0001
+        if np.abs(a) < Node.VERY_SMALL:
             a = Node.VERY_SMALL
+
         return 1.0/a
 
     def is_allowed_left_argument(self, node_arg):
@@ -495,6 +525,12 @@ class NodeSgn(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
+        if type(a) is np.ndarray:
+            res = np.copy(a)
+            res[np.abs(a) < 0] = -1.0
+            res[np.abs(a) > 0] = 1.0
+            return res
+
         if a<0:
             return -1
         elif a==0:
@@ -511,7 +547,7 @@ class NodeSqr(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return pow(a, 2) # abs(a)
+        return np.power(a, 2) # abs(a)
 
     def __str__(self):
         return "pow("+str(self.left)+",2)"
@@ -522,7 +558,7 @@ class NodeSqrt(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return sqrt(a) #abs(a)
+        return np.sqrt(a) #abs(a)
 
     def is_allowed_left_argument(self, node_arg):
         if type(node_arg) == type(NodeConstant(0)) and node_arg.value<0:
@@ -549,7 +585,7 @@ class NodeAbs(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return abs(a)
+        return np.absolute(a)
 
     def __str__(self):
         return "abs("+str(self.left)+")"
@@ -560,7 +596,7 @@ class NodeTan(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return tan(a)
+        return np.tan(a)
 
     def __str__(self):
         return "tan("+str(self.left)+")"
@@ -571,7 +607,7 @@ class NodeFloor(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return floor(a)
+        return np.floor(a)
 
     def __str__(self):
         return "floor("+str(self.left)+")"
@@ -582,7 +618,7 @@ class NodeCeil(Node):
         self.arity = 1
 
     def evaluate_inner(self,X, a, b):
-        return ceil(a)
+        return np.ceil(a)
 
     def __str__(self):
         return "ceiling("+str(self.left)+")"
