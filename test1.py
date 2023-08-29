@@ -6,7 +6,7 @@ from rils_rols.rils_rols import RILSROLSRegressor
 import sys
 import cProfile
 
-PROFILE = True
+PROFILE = False
 
 dataset = 'feynman_I_15_3x'
 pmlb_cache = "../pmlb/datasets"
@@ -15,7 +15,7 @@ label="target"
 test_size = 0.25
 seed = 12345
 max_fit_calls = 10000
-max_seconds = 100 if PROFILE else 10000
+max_seconds = 10000
 
 input_data = fetch_data(dataset,  local_cache_dir=pmlb_cache)
 

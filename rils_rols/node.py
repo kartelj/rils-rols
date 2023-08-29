@@ -313,15 +313,10 @@ class NodeDivide(Node):
     def evaluate_inner(self,X, a, b):
         if type(b) is np.ndarray:
             _b = np.copy(b)
-            _b[np.abs(_b) < Node.VERY_SMALL] = Node.VERY_SMALL
+            _b[_b==0] = Node.VERY_SMALL
             return a / _b
         
-        # I am not sure if code:
-        # if b==0:
-        #   b = Node.VERY_SMALL
-        # its good idea, if for example b == 1e-15 its not changed
-        # but if its zero it changed to 0.0001
-        if np.abs(b) < Node.VERY_SMALL:
+        if b == 0:
             b = Node.VERY_SMALL
         
         return a/b
@@ -387,6 +382,13 @@ class NodePow(Node):
         return copy_object
 
     def evaluate_inner(self,X, a, b):
+        if type(a) is np.ndarray:
+            _a = np.copy(a)
+            if type(b) is np.ndarray:
+                _a[(_a == 0) & (b <= 0)] = Node.VERY_SMALL
+            elif b <= 0:
+                _a[(_a == 0)] = Node.VERY_SMALL
+            return np.power(_a, b)
         if a==0 and b<=0:
             a = Node.VERY_SMALL
         return np.power(a, b)
@@ -567,15 +569,10 @@ class NodeLn(Node):
     def evaluate_inner(self,X, a, b):
         if type(a) is np.ndarray:
             _a = np.copy(a)
-            _a[np.abs(_a) < Node.VERY_SMALL] = Node.VERY_SMALL
+            _a[_a == 0] = Node.VERY_SMALL
             return np.log(_a)
         
-        # I am not sure if code:
-        # if a==0:
-        #   a = Node.VERY_SMALL
-        # its good idea, if for example a == 1e-15 its not changed
-        # but if its zero it changed to 0.0001
-        if np.abs(a) < Node.VERY_SMALL:
+        if a == 0:
             a = Node.VERY_SMALL
 
         # abs?
@@ -604,15 +601,10 @@ class NodeInv(Node):
     def evaluate_inner(self,X, a, b):
         if type(a) is np.ndarray:
             _a = np.copy(a)
-            _a[np.abs(_a) < Node.VERY_SMALL] = Node.VERY_SMALL
+            _a[_a == 0] = Node.VERY_SMALL
             return 1.0/_a
 
-        # I am not sure if code:
-        # if a==0:
-        #   a = Node.VERY_SMALL
-        # its good idea, if for example a == 1e-15 its not changed
-        # but if its zero it changed to 0.0001
-        if np.abs(a) < Node.VERY_SMALL:
+        if a == 0:
             a = Node.VERY_SMALL
 
         return 1.0/a

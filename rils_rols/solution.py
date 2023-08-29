@@ -45,7 +45,7 @@ class Solution:
             fyp = fact.evaluate_all(X, cache)
             if type(fyp) is not np.ndarray:
                 fyp = np.full((len(X)), fyp)
-            yp = yp + fyp
+            yp += fyp
         return yp
 
     def fitness(self, X, y, cache=True):
