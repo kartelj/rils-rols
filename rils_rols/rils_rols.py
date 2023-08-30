@@ -179,6 +179,7 @@ class RILSROLSRegressor(BaseEstimator):
         Node.reset_node_value_cache()
         return self.model.evaluate_all(X, False)
 
+    # TODO: return simpy size here
     def size(self):
         if self.model is not None:
             return self.model.size()
