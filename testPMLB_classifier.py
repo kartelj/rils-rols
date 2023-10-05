@@ -24,10 +24,11 @@ ITER_LIMIT = int(sys.argv[2])
 THREADS = int(sys.argv[3])
 
 DATASET_MIN_SIZE = 1000
+MAX_FEATURES = 100
 datasets={}
 for name in classification_dataset_names:
     df = fetch_data(dataset_name=name, local_cache_dir="../pmlb/datasets")
-    if len(df) < DATASET_MIN_SIZE:
+    if len(df) < DATASET_MIN_SIZE or len(df.columns)>MAX_FEATURES:
         continue
     # binary classification problem
     if df['target'].nunique() == 2:
@@ -43,7 +44,7 @@ classificators = [
     #['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
     #['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
     #['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
-    ['RILSROLSClassifier', RILSROLSClassifier, {'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':1000, 'verbose':True}],
+    ['RILSROLSClassifier', RILSROLSClassifier, {'initial_sample_size':1, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':1000, 'verbose':False}],
 ]
 
 for name, df in datasets.items():
@@ -67,10 +68,12 @@ for name, df in datasets.items():
         #        print('get_eq ' + str(e))
         #        eq = clf.sexpr
         preds = np.nan_to_num(clf.predict(X_test))
+        preds_train = np.nan_to_num(clf.predict(X_train))
         proba = np.nan_to_num(clf.predict_proba(X_test))
+        acc_train = accuracy_score(y_train, preds_train)
         acc = accuracy_score(y_test, preds)
         ll = log_loss(y_test, proba[:,1])
-        print(f'{name} {clf_name} {acc} {ll} {fit_time}s {eq}')
+        print(f'{name} {clf_name} {acc_train} {acc} {ll} {fit_time}s {eq}')
         results.loc[len(results)] = [name, _X.shape[0], _X.shape[1], clf_name, fit_time, acc, ll, eq]   
 
 results.to_csv('results.csv')

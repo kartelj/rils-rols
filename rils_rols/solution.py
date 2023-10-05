@@ -3,7 +3,7 @@ from math import e, inf
 import math
 from .node import NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
 from .utils import R2, RMSE, ResidualVariance
-from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import jaccard_score, matthews_corrcoef
 from sympy import *
 from sympy.core.numbers import ImaginaryUnit
 from sympy.core.symbol import Symbol
@@ -56,7 +56,7 @@ class Solution:
             if binarize:
                 yp = 1.0/(1.0+np.exp(-yp))
                 yp = (yp > 0.5)*1
-            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only(), 1-matthews_corrcoef(y, yp))
+            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only(), 1-jaccard_score(y, yp))
         except Exception as e:
             #print(e)
             Solution.math_error_count+=1

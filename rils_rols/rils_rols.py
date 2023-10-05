@@ -19,7 +19,7 @@ class FitnessType(Enum):
     BIC = 1 # bayesian information criterion
     SRM = 2 # structural risk minimization
     PENALTY = 3 # penalty based fitness function
-    MCC = 4 # matthews correllation coefficient with penalty
+    JACCARD = 4 # matthews correllation coefficient with penalty
 
 class RILSROLSRegressor(BaseEstimator):
 
@@ -157,8 +157,8 @@ class RILSROLSRegressor(BaseEstimator):
                     Node.reset_node_value_cache()
 
             self.time_elapsed = time.time()-self.start
-            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
-            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1],best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
+            print("%d/%d. t=%.1f R2=%.7f RMSE=%.7f JACCARD=%.7f size=%d fitFails=%d/%d cPerc=%.1f expr=%s"
+            %(self.main_it,self.ls_it, self.time_elapsed, 1-best_fitness[0], best_fitness[1], 1-best_fitness[6],best_solution.size(), Solution.fit_fails, Solution.fit_calls,Node.cache_hits*100.0/Node.cache_tries, best_solution))
             self.main_it+=1
             if best_fitness[0]<=self.error_tolerance and best_fitness[1] <= pow(self.error_tolerance, 0.125):
                 break
@@ -512,8 +512,8 @@ class RILSROLSRegressor(BaseEstimator):
             return self.compare_fitness_srm(new_fit, old_fit)
         elif self.fitness_type == FitnessType.PENALTY:
             return self.compare_fitness_penalty(new_fit, old_fit)
-        elif self.fitness_type == FitnessType.MCC:
-            return self.compare_fitness_mcc(new_fit, old_fit)
+        elif self.fitness_type == FitnessType.JACCARD:
+            return self.compare_fitness_jaccard(new_fit, old_fit)
         else:
             raise Exception("Unrecognized fitness type "+str(self.fitness_type))
 
@@ -571,7 +571,7 @@ class RILSROLSRegressor(BaseEstimator):
             return 1
         return 0
 
-    def compare_fitness_mcc(self, new_fit, old_fit):
+    def compare_fitness_jaccard(self, new_fit, old_fit):
         if math.isnan(new_fit[0]):
             return 1
         new_tot = (1+new_fit[6])*(1+new_fit[2]*self.complexity_penalty)
@@ -584,7 +584,7 @@ class RILSROLSRegressor(BaseEstimator):
 
 class RILSROLSClassifier(RILSROLSRegressor):
     
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.MCC, complexity_penalty=0.001, initial_sample_size=0.01, random_perturbations_order=False, verbose=False, binarize_target=True, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.JACCARD, complexity_penalty=0.001, initial_sample_size=0.01, random_perturbations_order=False, verbose=False, binarize_target=True, random_state=0):
         super().__init__(max_fit_calls, max_seconds, fitness_type, complexity_penalty, initial_sample_size, random_perturbations_order, verbose, binarize_target=binarize_target, random_state=random_state)
 
     def predict(self, X: numpy.ndarray):
