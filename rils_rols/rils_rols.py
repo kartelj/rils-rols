@@ -3,6 +3,7 @@ import copy
 import time
 import math
 from random import Random, shuffle
+import numpy
 from sklearn.base import BaseEstimator
 import copy
 from sympy import *
@@ -18,11 +19,12 @@ class FitnessType(Enum):
     BIC = 1 # bayesian information criterion
     SRM = 2 # structural risk minimization
     PENALTY = 3 # penalty based fitness function
+    MCC = 4 # matthews correllation coefficient with penalty
 
 class RILSROLSRegressor(BaseEstimator):
 
     def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01,  
-                 random_perturbations_order = False, verbose=False, random_state=0):
+                 random_perturbations_order = False, verbose=False, binarize_target=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.fitness_type = fitness_type
@@ -31,6 +33,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.error_tolerance = 1e-16
         self.verbose = verbose
         self.random_perturbations_order = random_perturbations_order
+        self.binarize_target = binarize_target
         self.random_state = random_state
 
     def __reset(self):
@@ -71,7 +74,7 @@ class RILSROLSRegressor(BaseEstimator):
             raise Exception("Numbers of feature vectors (X) and target values (y) must be equal.")
         self.__setup_nodes(len(X[0]))
         best_solution =  Solution([NodeConstant(0)], self.complexity_penalty)
-        best_fitness = best_solution.fitness(X, y)
+        best_fitness = best_solution.fitness(X, y, binarize=self.binarize_target)
         self.main_it = 0
         checked_perturbations = set([])
         start_solutions = set([])
@@ -83,8 +86,11 @@ class RILSROLSRegressor(BaseEstimator):
             for pret in all_perturbations: 
                 pret_ols = copy.deepcopy(pret)
                 pret_ols = pret_ols.fit_constants_OLS(X, y)
-                pret_ols_fit = pret_ols.fitness(X, y)
-                pret_fits[pret]=pret_ols_fit[0]
+                pret_ols_fit = pret_ols.fitness(X, y, cache=False, binarize=self.binarize_target)
+                if self.binarize_target:
+                    pret_fits[pret]=pret_ols_fit[6]
+                else:
+                    pret_fits[pret]=pret_ols_fit[0]
 
             sorted_pret_fits = sorted(pret_fits.items(), key = lambda x: x[1])
             if self.random_perturbations_order:
@@ -108,7 +114,9 @@ class RILSROLSRegressor(BaseEstimator):
                 new_solution.simplify_whole(len(X[0]))
                 new_fitness = new_solution.fitness(X, y)
                 new_solution = self.LS_best(new_solution, X, y)
-                new_fitness = new_solution.fitness(X, y, False)
+                new_fitness = new_solution.fitness(X, y, cache=False, binarize=self.binarize_target)
+                if self.verbose:
+                    print(f"{new_fitness[6]}\t{pret}")
                 if self.compare_fitness(new_fitness, best_fitness)<0:
                     if self.verbose:
                         print("perturbation "+str(pret)+" produced global improvement.")
@@ -193,7 +201,7 @@ class RILSROLSRegressor(BaseEstimator):
     def fit_report_string(self, X, y):
         if self.model==None:
             raise Exception("Model is not build yet. First call fit().")
-        fitness = self.model.fitness(X,y, False)
+        fitness = self.model.fitness(X,y, cache=False, binarize=self.binarize_target)
         return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tR2={4:.7f}\tRMSE={5:.7f}\tsize={6}\tsec={7:.1f}\tmainIt={8}\tlsIt={9}\tfitCalls={10}\texpr={11}\texprSimp={12}\tfitType={13}\tinitSampleSize={14}\trandomPert={15}".format(
             self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty, 1-fitness[0], fitness[1], self.complexity(self.model_simp), self.time_elapsed,self.main_it, self.ls_it,Solution.fit_calls, self.model, self.model_simp, self.fitness_type, self.initial_sample_size, self.random_perturbations_order)
 
@@ -244,7 +252,7 @@ class RILSROLSRegressor(BaseEstimator):
         return all
     
     def LS_best(self, solution: Solution, X, y):
-        best_fitness = solution.fitness(X, y)
+        best_fitness = solution.fitness(X, y, binarize=self.binarize_target)
         best_solution = copy.deepcopy(solution)
         impr = True
         while impr or impr2:
@@ -259,7 +267,7 @@ class RILSROLSRegressor(BaseEstimator):
             impr, best_solution, best_fitness = self.LS_best_change_iteration(best_solution, X, y, True)
             if impr or impr2:
                 best_solution.simplify_whole(len(X[0]))
-                best_fitness = best_solution.fitness(X, y, False)
+                best_fitness = best_solution.fitness(X, y, cache=False, binarize=self.binarize_target)
                 if self.compare_fitness(best_fitness, old_best_fitness)>=0:
                     impr = False
                     impr2 = False
@@ -269,12 +277,12 @@ class RILSROLSRegressor(BaseEstimator):
                         print("REVERTING back to old best "+str(best_solution))
                 else:
                     if self.verbose:
-                        print("IMPROVED with LS-change impr="+str(impr)+" impr2="+str(impr2)+" "+str(1-best_fitness[0])+"  "+str(best_solution))
+                        print("IMPROVED with LS-change impr="+str(impr)+" impr2="+str(impr2)+" "+str(1-best_fitness[0])+"  "+str(1-best_fitness[6])+ "  "+str(best_solution))
                 continue  
         return best_solution
 
     def LS_best_change_iteration(self, solution: Solution, X, y, cache, joined=False):
-        best_fitness = solution.fitness(X, y, False)
+        best_fitness = solution.fitness(X, y, cache=False, binarize=self.binarize_target)
         best_solution = copy.deepcopy(solution)
         if joined:
             print("JOINING SOLUTION IN LS")
@@ -299,7 +307,7 @@ class RILSROLSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = new_solution.fitness(X, y, cache=cache, binarize=self.binarize_target)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
@@ -314,7 +322,7 @@ class RILSROLSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = new_solution.fitness(X, y, cache=cache, binarize=self.binarize_target)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
@@ -329,7 +337,7 @@ class RILSROLSRegressor(BaseEstimator):
                         if joined:
                             new_solution.expand_fast()
                         new_solution = new_solution.fit_constants_OLS(X, y)
-                        new_fitness = new_solution.fitness(X, y, cache)
+                        new_fitness = new_solution.fitness(X, y, cache=cache, binarize=self.binarize_target)
                         if self.compare_fitness(new_fitness, best_fitness)<0:
                             impr = True
                             best_fitness = new_fitness
@@ -504,6 +512,8 @@ class RILSROLSRegressor(BaseEstimator):
             return self.compare_fitness_srm(new_fit, old_fit)
         elif self.fitness_type == FitnessType.PENALTY:
             return self.compare_fitness_penalty(new_fit, old_fit)
+        elif self.fitness_type == FitnessType.MCC:
+            return self.compare_fitness_mcc(new_fit, old_fit)
         else:
             raise Exception("Unrecognized fitness type "+str(self.fitness_type))
 
@@ -560,3 +570,45 @@ class RILSROLSRegressor(BaseEstimator):
         if new_tot>old_tot+0.00000001:
             return 1
         return 0
+
+    def compare_fitness_mcc(self, new_fit, old_fit):
+        if math.isnan(new_fit[0]):
+            return 1
+        new_tot = (1+new_fit[6])*(1+new_fit[2]*self.complexity_penalty)
+        old_tot = (1+old_fit[6])*(1+old_fit[2]*self.complexity_penalty)
+        if new_tot<old_tot-0.00000001:
+            return -1
+        if new_tot>old_tot+0.00000001:
+            return 1
+        return 0
+
+class RILSROLSClassifier(RILSROLSRegressor):
+    
+    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.MCC, complexity_penalty=0.001, initial_sample_size=0.01, random_perturbations_order=False, verbose=False, binarize_target=True, random_state=0):
+        super().__init__(max_fit_calls, max_seconds, fitness_type, complexity_penalty, initial_sample_size, random_perturbations_order, verbose, binarize_target=binarize_target, random_state=random_state)
+
+    def predict(self, X: numpy.ndarray):
+        """Predict using the symbolic model.
+
+        Args:
+            - X (numpy.ndarray): Samples.
+
+        Returns:
+            numpy.ndarray: Returns predicted values.
+        """
+        preds = RILSROLSRegressor.predict(self, X)
+        preds = 1.0/(1.0+numpy.exp(-preds))
+        return (preds > 0.5)*1.0
+    
+    def predict_proba(self, X: numpy.ndarray):
+        """Predict using the symbolic model.
+
+        Args:
+            - X (numpy.ndarray): Samples.
+
+        Returns:
+            numpy.ndarray, shape = [n_samples, n_classes]: The class probabilities of the input samples.
+        """
+        preds = self.predict(X)
+        proba = numpy.vstack([1 - preds, preds]).T
+        return proba

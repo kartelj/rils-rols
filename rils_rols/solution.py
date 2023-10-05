@@ -3,6 +3,7 @@ from math import e, inf
 import math
 from .node import NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
 from .utils import R2, RMSE, ResidualVariance
+from sklearn.metrics import matthews_corrcoef
 from sympy import *
 from sympy.core.numbers import ImaginaryUnit
 from sympy.core.symbol import Symbol
@@ -48,16 +49,19 @@ class Solution:
             yp += fyp
         return yp
 
-    def fitness(self, X, y, cache=True):
+    def fitness(self, X, y, cache=True, binarize=False):
         try:
             Solution.fit_calls+=1
             yp = self.evaluate_all(X, cache) 
-            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only())
+            if binarize:
+                yp = 1.0/(1.0+np.exp(-yp))
+                yp = (yp > 0.5)*1
+            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only(), 1-matthews_corrcoef(y, yp))
         except Exception as e:
             #print(e)
             Solution.math_error_count+=1
             Solution.fit_fails+=1
-            return (inf, inf, inf, inf, inf, inf)
+            return (inf, inf, inf, inf, inf, inf, inf)
 
     def size(self):
         totSize = len(self.factors) 
