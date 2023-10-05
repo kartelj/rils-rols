@@ -43,8 +43,9 @@ class Solution:
         yp = np.zeros(len(X))
         for fact in self.factors:
             fyp = fact.evaluate_all(X, cache)
-            for i in range(len(fyp)):
-                yp[i]+=fyp[i]
+            if type(fyp) is not np.ndarray:
+                fyp = np.full((len(X)), fyp)
+            yp += fyp
         return yp
 
     def fitness(self, X, y, cache=True):
@@ -85,12 +86,7 @@ class Solution:
         try:
             for i in range(len(new_factors)):
                 fiX = new_factors[i].evaluate_all(X, True)
-                for j in range(len(fiX)):
-                    if math.isnan(fiX[j]):
-                        raise Exception("nan happened")
-                    if isinstance(fiX[j], complex):
-                        raise Exception("complex happened")
-                    Xnew[j, i]=fiX[j]
+                Xnew[:, i] = fiX
             X2_new = sma.add_constant(Xnew)
             est = sma.OLS(y, X2_new)
             fit_info = est.fit()

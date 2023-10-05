@@ -11,3 +11,7 @@
 /paper_resources/doc/paper.pdf
 /paper_resources/doc/paper.spl
 /paper_resources/test
+profile_cumtime.txt
+profile_tottime.txt
+tmp.txt
+rils_rols/__pycache__/
