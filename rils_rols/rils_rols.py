@@ -178,6 +178,7 @@ class RILSROLSRegressor(BaseEstimator):
         return ex2
 
     def predict(self, X):
+        X = np.array(X)
         Node.reset_node_value_cache()
         return self.model.evaluate_all(X, False)
 
