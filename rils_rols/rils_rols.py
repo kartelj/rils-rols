@@ -3,6 +3,7 @@ import copy
 import time
 import math
 from random import Random, shuffle
+import numpy as np
 from sklearn.base import BaseEstimator
 import copy
 from sympy import *
@@ -51,6 +52,7 @@ class RILSROLSRegressor(BaseEstimator):
         self.allowed_nodes+=[NodePlus(), NodeMinus(), NodeMultiply(), NodeDivide(), NodeSqr(), NodeSqrt(),NodeLn(), NodeExp(),NodeSin(), NodeCos()]#, NodeArcSin(), NodeArcCos()]
 
     def fit(self, X, y):
+        X = np.array(X)
         x_all = copy.deepcopy(X)
         y_all = copy.deepcopy(y)
         # take 1% of points or at least 100 points initially 
