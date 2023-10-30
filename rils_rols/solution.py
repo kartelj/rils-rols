@@ -2,7 +2,7 @@ import copy
 from math import e, inf
 import math
 from .node import NodeAbs, NodeArcCos, NodeArcSin, NodeArcTan, NodeCeil, NodeConstant, NodeCos, NodeExp, NodeFloor, NodeLn, NodeMax, NodeMin, NodeMultiply, NodePlus, NodePow, NodeSgn, NodeSin, NodeTan, NodeVariable
-from .utils import R2, RMSE, ResidualVariance
+from .utils import R2, RMSE, ResidualVariance, binarize
 from sklearn.metrics import jaccard_score, matthews_corrcoef
 from sympy import *
 from sympy.core.numbers import ImaginaryUnit
@@ -49,14 +49,14 @@ class Solution:
             yp += fyp
         return yp
 
-    def fitness(self, X, y, cache=True, binarize=False):
+    def fitness(self, X, y, cache=True):
         try:
             Solution.fit_calls+=1
+            #if type(self.factors[0]) == type(NodeConstant(0)):
+            #    return (inf, inf, inf, inf, inf, inf, inf)
             yp = self.evaluate_all(X, cache) 
-            if binarize:
-                yp = 1.0/(1.0+np.exp(-yp))
-                yp = (yp > 0.5)*1
-            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only(), 1-jaccard_score(y, yp))
+            yp_bin = binarize(yp)
+            return (1-R2(y, yp), RMSE(y, yp), self.size(), ResidualVariance(y, yp, self.size()), self.size_non_linear(), self.size_operators_only(), 1-jaccard_score(y, yp_bin))
         except Exception as e:
             #print(e)
             Solution.math_error_count+=1

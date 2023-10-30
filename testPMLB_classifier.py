@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from pmlb import fetch_data, classification_dataset_names
 import time
+import cProfile
 
 #check_estimator(RILSROLSRegressor())
 
@@ -44,7 +45,7 @@ classificators = [
     #['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
     #['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
     #['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
-    ['RILSROLSClassifier', RILSROLSClassifier, {'initial_sample_size':1, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':1000, 'verbose':False}],
+    ['RILSROLSClassifier', RILSROLSClassifier, {'initial_sample_size':1, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':100, 'verbose':True}],
 ]
 
 for name, df in datasets.items():
@@ -58,7 +59,9 @@ for name, df in datasets.items():
     for clf_name, clf_type, clf_params in classificators:
         clf = clf_type(**clf_params)
         start = time.time()
-        clf.fit(X_train, y_train)
+        cProfile.run('clf.fit(X_train, y_train)', 'restats')
+
+        #clf.fit(X_train, y_train)
         fit_time = time.time() - start
         eq = None
         #if clf_type is NLLRegressor:
@@ -73,7 +76,10 @@ for name, df in datasets.items():
         acc_train = accuracy_score(y_train, preds_train)
         acc = accuracy_score(y_test, preds)
         ll = log_loss(y_test, proba[:,1])
-        print(f'{name} {clf_name} {acc_train} {acc} {ll} {fit_time}s {eq}')
+        log_txt = f'{name} {clf_name} {acc_train} {acc} {ll} {fit_time}s {eq}'
+        print(log_txt)
+        with open('log.txt', 'a') as flog:
+            flog.write(log_txt+'\n')
         results.loc[len(results)] = [name, _X.shape[0], _X.shape[1], clf_name, fit_time, acc, ll, eq]   
 
 results.to_csv('results.csv')

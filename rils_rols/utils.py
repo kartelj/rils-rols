@@ -44,3 +44,14 @@ def percentile_abs_error(yt, yp, percentile):
 
 def R2(yt, yp):
     return r2_score(yt, yp)
+
+def logistic(yp):
+    return 1.0/(1.0+np.exp(-yp))
+
+def binarize(yp):
+    #yp = logistic(yp)
+    return (yp > 0.5)*1
+
+def proba(yp):
+    yp = logistic(yp)
+    return np.vstack([1 - yp, yp]).T
