@@ -150,7 +150,7 @@ public:
 
 	vector<double> evaluate_all(vector<vector<double>>);
 
-	vector<node> all_subtrees();
+	static vector<node*> all_subtrees_references(node* root);
 
 	vector<node*> extract_constants_references();
 

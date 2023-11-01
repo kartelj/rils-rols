@@ -1,4 +1,5 @@
 #include "node.h"
+#include <cassert>
 
 vector<double> node::evaluate_all(vector<vector<double>> X) {
 	int n = X.size();
@@ -25,24 +26,44 @@ vector<double> node::evaluate_all(vector<vector<double>> X) {
 	return yp;
 }
 
-vector<node> node::all_subtrees() {
+/*
+vector<node*> node::all_subtrees_references() {
 	if (this == NULL)
-		return vector<node>();
-	vector<node> all_st;
-	all_st.push_back(*this);
+		return vector<node*>();
+	vector<node*> all_st;
+	all_st.push_back(this);
 	if (this->arity == 0)
 		return all_st;
 	if (this->arity >= 1) {
-		vector<node> left_st = this->left->all_subtrees();
+		vector<node*> left_st = this->left->all_subtrees_references();
 		for(int i=0; i<left_st.size(); i++)
 			all_st.push_back(left_st[i]);
 	}
 	if (this->arity >= 2) {
-		vector<node> right_st = this->right->all_subtrees();
+		vector<node*> right_st = this->right->all_subtrees_references();
 		for (int i = 0; i < right_st.size(); i++)
 			all_st.push_back(right_st[i]);
 	}
 	return all_st;
+}*/
+
+vector<node*> node::all_subtrees_references(node* root) {
+	if (root == NULL)
+		return vector<node*>();
+	vector<node*> queue;
+	queue.push_back(root);
+	int pos = 0;
+	while (pos<queue.size()) {
+		// adding children of current element
+		node* curr = queue[pos];
+		if (curr->left != NULL)
+			queue.push_back(curr->left);
+		if (curr->right != NULL)
+			queue.push_back(curr->right);
+		pos++;
+	}
+	assert(queue.size() == root->size());
+	return queue;
 }
 
 vector<node*> node::extract_constants_references() {

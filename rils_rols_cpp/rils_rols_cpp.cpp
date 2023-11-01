@@ -160,36 +160,44 @@ private:
 		return candidates;
 	}
 
-	vector<node> all_perturbations(node solution) {
+	vector<node> all_perturbations(node passed_solution) {
+		node* solution = new node(passed_solution);
 		vector<node> all_pert;
-		vector<node> all_subtrees = solution.all_subtrees();
+		vector<node*> all_subtrees = node::all_subtrees_references(solution);
+		//TODO: implemente BFS here and traverse subtrees during that
 		for (int i = 0; i < all_subtrees.size(); i++) {
-			node ref_node = all_subtrees[i];
-			if (ref_node.size() == solution.size()) {
+			if (all_subtrees[i]->size() == solution->size()) {
 				// the whole tree is being changed
-				vector<node> candidates = perturb_candidates(&solution, NULL, false);
+				vector<node> candidates = perturb_candidates(all_subtrees[i], NULL, false);
 				for (auto& cand : candidates)
 					all_pert.push_back(cand);
 			}
-			if (ref_node.arity >= 1) {
+			if (all_subtrees[i]->arity >= 1) {
 				// the left subtree is being changed
-				vector<node> candidates = perturb_candidates(solution.left, &ref_node, true);
-				node* solution_copy = new node(solution);
+				vector<node> candidates = perturb_candidates(all_subtrees[i]->left, all_subtrees[i], true);
+				node* old_left = new node(*(all_subtrees[i]->left));
+				int old_arity = all_subtrees[i]->arity;
 				for (auto& cand : candidates) {
 					node* cand_c = new node(cand);
-					solution_copy->left = cand_c;
+					all_subtrees[i]->left = cand_c;
+					all_subtrees[i]->arity = 10;
+					all_subtrees[i]->arity = old_arity;
+					node* solution_copy = new node(*solution);
 					all_pert.push_back(*solution_copy);
 				}
+				all_subtrees[i]->left = old_left;
 			}
-			if (ref_node.arity >= 2) {
+			if (all_subtrees[i]->arity >= 2) {
 				// the right subtree is being changed
-				vector<node> candidates = perturb_candidates(solution.right, &ref_node, false);
-				node* solution_copy = new node(solution);
+				vector<node> candidates = perturb_candidates(all_subtrees[i]->right, all_subtrees[i], false);
+				node* old_right = new node(*(all_subtrees[i]->right));
 				for (auto& cand : candidates) {
 					node* cand_c = new node(cand);
-					solution_copy->right = cand_c;
+					all_subtrees[i]->right = cand_c;
+					node* solution_copy = new node(*solution);
 					all_pert.push_back(*solution_copy);
 				}
+				all_subtrees[i]->right = old_right;
 			}
 		}
 		return all_pert;
@@ -211,6 +219,8 @@ private:
 		tuple<double, double, int> best_fitness = fitness(*best_solution, X, y);
 		double multipliers[] = {0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 1, 1.1, 1.2, 2, 5, 10, 20, 50, 100};
 		bool impr = true;
+		if (solution.size() > 6)
+			cout << "bla" << endl;
 		while (impr) {
 			impr = false;
 			vector<node*> constants = best_solution->extract_constants_references();
@@ -219,6 +229,7 @@ private:
 			for (int i = 0; i < constants.size(); i++) {
 				double old_value = constants[i]->const_value;
 				for (auto m : multipliers) {
+					// TODO: multiplier does not make sense if old_value is zero
 					constants[i]->const_value = old_value * m;
 					tuple<double, double, int> new_fitness = fitness(*best_solution, X, y);
 					if (compare_fitness(new_fitness, best_fitness)<0) {
@@ -320,7 +331,7 @@ public:
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			for (auto r2_by_pert : r2_by_perts) {
 				node pert = get<1>(r2_by_pert);
-				//cout << get<0>(r2_by_pert) << "\t" << pert.to_string() << endl;
+				cout << get<0>(r2_by_pert) << "\t" << pert.to_string() << endl;
 				//node new_solution = local_search(pert, X, y);
 				node new_solution = tune_constants(pert, X, y);
 				tuple<double, double, int> new_fitness = fitness(new_solution, X, y);
