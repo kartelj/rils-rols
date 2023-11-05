@@ -16,7 +16,9 @@ enum node_type {
 	DIVIDE,
 	SIN, 
 	COS, 
-	LN
+	LN, 
+	EXP, 
+	SQRT
 };
 
 class node
@@ -33,6 +35,8 @@ private:
 		case node_type::SIN:
 		case node_type::COS:
 		case node_type::LN:
+		case node_type::EXP:
+		case node_type::SQRT:
 			this->arity = 1;
 			break;
 		default:
@@ -59,17 +63,22 @@ public:
 	int var_index;
 	double const_value;
 
-	static node node_copy(const node& n) {
-		node nc(n.type);
-		nc.type = n.type;
-		nc.arity = n.arity;
-		nc.symmetric = n.symmetric;
-		nc.const_value = n.const_value;
-		nc.var_index = n.var_index;
-		if(n.left != NULL)
-			nc.left = new node(*n.left);
-		if(n.right!=NULL)
-			nc.right = new node(*n.right);
+	node() {
+
+	}
+
+	static node* node_copy(node* n) {
+		node* nc = new node(n->type);
+		nc->type = n->type;
+		nc->arity = n->arity;
+		nc->symmetric = n->symmetric;
+		nc->const_value = n->const_value;
+		nc->var_index = n->var_index;
+		if(n->left != NULL)
+			nc->left = node_copy(n->left);
+		if(n->right!=NULL)
+			nc->right = node_copy(n->right);
+		return nc;
 	}
 
 	static node node_constant(double const_value) {
@@ -98,6 +107,10 @@ public:
 
 	static node node_ln() { return node(node_type::LN); }
 
+	static node node_exp() { return node(node_type::EXP); }
+
+	static node node_sqrt() { return node(node_type::SQRT); }
+
 	double evaluate_inner(vector<double> X, double a, double b) { 
 		switch (type) {
 		case node_type::CONST:
@@ -118,6 +131,10 @@ public:
 			return cos(a);
 		case node_type::LN:
 			return log(a);
+		case node_type::EXP:
+			return exp(a);
+		case node_type::SQRT:
+			return sqrt(a);
 		default:
 			throw exception("Unrecognized operation.");
 		}
@@ -143,6 +160,10 @@ public:
 			return "cos(" + left->to_string() + ")";
 		case node_type::LN:
 			return "ln(" + left->to_string() + ")";
+		case node_type::EXP:
+			return "exp(" + left->to_string() + ")";
+		case node_type::SQRT:
+			return "sqrt(" + left->to_string() + ")";
 		default:
 			throw exception("Unrecognized operation.");
 		}
