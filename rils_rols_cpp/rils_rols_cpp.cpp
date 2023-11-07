@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <unordered_map>
+#include <unordered_set>
 #include <fstream>
 #include <filesystem>
 #include <sstream>
@@ -220,7 +221,18 @@ private:
 			}
 			i++;
 		}
-		return all_pert;
+
+		unordered_set<string> filtered_pert_strings;
+		vector<node> filtered_pert;
+		for (auto& node : all_pert) {
+			string node_str = node.to_string();
+			if (filtered_pert_strings.contains(node_str))
+				continue;
+			filtered_pert_strings.insert(node_str);
+			filtered_pert.push_back(node);
+		}
+		cout << "Kept " << filtered_pert.size() << " out of " << all_pert.size() << endl;
+		return filtered_pert;
 	}
 
 	node tune_constants(node solution, vector<vector<double>> X, vector<double> y) {
@@ -360,6 +372,8 @@ public:
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// taking the first 2-pert overall change
 			for (int i = 0; i < r2_by_perts.size(); i++) {
+				if (fit_calls > max_fit_calls)
+					break; 
 				node pert = get<1>(r2_by_perts[i]);
 				double pert_r2 = get<0>(r2_by_perts[i]);
 				cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
@@ -449,8 +463,8 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_04.data") != 0)
-			continue;
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_04.data") != 0)
+		//	continue;
 		vector<vector<double>> X_train, X_test;
 		vector<double> y_train, y_test;
 		std::cout << entry.path() << std::endl;
