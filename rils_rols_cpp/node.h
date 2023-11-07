@@ -81,37 +81,42 @@ public:
 		return nc;
 	}
 
-	static node node_constant(double const_value) {
-		node n(node_type::CONST);
-		n.const_value = const_value;
+	static node* node_internal(node_type type) {
+		node* n = new node(type);
 		return n;
 	}
 
-	static node node_variable(int var_index) {
-		node n(node_type::VAR);
-		n.var_index = var_index;
+	static node* node_constant(double const_value) {
+		node* n = new node(node_type::CONST);
+		n->const_value = const_value;
 		return n;
 	}
 
-	static node node_minus() { return node(node_type::MINUS); }
+	static node* node_variable(int var_index) {
+		node* n = new node(node_type::VAR);
+		n->var_index = var_index;
+		return n;
+	}
 
-	static node node_plus() { return node(node_type::PLUS); }
+	static node* node_minus() { return node_internal(node_type::MINUS); }
 
-	static node node_multiply() { return node(node_type::MULTIPLY); }
+	static node* node_plus() { return node_internal(node_type::PLUS); }
 
-	static node node_divide() { return node(node_type::DIVIDE); }
+	static node* node_multiply() { return node_internal(node_type::MULTIPLY); }
 
-	static node node_sin() { return node(node_type::SIN); }
+	static node* node_divide() { return node_internal(node_type::DIVIDE); }
 
-	static node node_cos() { return node(node_type::COS); }
+	static node* node_sin() { return node_internal(node_type::SIN); }
 
-	static node node_ln() { return node(node_type::LN); }
+	static node* node_cos() { return node_internal(node_type::COS); }
 
-	static node node_exp() { return node(node_type::EXP); }
+	static node* node_ln() { return node_internal(node_type::LN); }
 
-	static node node_sqrt() { return node(node_type::SQRT); }
+	static node* node_exp() { return node_internal(node_type::EXP); }
 
-	double evaluate_inner(vector<double> X, double a, double b) { 
+	static node* node_sqrt() { return node_internal(node_type::SQRT); }
+
+	double evaluate_inner(const vector<double> &X, double a, double b) { 
 		switch (type) {
 		case node_type::CONST:
 			return const_value;
@@ -169,7 +174,7 @@ public:
 		}
 	};
 
-	vector<double> evaluate_all(vector<vector<double>>);
+	vector<double> evaluate_all(const vector<vector<double>> &X);
 
 	static vector<node*> all_subtrees_references(node* root);
 

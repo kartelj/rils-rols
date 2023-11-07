@@ -47,7 +47,7 @@ private:
 	int ls_it, main_it, last_improved_it, time_start, time_elapsed, fit_calls;
 	unordered_map<string, tuple<double, double, int>> cache_fitness;
 	int cache_hits;
-	node final_solution;
+	node* final_solution;
 	tuple<double, double, int> final_fitness;
 	int best_time;
 	int total_time;
@@ -67,20 +67,20 @@ private:
 	vector<node> allowed_nodes;
 
 	void setup_nodes(int var_cnt) {
-		allowed_nodes.push_back(node::node_plus());
-		allowed_nodes.push_back(node::node_minus());
-		allowed_nodes.push_back(node::node_multiply());
-		allowed_nodes.push_back(node::node_divide());
-		allowed_nodes.push_back(node::node_sin());
-		allowed_nodes.push_back(node::node_cos());
-		allowed_nodes.push_back(node::node_ln());
-		allowed_nodes.push_back(node::node_exp());
-		allowed_nodes.push_back(node::node_sqrt());
-		double constants[] = { -1, 0, 0.5, 2, M_PI, 10 };
+		allowed_nodes.push_back(*node::node_plus());
+		allowed_nodes.push_back(*node::node_minus());
+		allowed_nodes.push_back(*node::node_multiply());
+		allowed_nodes.push_back(*node::node_divide());
+		allowed_nodes.push_back(*node::node_sin());
+		allowed_nodes.push_back(*node::node_cos());
+		allowed_nodes.push_back(*node::node_ln());
+		allowed_nodes.push_back(*node::node_exp());
+		allowed_nodes.push_back(*node::node_sqrt());
+		double constants[] = {1};
 		for (auto c : constants)
-			allowed_nodes.push_back(node::node_constant(c));
+			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < var_cnt; i++)
-			allowed_nodes.push_back(node::node_variable(i));
+			allowed_nodes.push_back(*node::node_variable(i));
 	}
 
 	vector<node> perturb_candidates(node* old_node) {
@@ -107,9 +107,13 @@ private:
 			candidates.push_back(*n_c);
 		}
 
-		// change anything to constants 0 or 1
-		candidates.push_back(node::node_constant(0));
-		candidates.push_back(node::node_constant(1));
+		// change anything to constant
+		for (auto& n : allowed_nodes) {
+			if (n.type != node_type::CONST)
+				continue;
+			node* n_c = node::node_copy(&n);
+			candidates.push_back(*n_c);
+		}
 
 		// change anything to unary operation applied to it
 		for (auto& n_un : allowed_nodes) {
@@ -180,8 +184,8 @@ private:
 		return candidates;
 	}
 
-	vector<node> all_perturbations(node passed_solution) {
-		node* solution = node::node_copy(&passed_solution);
+	vector<node> all_perturbations(node* passed_solution) {
+		node* solution = node::node_copy(passed_solution);
 		vector<node> all_pert;
 		vector<node*> all_subtrees;
 		all_subtrees.push_back(solution);
@@ -231,26 +235,45 @@ private:
 			filtered_pert_strings.insert(node_str);
 			filtered_pert.push_back(node);
 		}
-		cout << "Kept " << filtered_pert.size() << " out of " << all_pert.size() << endl;
+		//cout << "Kept " << filtered_pert.size() << " out of " << all_pert.size() << endl;
 		return filtered_pert;
 	}
 
-	node tune_constants(node solution, vector<vector<double>> X, vector<double> y) {
+	node* tune_constants(node solution, vector<vector<double>> X, vector<double> y) {
+		// add free constant
+		//node* best_solution = node::node_plus();
+		//best_solution->left = node::node_constant(0);
+		//best_solution->right = node::node_copy(&solution);
 		node* best_solution = node::node_copy(&solution);
-		tuple<double, double, int> best_fitness = fitness(*best_solution, X, y);
-		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 1, 1.1, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
+
+		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
+		double adders_if_zero[] = {-1, 1};
+		//double adders_fine[] = { -0.1, -0.01, -0.001, 0.001, 0.01, 0.1 };
 		bool impr = true;
+		vector<node*> constants = best_solution->extract_constants_references();
+		// set all constants to zero to give it fresh new start chances
+		for (auto cons : constants)
+			cons->const_value = 1;
+		tuple<double, double, int> best_fitness = fitness(best_solution, X, y);
 		while (impr) {
 			impr = false;
-			vector<node*> constants = best_solution->extract_constants_references();
 			int best_i = -1;
 			double best_value = 1;
 			for (int i = 0; i < constants.size(); i++) {
 				double old_value = constants[i]->const_value;
-				for (auto m : multipliers) {
-					// TODO: multiplier does not make sense if old_value is zero
-					constants[i]->const_value = old_value * m;
-					tuple<double, double, int> new_fitness = fitness(*best_solution, X, y);
+				vector<double> new_values;
+				if (old_value == 0)
+					for (auto add : adders_if_zero)
+						new_values.push_back(add);
+				else {
+					for (auto m : multipliers)
+						new_values.push_back(old_value * m);
+					//for (auto a : adders_fine)
+					//	new_values.push_back(old_value + a);
+				}
+				for (auto new_value : new_values) {
+					constants[i]->const_value = new_value;
+					tuple<double, double, int> new_fitness = fitness(best_solution, X, y);
 					if (compare_fitness(new_fitness, best_fitness) < 0) {
 						best_fitness = new_fitness;
 						best_i = i;
@@ -262,26 +285,26 @@ private:
 			if (best_i != -1) {
 				impr = true;
 				constants[best_i]->const_value = best_value;
-				tuple<double, double, int> test_fitness = fitness(*best_solution, X, y);
+				tuple<double, double, int> test_fitness = fitness(best_solution, X, y);
 				assert(compare_fitness(test_fitness, best_fitness) == 0);
 				//cout << "Improved to " << best_solution->to_string() << endl;
 			}
 		}
-		return *best_solution;
+		return best_solution;
 	}
 
-	tuple<double, double, int> fitness(node solution, vector<vector<double>> X, vector<double> y) {
+	tuple<double, double, int> fitness(node* solution, const vector<vector<double>> &X, const vector<double> &y) {
 		fit_calls++;
-		string solution_string = solution.to_string();
+		string solution_string = solution->to_string();
 		auto it = cache_fitness.find(solution_string);
 		if (it != cache_fitness.end()) {
 			cache_hits++;
 			return it->second;
 		}
-		vector<double> yp = solution.evaluate_all(X);
+		vector<double> yp = solution->evaluate_all(X);
 		double r2 = utils::R2(y, yp);
 		double rmse = utils::RMSE(y, yp);
-		int size = solution.size();
+		int size = solution->size();
 		tuple<double, double, int> fit = tuple<double, double, int>{ 1 - r2, rmse, size };
 		cache_fitness.insert({ solution_string, fit });
 		return fit;
@@ -336,38 +359,39 @@ public:
 		final_fitness = fitness(final_solution, X, y);
 		// main loop
 		bool improved = true;
-		while (fit_calls < max_fit_calls) {
+		while (fit_calls < max_fit_calls && get<0>(final_fitness)!=0) {
 			main_it += 1;
-			node start_solution = final_solution;
+			node* start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
 				vector<node> all_perts = all_perturbations(final_solution);
-				vector<node> all_2_perts = all_perturbations(all_perts[rand() % all_perts.size()]);
-				start_solution = all_2_perts[rand() % all_2_perts.size()];
-				cout << "Randomized to " << start_solution.to_string() << endl;
+				vector<node> all_2_perts = all_perturbations(&all_perts[rand() % all_perts.size()]);
+				start_solution = &all_2_perts[rand() % all_2_perts.size()];
+				cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
-			cout << main_it << ".\tcache hits " << cache_hits << "/" << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution.to_string() << endl;
+			cout << main_it << ".\tcache hits " << cache_hits << "/" << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 			vector<node> all_perts = all_perturbations(start_solution);
 			vector<tuple<double, node>> r2_by_perts;
 			//taking the best 1-pert change
 			for (int i = 0; i < all_perts.size(); i++) {
 				node pert = all_perts[i];
-				node pert_tuned = tune_constants(pert, X, y);
+				//cout << pert.to_string() << endl;
+				node* pert_tuned = tune_constants(pert, X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
-				r2_by_perts.push_back(tuple<double, node>{get<0>(pert_tuned_fitness), pert_tuned});
+				r2_by_perts.push_back(tuple<double, node>{get<0>(pert_tuned_fitness), *pert_tuned});
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
 					improved = true;
 					final_fitness = pert_tuned_fitness;
 					final_solution = pert_tuned;
-					cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution.to_string() << endl;
+					cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<seconds>(stop - start).count();
 				}
 			}
-			//if (improved)
-			//	continue;
+			if (improved)
+				continue;
 
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// taking the first 2-pert overall change
@@ -376,18 +400,19 @@ public:
 					break; 
 				node pert = get<1>(r2_by_perts[i]);
 				double pert_r2 = get<0>(r2_by_perts[i]);
-				cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
-				vector<node> pert_perts = all_perturbations(pert);
+				//cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
+				vector<node> pert_perts = all_perturbations(&pert);
 				// actually best for a given 1-pert change
 				for (auto& pert_pert : pert_perts) {
-					node pert_pert_tuned = tune_constants(pert_pert, X, y);
+					//cout << pert_pert.to_string() << endl;
+					node* pert_pert_tuned = tune_constants(pert_pert, X, y);
 					tuple<double, double, int> pert_pert_tuned_fitness = fitness(pert_pert_tuned, X, y);
-					//cout << get<0>(fit) <<"\t" << pert_pert.to_string() << endl;
+					//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
 					if (compare_fitness(pert_pert_tuned_fitness, final_fitness) < 0) {
 						improved = true;
 						final_fitness = pert_pert_tuned_fitness;
 						final_solution = pert_pert_tuned;
-						cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution.to_string() << endl;
+						cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 						auto stop = high_resolution_clock::now();
 						best_time = duration_cast<seconds>(stop - start).count();
 					}
@@ -401,11 +426,11 @@ public:
 	}
 
 	vector<double> predict(vector<vector<double>> X) {
-		return final_solution.evaluate_all(X);
+		return final_solution->evaluate_all(X);
 	}
 
 	string get_model_string() {
-		return final_solution.to_string();
+		return final_solution->to_string();
 	}
 
 	int get_best_time() {
@@ -453,8 +478,8 @@ tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols,
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 1000000;
-	int max_time = 300;
+	int max_fit = 100000000;
+	int max_time = 3600;
 	double complexity_penalty = 0.001;
 	double sample_size = 0.01;
 	double train_share = 0.75;
@@ -463,7 +488,7 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_04.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_02.data") != 0)
 		//	continue;
 		vector<vector<double>> X_train, X_test;
 		vector<double> y_train, y_test;

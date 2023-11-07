@@ -1,7 +1,7 @@
 #include "node.h"
 #include <cassert>
 
-vector<double> node::evaluate_all(vector<vector<double>> X) {
+vector<double> node::evaluate_all(const vector<vector<double>> &X) {
 	int n = X.size();
 	vector<double> yp(n), left_vals, right_vals;
 	switch (this->arity) {
