@@ -16,7 +16,7 @@ using namespace std;
 using namespace std::chrono;
 namespace fs = std::filesystem;
 
-enum fitness_type
+enum class fitness_type
 {
 	BIC = 1,
 	SRM = 2,
@@ -49,9 +49,9 @@ private:
 	int cache_hits;
 	node* final_solution;
 	tuple<double, double, int> final_fitness;
-	int best_time;
-	int total_time;
-	double early_exit_eps = 1e-6;
+	double best_time;
+	double total_time;
+	double early_exit_eps = 1e-7;
 
 	void reset() {
 		ls_it = 0;
@@ -85,17 +85,17 @@ private:
 			allowed_nodes.push_back(*node::node_variable(i));
 	}
 
-	vector<node> perturb_candidates(node* old_node) {
+	vector<node> perturb_candidates(const node &old_node) {
 		vector<node> candidates;
-		if (old_node->arity >= 1) {
+		if (old_node.arity >= 1) {
 			// change node to its left subtree
-			node* left_c = node::node_copy(old_node->left);
+			node* left_c = node::node_copy(*old_node.left);
 			candidates.push_back(*left_c);
 		}
 
-		if (old_node->arity >= 2) {
+		if (old_node.arity >= 2) {
 			// change node to its right subtree
-			node* right_c = node::node_copy(old_node->right);
+			node* right_c = node::node_copy(*old_node.right);
 			candidates.push_back(*right_c);
 		}
 
@@ -103,9 +103,9 @@ private:
 		for (auto& n : allowed_nodes) {
 			if (n.type != node_type::VAR)
 				continue;
-			if (old_node->type == node_type::VAR && old_node->var_index == n.var_index)
+			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
 				continue; // avoid changing to same variable
-			node* n_c = node::node_copy(&n);
+			node* n_c = node::node_copy(n);
 			candidates.push_back(*n_c);
 		}
 
@@ -113,7 +113,7 @@ private:
 		for (auto& n : allowed_nodes) {
 			if (n.type != node_type::CONST)
 				continue;
-			node* n_c = node::node_copy(&n);
+			node* n_c = node::node_copy(n);
 			candidates.push_back(*n_c);
 		}
 
@@ -121,38 +121,38 @@ private:
 		for (auto& n_un : allowed_nodes) {
 			if (n_un.arity != 1)
 				continue;
-			node* n_un_c = node::node_copy(&n_un);
+			node* n_un_c = node::node_copy(n_un);
 			node* old_node_c = node::node_copy(old_node);
 			n_un_c->left = old_node_c;
 			candidates.push_back(*n_un_c);
 		}
 
-		if (old_node->arity == 1) {
+		if (old_node.arity == 1) {
 			// change unary operation to another unary operation
 			for (auto& n_un : allowed_nodes) {
-				if (n_un.arity != 1 || n_un.type == old_node->type)
+				if (n_un.arity != 1 || n_un.type == old_node.type)
 					continue;
-				node* n_un_c = node::node_copy(&n_un);
-				node* old_left_c = node::node_copy(old_node->left);
+				node* n_un_c = node::node_copy(n_un);
+				node* old_left_c = node::node_copy(*old_node.left);
 				n_un_c->left = old_left_c;
 				candidates.push_back(*n_un_c);
 			}
 		}
-		if (old_node->arity == 2) {
+		if (old_node.arity == 2) {
 			// change one binary operation to another
 			for (auto& n_bin : allowed_nodes) {
-				if (n_bin.arity != 2 || n_bin.type == old_node->type)
+				if (n_bin.arity != 2 || n_bin.type == old_node.type)
 					continue;
-				node* n_bin_c = node::node_copy(&n_bin);
-				node* old_left_c = node::node_copy(old_node->left);
-				node* old_right_c = node::node_copy(old_node->right);
+				node* n_bin_c = node::node_copy(n_bin);
+				node* old_left_c = node::node_copy(*old_node.left);
+				node* old_right_c = node::node_copy(*old_node.right);
 				n_bin_c->left = old_left_c;
 				n_bin_c->right = old_right_c;
 				candidates.push_back(*n_bin_c);
 				if (!n_bin.symmetric) {
-					node* n_bin_c = node::node_copy(&n_bin);
-					node* old_left_c = node::node_copy(old_node->left);
-					node* old_right_c = node::node_copy(old_node->right);
+					node* n_bin_c = node::node_copy(n_bin);
+					node* old_left_c = node::node_copy(*old_node.left);
+					node* old_right_c = node::node_copy(*old_node.right);
 					n_bin_c->right = old_left_c;
 					n_bin_c->left = old_right_c;
 					candidates.push_back(*n_bin_c);
@@ -166,16 +166,16 @@ private:
 			for (auto& n_var : allowed_nodes) {
 				if (n_var.type != node_type::VAR && n_var.type != node_type::CONST)
 					continue;
-				node* n_bin_c = node::node_copy(&n_bin);
+				node* n_bin_c = node::node_copy(n_bin);
 				node* old_node_c = node::node_copy(old_node);
-				node* n_var_c = node::node_copy(&n_var);
+				node* n_var_c = node::node_copy(n_var);
 				n_bin_c->left = old_node_c;
 				n_bin_c->right = n_var_c;
 				candidates.push_back(*n_bin_c);
 				if (!n_bin.symmetric) {
-					n_bin_c = node::node_copy(&n_bin);
+					n_bin_c = node::node_copy(n_bin);
 					old_node_c = node::node_copy(old_node);
-					n_var_c = node::node_copy(&n_var);
+					n_var_c = node::node_copy(n_var);
 					n_bin_c->right = old_node_c;
 					n_bin_c->left = n_var_c;
 					candidates.push_back(*n_bin_c);
@@ -186,7 +186,7 @@ private:
 		return candidates;
 	}
 
-	vector<node> all_perturbations(node* passed_solution) {
+	vector<node> all_perturbations(const node &passed_solution) {
 		node* solution = node::node_copy(passed_solution);
 		vector<node> all_pert;
 		vector<node*> all_subtrees;
@@ -195,18 +195,18 @@ private:
 		while (i < all_subtrees.size()) {
 			if (all_subtrees[i]->size() == solution->size()) {
 				// the whole tree is being changed
-				vector<node> candidates = perturb_candidates(all_subtrees[i]);
+				vector<node> candidates = perturb_candidates(*all_subtrees[i]);
 				for (auto& cand : candidates)
 					all_pert.push_back(cand);
 			}
 			if (all_subtrees[i]->arity >= 1) {
 				// the left subtree is being changed
-				vector<node> candidates = perturb_candidates(all_subtrees[i]->left);
-				node* old_left = node::node_copy(all_subtrees[i]->left);
+				vector<node> candidates = perturb_candidates(*all_subtrees[i]->left);
+				node* old_left = node::node_copy(*all_subtrees[i]->left);
 				for (auto& cand : candidates) {
-					node* cand_c = node::node_copy(&cand);
+					node* cand_c = node::node_copy(cand);
 					all_subtrees[i]->left = cand_c;
-					node* solution_copy = node::node_copy(solution);
+					node* solution_copy = node::node_copy(*solution);
 					all_pert.push_back(*solution_copy);
 				}
 				all_subtrees[i]->left = old_left;
@@ -214,12 +214,12 @@ private:
 			}
 			if (all_subtrees[i]->arity >= 2) {
 				// the right subtree is being changed
-				vector<node> candidates = perturb_candidates(all_subtrees[i]->right);
-				node* old_right = node::node_copy(all_subtrees[i]->right);
+				vector<node> candidates = perturb_candidates(*all_subtrees[i]->right);
+				node* old_right = node::node_copy(*all_subtrees[i]->right);
 				for (auto& cand : candidates) {
-					node* cand_c = node::node_copy(&cand);
+					node* cand_c = node::node_copy(cand);
 					all_subtrees[i]->right = cand_c;
-					node* solution_copy = node::node_copy(solution);
+					node* solution_copy = node::node_copy(*solution);
 					all_pert.push_back(*solution_copy);
 				}
 				all_subtrees[i]->right = old_right;
@@ -241,13 +241,85 @@ private:
 		return filtered_pert;
 	}
 
-	node* tune_constants(node solution, vector<vector<double>> X, vector<double> y) {
-		// add free constant
-		//node* best_solution = node::node_plus();
-		//best_solution->left = node::node_constant(0);
-		//best_solution->right = node::node_copy(&solution);
-		node* best_solution = node::node_copy(&solution);
+	node* tune_constants_grad_desc(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
+		node* best_solution = node::node_copy(solution);
+		double alpha = 0.01; // learning speed
+		double momentum = 0.9; // when 0, it is standard gradient descent
+		double h = 0.01; // step for calculating gradient
+		int max_iter = 100;
+		vector<node*> constants = best_solution->extract_constants_references();
+		if (constants.size() == 0)
+			return best_solution; // nothing to tune
+		tuple<double, double, int> best_fitness = fitness(best_solution, X, y);
+		vector<double> last_change;
+		for (auto cons : constants)
+			last_change.push_back(0);
+		while (max_iter>0) {
+			// calculate numerical gradients 
+			vector<double> grads;
+			tuple<double, double, int> curr_fitness = fitness(best_solution, X, y);
+			double curr_fv =  penalty_fitness(curr_fitness);
+			for (auto cons : constants) {
+				cons->const_value += h;
+				tuple<double, double, int> cons_h_fitness = fitness(best_solution, X, y);
+				double cons_h_fv =  penalty_fitness(cons_h_fitness);
+				double grad = (cons_h_fv - curr_fv) / h;
+				grads.push_back(grad);
+				cons->const_value -= h;
+			}
+			// remember old constants values
+			vector<double> old_values;
+			// apply gradient descent rule with momentum
+			for (int i = 0; i < constants.size(); i++) {
+				old_values.push_back(constants[i]->const_value);
+				constants[i]->const_value = constants[i]->const_value- alpha * grads[i]+momentum*last_change[i];
+				last_change[i] = constants[i]->const_value - old_values[i];
+			}
+			tuple<double, double, int> new_fitness = fitness(best_solution, X, y);
+			if (compare_fitness(new_fitness, best_fitness) >= 0) {
+				// returning to previous values and exiting
+				for (int i = 0; i < constants.size(); i++)
+					constants[i]->const_value = old_values[i];
+				break;
+			}
+			else {
+				best_fitness = new_fitness;
+			}
+			max_iter--;
+		}
+		return best_solution;
+	}
 
+	node* tune_constants_randomized_gcd(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
+		node* best_solution = node::node_copy(solution);
+		tuple<double, double, int> best_fitness = fitness(best_solution, X, y);
+		if (best_solution->extract_constants_references().size() == 0)
+			return best_solution; // nothing to tune
+		int max_iter = 10;
+		double radius = 1;
+		while (max_iter > 0) {
+			node* new_solution = node::node_copy(*best_solution);
+			vector<node*> new_constants = new_solution->extract_constants_references();
+			for (auto cons : new_constants) {
+				double rv_rr = rand() * 2.0 * radius / RAND_MAX - radius;
+				cons->const_value = cons->const_value + rv_rr * cons->const_value;
+			}
+			new_solution = tune_constants_grad_desc(*new_solution, X, y);
+			tuple<double, double, int> new_fitness = fitness(new_solution, X, y);
+			if (compare_fitness(new_fitness, best_fitness) < 0) {
+				radius = 1;
+				best_solution = new_solution;
+				best_fitness = new_fitness;
+			}
+			else 
+				radius*=1.5;
+			max_iter--;
+		}
+		return best_solution;
+	}
+
+	node* tune_constants(const node &solution, const vector<vector<double>> &X, const vector<double> &y) {
+		node* best_solution = node::node_copy(solution);
 		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
 		double adders_if_zero[] = { -1, 1 };
 		//double adders_fine[] = { -0.1, -0.01, -0.001, 0.001, 0.01, 0.1 };
@@ -344,6 +416,7 @@ public:
 		this->random_perturbations_order = random_perturbations_order;
 		this->verbose = verbose;
 		this->random_state = random_state;
+		reset();
 	}
 
 	bool finished() {
@@ -362,6 +435,17 @@ public:
 		}
 		setup_nodes(X[0].size());
 		final_solution = node::node_constant(0);
+		//exp(2 - 2 * x0)
+		/*
+		final_solution = node::node_exp();
+		final_solution->left = node::node_minus();
+		final_solution->left->left = node::node_constant(0);
+		final_solution->left->right = node::node_multiply();
+		final_solution->left->right->left = node::node_constant(0);
+		final_solution->left->right->right = node::node_variable(0);
+		final_solution = tune_constants(*final_solution, X, y);*/
+
+
 		final_fitness = fitness(final_solution, X, y);
 		// main loop
 		bool improved = true;
@@ -370,15 +454,15 @@ public:
 			node* start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
-				vector<node> all_perts = all_perturbations(final_solution);
-				vector<node> all_2_perts = all_perturbations(&all_perts[rand() % all_perts.size()]);
+				vector<node> all_perts = all_perturbations(*final_solution);
+				vector<node> all_2_perts = all_perturbations(all_perts[rand() % all_perts.size()]);
 				start_solution = &all_2_perts[rand() % all_2_perts.size()];
 				cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
 			cout << main_it << ".\tcache hits " << cache_hits << "/" << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
-			vector<node> all_perts = all_perturbations(start_solution);
+			vector<node> all_perts = all_perturbations(*start_solution);
 			vector<tuple<double, node>> r2_by_perts;
 			//taking the best 1-pert change
 			for (int i = 0;i < all_perts.size(); i++) {
@@ -409,7 +493,7 @@ public:
 				node pert = get<1>(r2_by_perts[i]);
 				double pert_r2 = get<0>(r2_by_perts[i]);
 				//cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
-				vector<node> pert_perts = all_perturbations(&pert);
+				vector<node> pert_perts = all_perturbations(pert);
 				// actually best for a given 1-pert change
 				for (auto& pert_pert : pert_perts) {
 					if (finished())
@@ -452,7 +536,7 @@ public:
 	}
 };
 
-static vector<vector<double>> random_data(int rows, int cols, int min_val, int max_val, int random_state) {
+static vector<vector<double>> random_data(int rows, int cols, double min_val, double max_val, int random_state) {
 	assert(max_val > min_val);
 	srand(random_state);
 	vector<vector<double>> data;
@@ -467,7 +551,7 @@ static vector<vector<double>> random_data(int rows, int cols, int min_val, int m
 	return data;
 }
 
-tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols, int min_val, int max_val, int random_state) {
+tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols, double min_val, double max_val, int random_state) {
 	assert(max_val > min_val);
 	srand(random_state);
 	vector<vector<double>> X;
@@ -490,7 +574,7 @@ int main()
 	int random_state = 23654;
 	int max_fit = 100000000;
 	int max_time = 3600;
-	double complexity_penalty = 0.001;
+	double complexity_penalty = 0.01;
 	double sample_size = 0.01;
 	double train_share = 0.75;
 	//tuple<vector<vector<double>>, vector<double>> dataset = sample_dataset(100, 2, -3, 5, random_state);
@@ -498,7 +582,7 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_02.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_03.data") != 0)
 		//	continue;
 		vector<vector<double>> X_train, X_test;
 		vector<double> y_train, y_test;

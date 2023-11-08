@@ -7,7 +7,8 @@ using namespace std;
 
 # define M_PI 3.14159265358979323846
 
-enum node_type {
+enum class node_type{
+	NONE,
 	CONST, 
 	VAR, 
 	PLUS, 
@@ -54,6 +55,8 @@ private:
 		}
 		this->left = NULL;
 		this->right = NULL;
+		this->var_index = -1;
+		this->const_value = 0;
 	}
 
 public:
@@ -66,20 +69,26 @@ public:
 	double const_value;
 
 	node() {
-
+		left = NULL;
+		right = NULL;
+		arity = 0;
+		const_value = 0;
+		var_index = -1;
+		symmetric = false;
+		type = node_type::NONE;
 	}
 
-	static node* node_copy(node* n) {
-		node* nc = new node(n->type);
-		nc->type = n->type;
-		nc->arity = n->arity;
-		nc->symmetric = n->symmetric;
-		nc->const_value = n->const_value;
-		nc->var_index = n->var_index;
-		if(n->left != NULL)
-			nc->left = node_copy(n->left);
-		if(n->right!=NULL)
-			nc->right = node_copy(n->right);
+	static node* node_copy(const node &n) {
+		node* nc = new node(n.type);
+		nc->type = n.type;
+		nc->arity = n.arity;
+		nc->symmetric = n.symmetric;
+		nc->const_value = n.const_value;
+		nc->var_index = n.var_index;
+		if(n.left != NULL)
+			nc->left = node_copy(*n.left);
+		if(n.right!=NULL)
+			nc->right = node_copy(*n.right);
 		return nc;
 	}
 
@@ -120,7 +129,7 @@ public:
 
 	static node* node_sqr() { return node_internal(node_type::SQR); }
 
-	double evaluate_inner(const vector<double> &X, double a, double b) { 
+	double evaluate_inner(const vector<double> &X, const double &a, const double &b) { 
 		switch (type) {
 		case node_type::CONST:
 			return const_value;
