@@ -18,7 +18,8 @@ enum node_type {
 	COS, 
 	LN, 
 	EXP, 
-	SQRT
+	SQRT, 
+	SQR
 };
 
 class node
@@ -37,6 +38,7 @@ private:
 		case node_type::LN:
 		case node_type::EXP:
 		case node_type::SQRT:
+		case node_type::SQR:
 			this->arity = 1;
 			break;
 		default:
@@ -116,6 +118,8 @@ public:
 
 	static node* node_sqrt() { return node_internal(node_type::SQRT); }
 
+	static node* node_sqr() { return node_internal(node_type::SQR); }
+
 	double evaluate_inner(const vector<double> &X, double a, double b) { 
 		switch (type) {
 		case node_type::CONST:
@@ -140,6 +144,8 @@ public:
 			return exp(a);
 		case node_type::SQRT:
 			return sqrt(a);
+		case node_type::SQR:
+			return a*a;
 		default:
 			throw exception("Unrecognized operation.");
 		}
@@ -156,9 +162,9 @@ public:
 		case node_type::MINUS:
 			return  "(" + left->to_string() + "-" + right->to_string() + ")";
 		case node_type::MULTIPLY:
-			return  "(" + left->to_string() + "*" + right->to_string() + ")";
+			return  left->to_string() + "*" + right->to_string();
 		case node_type::DIVIDE:
-			return  "(" + left->to_string() + "/" + right->to_string() + ")";
+			return  left->to_string() + "/" + right->to_string();
 		case node_type::SIN:
 			return "sin(" + left->to_string() + ")";
 		case node_type::COS:
@@ -169,6 +175,8 @@ public:
 			return "exp(" + left->to_string() + ")";
 		case node_type::SQRT:
 			return "sqrt(" + left->to_string() + ")";
+		case node_type::SQR:
+			return left->to_string() + "*" + left->to_string();
 		default:
 			throw exception("Unrecognized operation.");
 		}

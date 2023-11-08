@@ -51,6 +51,7 @@ private:
 	tuple<double, double, int> final_fitness;
 	int best_time;
 	int total_time;
+	double early_exit_eps = 1e-6;
 
 	void reset() {
 		ls_it = 0;
@@ -76,7 +77,8 @@ private:
 		allowed_nodes.push_back(*node::node_ln());
 		allowed_nodes.push_back(*node::node_exp());
 		allowed_nodes.push_back(*node::node_sqrt());
-		double constants[] = {1};
+		allowed_nodes.push_back(*node::node_sqr());
+		double constants[] = { 1 };
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < var_cnt; i++)
@@ -162,7 +164,7 @@ private:
 			if (n_bin.arity != 2)
 				continue;
 			for (auto& n_var : allowed_nodes) {
-				if (n_var.type != node_type::VAR && n_var.type!=node_type::CONST)
+				if (n_var.type != node_type::VAR && n_var.type != node_type::CONST)
 					continue;
 				node* n_bin_c = node::node_copy(&n_bin);
 				node* old_node_c = node::node_copy(old_node);
@@ -247,7 +249,7 @@ private:
 		node* best_solution = node::node_copy(&solution);
 
 		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
-		double adders_if_zero[] = {-1, 1};
+		double adders_if_zero[] = { -1, 1 };
 		//double adders_fine[] = { -0.1, -0.01, -0.001, 0.001, 0.01, 0.1 };
 		bool impr = true;
 		vector<node*> constants = best_solution->extract_constants_references();
@@ -293,7 +295,7 @@ private:
 		return best_solution;
 	}
 
-	tuple<double, double, int> fitness(node* solution, const vector<vector<double>> &X, const vector<double> &y) {
+	tuple<double, double, int> fitness(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
 		fit_calls++;
 		string solution_string = solution->to_string();
 		auto it = cache_fitness.find(solution_string);
@@ -344,6 +346,10 @@ public:
 		this->random_state = random_state;
 	}
 
+	bool finished() {
+		return fit_calls >= max_fit_calls || get<0>(final_fitness) < early_exit_eps;
+	}
+
 	void fit(vector<vector<double>> X_all, vector<double> y_all) {
 		auto start = high_resolution_clock::now();
 		reset();
@@ -359,7 +365,7 @@ public:
 		final_fitness = fitness(final_solution, X, y);
 		// main loop
 		bool improved = true;
-		while (fit_calls < max_fit_calls && get<0>(final_fitness)!=0) {
+		while (!finished()) {
 			main_it += 1;
 			node* start_solution = final_solution;
 			if (!improved) {
@@ -375,7 +381,9 @@ public:
 			vector<node> all_perts = all_perturbations(start_solution);
 			vector<tuple<double, node>> r2_by_perts;
 			//taking the best 1-pert change
-			for (int i = 0; i < all_perts.size(); i++) {
+			for (int i = 0;i < all_perts.size(); i++) {
+				if (finished())
+					break;
 				node pert = all_perts[i];
 				//cout << pert.to_string() << endl;
 				node* pert_tuned = tune_constants(pert, X, y);
@@ -390,20 +398,22 @@ public:
 					best_time = duration_cast<seconds>(stop - start).count();
 				}
 			}
-			if (improved)
-				continue;
+			//if (improved)
+			//	continue;
 
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// taking the first 2-pert overall change
-			for (int i = 0; i < r2_by_perts.size(); i++) {
-				if (fit_calls > max_fit_calls)
-					break; 
+			for (int i = 0;i < r2_by_perts.size(); i++) {
+				if (finished())
+					break;
 				node pert = get<1>(r2_by_perts[i]);
 				double pert_r2 = get<0>(r2_by_perts[i]);
 				//cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
 				vector<node> pert_perts = all_perturbations(&pert);
 				// actually best for a given 1-pert change
 				for (auto& pert_pert : pert_perts) {
+					if (finished())
+						break;
 					//cout << pert_pert.to_string() << endl;
 					node* pert_pert_tuned = tune_constants(pert_pert, X, y);
 					tuple<double, double, int> pert_pert_tuned_fitness = fitness(pert_pert_tuned, X, y);
@@ -417,8 +427,8 @@ public:
 						best_time = duration_cast<seconds>(stop - start).count();
 					}
 				}
-				if (improved)
-					break;
+				//if (improved)
+				//	break;
 			}
 		}
 		auto stop = high_resolution_clock::now();
