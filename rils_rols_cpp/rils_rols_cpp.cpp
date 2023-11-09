@@ -11,6 +11,7 @@
 #include <chrono>
 #include "node.h"
 #include "utils.h"
+#include "ols.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -318,8 +319,8 @@ private:
 		return best_solution;
 	}
 
-	node* tune_constants_best_impr(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
-		node* best_solution = node::node_copy(solution);
+	node* tune_constants(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
+		node* best_solution = node::node_copy(*solution);
 		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
 		double adders_if_zero[] = { -1, 1 };
 		//double adders_fine[] = { -0.1, -0.01, -0.001, 0.001, 0.01, 0.1 };
@@ -374,15 +375,31 @@ private:
 	/// <param name="X"></param>
 	/// <param name="y"></param>
 	/// <returns></returns>
-	node* tune_constants(node *solution, const vector<vector<double>>& X, const vector<double>& y) {
+	node* tune_constants_ols(node *solution, const vector<vector<double>>& X, const vector<double>& y) {
 		// TODO: expand to non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
-		vector<node*> factors = solution->expand();
-		for (auto f : factors) {
-			if (f->type == node_type::CONST)
+		vector<node*> all_factors = solution->expand();
+		vector<node*> factors;
+		for (auto f : all_factors) {
+			if (f->type != node_type::CONST)
 				continue;
-			cout << f->to_string() << endl;
+			factors.push_back(f);
 		}
-
+		factors.push_back(node::node_constant(1)); // add free term
+		
+		vector<vector<double>> X_factors(X.size());
+		for (int i = 0; i < X.size(); i++) {
+			vector<double> row(factors.size());
+			X_factors[i] =row;
+		}
+		for (int i = 0; i < factors.size(); i++) {
+			vector<double> factor_values = factors[i]->evaluate_all(X);
+			for (int j = 0; j < X.size(); j++)
+				X_factors[j][i] = factor_values[j];
+		}
+		vector<double> coefs = run_ols(X_factors, y);
+		for (auto c : coefs)
+			cout << c << endl;
+		return solution;
 	}
 
 	tuple<double, double, int> fitness(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
@@ -488,7 +505,7 @@ public:
 					break;
 				node pert = all_perts[i];
 				//cout << pert.to_string() << endl;
-				node* pert_tuned = tune_constants(pert, X, y);
+				node* pert_tuned = tune_constants(&pert, X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
 				r2_by_perts.push_back(tuple<double, node>{get<0>(pert_tuned_fitness), *pert_tuned});
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
@@ -517,7 +534,7 @@ public:
 					if (finished())
 						break;
 					//cout << pert_pert.to_string() << endl;
-					node* pert_pert_tuned = tune_constants(pert_pert, X, y);
+					node* pert_pert_tuned = tune_constants(&pert_pert, X, y);
 					tuple<double, double, int> pert_pert_tuned_fitness = fitness(pert_pert_tuned, X, y);
 					//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
 					if (compare_fitness(pert_pert_tuned_fitness, final_fitness) < 0) {

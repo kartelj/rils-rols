@@ -129,62 +129,35 @@ public:
 
 	static node* node_sqr() { return node_internal(node_type::SQR); }
 
-	const vector<double>& evaluate_inner(const vector < vector< double> > & X, const vector<double>& a, const vector<double>& b) {
-		int n = X.size();
-		vector<double> yp(n);
+	double evaluate_inner(const vector<double>& X, const double& a, const double& b) {
 		switch (type) {
 		case node_type::CONST:
-			for (int i = 0; i < n; i++)
-				yp[i] = const_value;
-			break;
+			return const_value;
 		case node_type::VAR:
-			for (int i = 0; i < n; i++)
-				yp[i] = X[i][var_index];
-			break;
+			return X[var_index];
 		case node_type::PLUS:
-			for (int i = 0; i < n; i++)
-				yp[i] = a[i] + b[i];
-			break;
+			return  a + b;
 		case node_type::MINUS:
-			for (int i = 0; i < n; i++)
-				yp[i] = a[i] - b[i];
-			break;
+			return a - b;
 		case node_type::MULTIPLY:
-			for (int i = 0; i < n; i++)
-				yp[i] = a[i] * b[i];
-			break;
+			return a * b;
 		case node_type::DIVIDE:
-			for (int i = 0; i < n; i++)
-				yp[i] = a[i] / b[i];
-			break;
+			return a / b;
 		case node_type::SIN:
-			for (int i = 0; i < n; i++)
-				yp[i] = sin(a[i]);
-			break;
+			return sin(a);
 		case node_type::COS:
-			for (int i = 0; i < n; i++)
-				yp[i] = cos(a[i]);
-			break;
+			return cos(a);
 		case node_type::LN:
-			for (int i = 0; i < n; i++)
-				yp[i] = log(a[i]);
-			break;
+			return log(a);
 		case node_type::EXP:
-			for (int i = 0; i < n; i++)
-				yp[i] = exp(a[i]);
-			break;
+			return exp(a);
 		case node_type::SQRT:
-			for (int i = 0; i < n; i++)
-				yp[i] = sqrt(a[i]);
-			break;
+			return sqrt(a);
 		case node_type::SQR:
-			for (int i = 0; i < n; i++)
-				yp[i] = a[i]*a[i];
-			break;
+			return a * a;
 		default:
 			throw exception("Unrecognized operation.");
 		}
-		return yp;
 	};
 
 	string to_string() const {

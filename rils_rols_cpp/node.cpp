@@ -1,16 +1,29 @@
 #include "node.h"
 #include <cassert>
 
-vector<double> node::evaluate_all(const vector<vector<double>> &X) {
+vector<double> node::evaluate_all(const vector<vector<double>>& X) {
 	int n = X.size();
-	vector<double> left_vals, right_vals;
-	if(arity>=1)
+	vector<double> yp(n), left_vals, right_vals;
+	switch (this->arity) {
+	case 0:
+		for (int i = 0; i < n; i++)
+			yp[i] = this->evaluate_inner(X[i], NULL, NULL);
+		break;
+	case 1:
 		left_vals = this->left->evaluate_all(X);
-	if(arity==2)
+		for (int i = 0; i < n; i++)
+			yp[i] = this->evaluate_inner(X[i], left_vals[i], NULL);
+		break;
+	case 2:
+		left_vals = this->left->evaluate_all(X);
 		right_vals = this->right->evaluate_all(X);
-	if(arity>2)
+		for (int i = 0; i < n; i++)
+			yp[i] = this->evaluate_inner(X[i], left_vals[i], right_vals[i]);
+		break;
+	default:
 		throw new exception("Arity > 2 is not allowed.");
-	return this->evaluate_inner(X, left_vals, right_vals);;
+	}
+	return yp;
 }
 
 vector<node*> node::all_subtrees_references(node* root) {
