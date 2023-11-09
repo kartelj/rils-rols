@@ -3,27 +3,14 @@
 
 vector<double> node::evaluate_all(const vector<vector<double>> &X) {
 	int n = X.size();
-	vector<double> yp(n), left_vals, right_vals;
-	switch (this->arity) {
-	case 0:
-		for(int i=0; i<n; i++)
-			yp[i] = this->evaluate_inner(X[i], NULL, NULL);
-		break;
-	case 1:
+	vector<double> left_vals, right_vals;
+	if(arity>=1)
 		left_vals = this->left->evaluate_all(X);
-		for (int i = 0; i < n; i++) 
-			yp[i] = this->evaluate_inner(X[i], left_vals[i], NULL);
-		break;
-	case 2:
-		left_vals = this->left->evaluate_all(X);
+	if(arity==2)
 		right_vals = this->right->evaluate_all(X);
-		for(int i = 0; i < n; i++)
-			yp[i] = this->evaluate_inner(X[i], left_vals[i], right_vals[i]);
-		break;
-	default:
+	if(arity>2)
 		throw new exception("Arity > 2 is not allowed.");
-	}
-	return yp;
+	return this->evaluate_inner(X, left_vals, right_vals);;
 }
 
 vector<node*> node::all_subtrees_references(node* root) {
@@ -63,6 +50,21 @@ vector<node*> node::extract_constants_references() {
 			all_cons.push_back(right_cons[i]);
 	}
 	return all_cons;
+}
+
+vector<node*> node::expand(){
+	vector<node*> all_factors;
+	if (type == node_type::PLUS || type == node_type::MINUS) {
+		vector<node*> left_factors = left->expand();
+		vector<node*> right_factors = right->expand();
+		for (auto n : left_factors)
+			all_factors.push_back(n);
+		for (auto n : right_factors)
+			all_factors.push_back(n);
+	}
+	else if(type!=node_type::CONST)
+		all_factors.push_back(this);
+	return all_factors;
 }
 
 int node::size() {

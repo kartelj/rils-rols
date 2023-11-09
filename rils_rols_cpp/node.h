@@ -129,38 +129,65 @@ public:
 
 	static node* node_sqr() { return node_internal(node_type::SQR); }
 
-	double evaluate_inner(const vector<double> &X, const double &a, const double &b) { 
+	const vector<double>& evaluate_inner(const vector < vector< double> > & X, const vector<double>& a, const vector<double>& b) {
+		int n = X.size();
+		vector<double> yp(n);
 		switch (type) {
 		case node_type::CONST:
-			return const_value;
+			for (int i = 0; i < n; i++)
+				yp[i] = const_value;
+			break;
 		case node_type::VAR:
-			return X[var_index];
+			for (int i = 0; i < n; i++)
+				yp[i] = X[i][var_index];
+			break;
 		case node_type::PLUS:
-			return  a + b;
+			for (int i = 0; i < n; i++)
+				yp[i] = a[i] + b[i];
+			break;
 		case node_type::MINUS:
-			return a - b;
+			for (int i = 0; i < n; i++)
+				yp[i] = a[i] - b[i];
+			break;
 		case node_type::MULTIPLY:
-			return a * b;
+			for (int i = 0; i < n; i++)
+				yp[i] = a[i] * b[i];
+			break;
 		case node_type::DIVIDE:
-			return a / b;
+			for (int i = 0; i < n; i++)
+				yp[i] = a[i] / b[i];
+			break;
 		case node_type::SIN:
-			return sin(a);
+			for (int i = 0; i < n; i++)
+				yp[i] = sin(a[i]);
+			break;
 		case node_type::COS:
-			return cos(a);
+			for (int i = 0; i < n; i++)
+				yp[i] = cos(a[i]);
+			break;
 		case node_type::LN:
-			return log(a);
+			for (int i = 0; i < n; i++)
+				yp[i] = log(a[i]);
+			break;
 		case node_type::EXP:
-			return exp(a);
+			for (int i = 0; i < n; i++)
+				yp[i] = exp(a[i]);
+			break;
 		case node_type::SQRT:
-			return sqrt(a);
+			for (int i = 0; i < n; i++)
+				yp[i] = sqrt(a[i]);
+			break;
 		case node_type::SQR:
-			return a*a;
+			for (int i = 0; i < n; i++)
+				yp[i] = a[i]*a[i];
+			break;
 		default:
 			throw exception("Unrecognized operation.");
 		}
+		return yp;
 	};
 
-	string to_string() {
+	string to_string() const {
 		switch (type) {
 		case node_type::CONST:
 			return std::to_string(const_value);
@@ -196,6 +223,8 @@ public:
 	static vector<node*> all_subtrees_references(node* root);
 
 	vector<node*> extract_constants_references();
+
+	vector<node*> expand();
 
 	int size();
 };

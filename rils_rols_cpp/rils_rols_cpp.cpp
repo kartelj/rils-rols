@@ -85,7 +85,7 @@ private:
 			allowed_nodes.push_back(*node::node_variable(i));
 	}
 
-	vector<node> perturb_candidates(const node &old_node) {
+	vector<node> perturb_candidates(const node& old_node) {
 		vector<node> candidates;
 		if (old_node.arity >= 1) {
 			// change node to its left subtree
@@ -186,7 +186,7 @@ private:
 		return candidates;
 	}
 
-	vector<node> all_perturbations(const node &passed_solution) {
+	vector<node> all_perturbations(const node& passed_solution) {
 		node* solution = node::node_copy(passed_solution);
 		vector<node> all_pert;
 		vector<node*> all_subtrees;
@@ -254,15 +254,15 @@ private:
 		vector<double> last_change;
 		for (auto cons : constants)
 			last_change.push_back(0);
-		while (max_iter>0) {
+		while (max_iter > 0) {
 			// calculate numerical gradients 
 			vector<double> grads;
 			tuple<double, double, int> curr_fitness = fitness(best_solution, X, y);
-			double curr_fv =  penalty_fitness(curr_fitness);
+			double curr_fv = penalty_fitness(curr_fitness);
 			for (auto cons : constants) {
 				cons->const_value += h;
 				tuple<double, double, int> cons_h_fitness = fitness(best_solution, X, y);
-				double cons_h_fv =  penalty_fitness(cons_h_fitness);
+				double cons_h_fv = penalty_fitness(cons_h_fitness);
 				double grad = (cons_h_fv - curr_fv) / h;
 				grads.push_back(grad);
 				cons->const_value -= h;
@@ -272,7 +272,7 @@ private:
 			// apply gradient descent rule with momentum
 			for (int i = 0; i < constants.size(); i++) {
 				old_values.push_back(constants[i]->const_value);
-				constants[i]->const_value = constants[i]->const_value- alpha * grads[i]+momentum*last_change[i];
+				constants[i]->const_value = constants[i]->const_value - alpha * grads[i] + momentum * last_change[i];
 				last_change[i] = constants[i]->const_value - old_values[i];
 			}
 			tuple<double, double, int> new_fitness = fitness(best_solution, X, y);
@@ -311,14 +311,14 @@ private:
 				best_solution = new_solution;
 				best_fitness = new_fitness;
 			}
-			else 
-				radius*=1.5;
+			else
+				radius *= 1.5;
 			max_iter--;
 		}
 		return best_solution;
 	}
 
-	node* tune_constants(const node &solution, const vector<vector<double>> &X, const vector<double> &y) {
+	node* tune_constants_best_impr(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
 		node* best_solution = node::node_copy(solution);
 		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
 		double adders_if_zero[] = { -1, 1 };
@@ -365,6 +365,24 @@ private:
 			}
 		}
 		return best_solution;
+	}
+
+	/// <summary>
+	/// OLS based tunning on expanded expression
+	/// </summary>
+	/// <param name="solution"></param>
+	/// <param name="X"></param>
+	/// <param name="y"></param>
+	/// <returns></returns>
+	node* tune_constants(node *solution, const vector<vector<double>>& X, const vector<double>& y) {
+		// TODO: expand to non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
+		vector<node*> factors = solution->expand();
+		for (auto f : factors) {
+			if (f->type == node_type::CONST)
+				continue;
+			cout << f->to_string() << endl;
+		}
+
 	}
 
 	tuple<double, double, int> fitness(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
@@ -582,8 +600,8 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_03.data") != 0)
-		//	continue;
+		if (entry.path().compare("../paper_resources/random_12345_data\\random_04_02_0010000_04.data") != 0)
+			continue;
 		vector<vector<double>> X_train, X_test;
 		vector<double> y_train, y_test;
 		std::cout << entry.path() << std::endl;
