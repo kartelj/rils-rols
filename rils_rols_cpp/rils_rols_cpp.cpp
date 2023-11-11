@@ -79,7 +79,7 @@ private:
 		allowed_nodes.push_back(*node::node_exp());
 		allowed_nodes.push_back(*node::node_sqrt());
 		allowed_nodes.push_back(*node::node_sqr());
-		double constants[] = { 1 };
+		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10};
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < var_cnt; i++)
@@ -88,6 +88,20 @@ private:
 
 	vector<node> perturb_candidates(const node& old_node) {
 		vector<node> candidates;
+
+		if (old_node.type == node_type::CONST) {
+			//finetune constants
+			if (old_node.const_value == 0) {
+				candidates.push_back(*node::node_constant(-1));
+				candidates.push_back(*node::node_constant(1));
+			}
+			else {
+				double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0, 1, 1.1, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
+				for (auto mult : multipliers)
+					candidates.push_back(*node::node_constant(old_node.const_value * mult));
+			}
+		}
+
 		if (old_node.arity >= 1) {
 			// change node to its left subtree
 			node* left_c = node::node_copy(*old_node.left);
@@ -100,20 +114,12 @@ private:
 			candidates.push_back(*right_c);
 		}
 
-		// change anything to variable
+		// change anything to variable or constant
 		for (auto& n : allowed_nodes) {
-			if (n.type != node_type::VAR)
+			if (n.arity != 0)
 				continue;
 			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
 				continue; // avoid changing to same variable
-			node* n_c = node::node_copy(n);
-			candidates.push_back(*n_c);
-		}
-
-		// change anything to constant
-		for (auto& n : allowed_nodes) {
-			if (n.type != node_type::CONST)
-				continue;
 			node* n_c = node::node_copy(n);
 			candidates.push_back(*n_c);
 		}
@@ -321,7 +327,7 @@ private:
 
 	node* tune_constants_best_impr(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
 		node* best_solution = node::node_copy(*solution);
-		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
+		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0, 1, 1.1, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
 		double adders_if_zero[] = { -1, 1 };
 		//double adders_fine[] = { -0.1, -0.01, -0.001, 0.001, 0.01, 0.1 };
 		bool impr = true;
@@ -386,11 +392,8 @@ private:
 		}
 		factors.push_back(node::node_constant(1)); // add free term
 		
-		vector<vector<double>> X_factors(X.size());
-		for (int i = 0; i < X.size(); i++) {
-			vector<double> row(factors.size());
-			X_factors[i] =row;
-		}
+		vector<vector<double>> X_factors(X.size(), vector<double>(factors.size()));
+
 		for (int i = 0; i < factors.size(); i++) {
 			vector<double> factor_values = factors[i]->evaluate_all(X);
 			for (int j = 0; j < X.size(); j++)
@@ -626,8 +629,8 @@ tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols,
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 100000000;
-	int max_time = 3600;
+	int max_fit = 1000000;
+	int max_time = 300;
 	double complexity_penalty = 0.01;
 	double sample_size = 0.01;
 	double train_share = 0.75;
@@ -636,8 +639,8 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		if (entry.path().compare("../paper_resources/random_12345_data\\random_04_02_0010000_04.data") != 0)
-			continue;
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_02_0010000_04.data") != 0)
+		//	continue;
 		vector<vector<double>> X_train, X_test;
 		vector<double> y_train, y_test;
 		std::cout << entry.path() << std::endl;
