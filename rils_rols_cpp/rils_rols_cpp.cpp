@@ -319,7 +319,7 @@ private:
 		return best_solution;
 	}
 
-	node* tune_constants(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
+	node* tune_constants_best_impr(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
 		node* best_solution = node::node_copy(*solution);
 		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0.99,0.999, 0, 1, 1.1, 1.01,1.001, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
 		double adders_if_zero[] = { -1, 1 };
@@ -375,12 +375,12 @@ private:
 	/// <param name="X"></param>
 	/// <param name="y"></param>
 	/// <returns></returns>
-	node* tune_constants_ols(node *solution, const vector<vector<double>>& X, const vector<double>& y) {
+	node* tune_constants(node *solution, const vector<vector<double>>& X, const vector<double>& y) {
 		// TODO: expand to non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
 		vector<node*> all_factors = solution->expand();
 		vector<node*> factors;
 		for (auto f : all_factors) {
-			if (f->type != node_type::CONST)
+			if (f->type == node_type::CONST)
 				continue;
 			factors.push_back(f);
 		}
@@ -397,9 +397,28 @@ private:
 				X_factors[j][i] = factor_values[j];
 		}
 		vector<double> coefs = run_ols(X_factors, y);
-		for (auto c : coefs)
-			cout << c << endl;
-		return solution;
+		node* ols_solution  = NULL;
+		for (int i = 0; i < factors.size(); i++) {
+			//cout << coefs[i] << "*"<< factors[i]->to_string()<<"+";
+			node* new_fact = NULL;
+			if (factors[i]->type == node_type::CONST)
+				new_fact = node::node_constant(coefs[i] * factors[i]->const_value);
+			else {
+				new_fact = node::node_multiply();
+				new_fact->left = node::node_constant(coefs[i]);
+				new_fact->right = node::node_copy(*factors[i]);
+			}
+			if (ols_solution == NULL)
+				ols_solution = new_fact;
+			else {
+				node* tmp = ols_solution;
+				ols_solution = node::node_plus();
+				ols_solution->left = tmp;
+				ols_solution->right = new_fact;
+			}
+		}
+		//cout << endl;
+		return ols_solution;
 	}
 
 	tuple<double, double, int> fitness(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
