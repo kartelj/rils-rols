@@ -9,10 +9,8 @@
 #include <sstream>
 #include <random>
 #include <chrono>
-#include "eigen/Eigen/Dense"
 #include "node.h"
 #include "utils.h"
-#include "ols.h"
 #include "eigen/Eigen/Dense"
 
 using namespace std;
@@ -89,9 +87,7 @@ private:
 			allowed_nodes.push_back(*node::node_variable(i));
 	}
 
-	vector<node> perturb_candidates(const node& old_node) {
-		vector<node> candidates;
-
+	void add_const_finetune(const node& old_node, vector<node> &candidates) {
 		if (old_node.type == node_type::CONST) {
 			//finetune constants
 			if (old_node.const_value == 0) {
@@ -104,19 +100,22 @@ private:
 					candidates.push_back(*node::node_constant(old_node.const_value * mult));
 			}
 		}
+	}
 
+	void add_left_right(const node& old_node, vector<node>& candidates) {
 		if (old_node.arity >= 1) {
 			// change node to its left subtree
 			node* left_c = node::node_copy(*old_node.left);
 			candidates.push_back(*left_c);
 		}
-
 		if (old_node.arity >= 2) {
 			// change node to its right subtree
 			node* right_c = node::node_copy(*old_node.right);
 			candidates.push_back(*right_c);
 		}
+	}
 
+	void add_change_to_var_const(const node& old_node, vector<node>& candidates) {
 		// change anything to variable or constant
 		for (auto& n : allowed_nodes) {
 			if (n.arity != 0)
@@ -126,7 +125,21 @@ private:
 			node* n_c = node::node_copy(n);
 			candidates.push_back(*n_c);
 		}
+	}
 
+	void add_change_to_var(const node& old_node, vector<node>& candidates) {
+		// change anything to variable
+		for (auto& n : allowed_nodes) {
+			if (n.type!=node_type::VAR)
+				continue;
+			if (old_node.var_index == n.var_index)
+				continue; // avoid changing to same variable
+			node* n_c = node::node_copy(n);
+			candidates.push_back(*n_c);
+		}
+	}
+
+	void add_change_unary_applied(const node& old_node, vector<node>& candidates) {
 		// change anything to unary operation applied to it
 		for (auto& n_un : allowed_nodes) {
 			if (n_un.arity != 1)
@@ -136,7 +149,9 @@ private:
 			n_un_c->left = old_node_c;
 			candidates.push_back(*n_un_c);
 		}
+	}
 
+	void add_change_unary_to_another(const node& old_node, vector<node>& candidates) {
 		if (old_node.arity == 1) {
 			// change unary operation to another unary operation
 			for (auto& n_un : allowed_nodes) {
@@ -148,27 +163,9 @@ private:
 				candidates.push_back(*n_un_c);
 			}
 		}
-		if (old_node.arity == 2) {
-			// change one binary operation to another
-			for (auto& n_bin : allowed_nodes) {
-				if (n_bin.arity != 2 || n_bin.type == old_node.type)
-					continue;
-				node* n_bin_c = node::node_copy(n_bin);
-				node* old_left_c = node::node_copy(*old_node.left);
-				node* old_right_c = node::node_copy(*old_node.right);
-				n_bin_c->left = old_left_c;
-				n_bin_c->right = old_right_c;
-				candidates.push_back(*n_bin_c);
-				if (!n_bin.symmetric) {
-					node* n_bin_c = node::node_copy(n_bin);
-					node* old_left_c = node::node_copy(*old_node.left);
-					node* old_right_c = node::node_copy(*old_node.right);
-					n_bin_c->right = old_left_c;
-					n_bin_c->left = old_right_c;
-					candidates.push_back(*n_bin_c);
-				}
-			}
-		}
+	}
+
+	void add_change_binary_applied(const node& old_node, vector<node>& candidates) {
 		// change anything to binary operation with some variable or constant  -- increases the model size
 		for (auto& n_bin : allowed_nodes) {
 			if (n_bin.arity != 2)
@@ -192,65 +189,126 @@ private:
 				}
 			}
 		}
-		// TODO: check for duplicates
+	}
+
+	void add_change_binary_to_another(const node& old_node, vector<node>& candidates) {
+		if (old_node.arity == 2) {
+			// change one binary operation to another
+			for (auto& n_bin : allowed_nodes) {
+				if (n_bin.arity != 2 || n_bin.type == old_node.type)
+					continue;
+				node* n_bin_c = node::node_copy(n_bin);
+				node* old_left_c = node::node_copy(*old_node.left);
+				node* old_right_c = node::node_copy(*old_node.right);
+				n_bin_c->left = old_left_c;
+				n_bin_c->right = old_right_c;
+				candidates.push_back(*n_bin_c);
+				if (!n_bin.symmetric) {
+					node* n_bin_c = node::node_copy(n_bin);
+					node* old_left_c = node::node_copy(*old_node.left);
+					node* old_right_c = node::node_copy(*old_node.right);
+					n_bin_c->right = old_left_c;
+					n_bin_c->left = old_right_c;
+					candidates.push_back(*n_bin_c);
+				}
+			}
+		}
+	}
+
+	vector<node> perturb_candidates(const node& old_node) {
+		vector<node> candidates;
+		add_left_right(old_node, candidates);
+		add_change_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
+		add_change_unary_applied(old_node, candidates); // in Python version this was just change of variable to unary applied to variable, but this looks more powerfull
+		add_change_unary_to_another(old_node, candidates);
+		add_change_binary_applied(old_node, candidates); // in Python version this was just change of variable or constant to unary applied to variable, but this looks more powerfull
+		add_change_binary_to_another(old_node, candidates);
 		return candidates;
 	}
 
-	vector<node> all_perturbations(const node& passed_solution) {
+	vector<node> change_candidates(const node& old_node) {
+		vector<node> candidates;
+		add_const_finetune(old_node, candidates);
+		add_left_right(old_node, candidates);
+		add_change_to_var_const(old_node, candidates);
+		add_change_unary_applied(old_node, candidates);
+		add_change_unary_to_another(old_node, candidates);
+		add_change_binary_applied(old_node, candidates);
+		add_change_binary_to_another(old_node, candidates);
+		return candidates;
+	}
+
+	vector<node> all_candidates(const node& passed_solution, bool local_search) {
 		node* solution = node::node_copy(passed_solution);
-		vector<node> all_pert;
+		vector<node> all_cand;
 		vector<node*> all_subtrees;
 		all_subtrees.push_back(solution);
 		int i = 0;
 		while (i < all_subtrees.size()) {
 			if (all_subtrees[i]->size() == solution->size()) {
 				// the whole tree is being changed
-				vector<node> candidates = perturb_candidates(*all_subtrees[i]);
+				vector<node> candidates;
+				if (local_search)
+					candidates = change_candidates(*all_subtrees[i]);
+				else
+					candidates = perturb_candidates(*all_subtrees[i]);
 				for (auto& cand : candidates)
-					all_pert.push_back(cand);
+					all_cand.push_back(cand);
 			}
 			if (all_subtrees[i]->arity >= 1) {
 				// the left subtree is being changed
-				vector<node> candidates = perturb_candidates(*all_subtrees[i]->left);
+				vector<node> candidates;
+				if (local_search)
+					candidates = change_candidates(*all_subtrees[i]->left);
+				else
+					candidates = perturb_candidates(*all_subtrees[i]->left);
 				node* old_left = node::node_copy(*all_subtrees[i]->left);
 				for (auto& cand : candidates) {
 					node* cand_c = node::node_copy(cand);
 					all_subtrees[i]->left = cand_c;
 					node* solution_copy = node::node_copy(*solution);
-					all_pert.push_back(*solution_copy);
+					all_cand.push_back(*solution_copy);
 				}
 				all_subtrees[i]->left = old_left;
 				all_subtrees.push_back(all_subtrees[i]->left);
 			}
 			if (all_subtrees[i]->arity >= 2) {
 				// the right subtree is being changed
-				vector<node> candidates = perturb_candidates(*all_subtrees[i]->right);
+				vector<node> candidates;
+				if (local_search)
+					candidates = change_candidates(*all_subtrees[i]->right);
+				else
+					candidates = perturb_candidates(*all_subtrees[i]->right);
 				node* old_right = node::node_copy(*all_subtrees[i]->right);
 				for (auto& cand : candidates) {
 					node* cand_c = node::node_copy(cand);
 					all_subtrees[i]->right = cand_c;
 					node* solution_copy = node::node_copy(*solution);
-					all_pert.push_back(*solution_copy);
+					all_cand.push_back(*solution_copy);
 				}
 				all_subtrees[i]->right = old_right;
 				all_subtrees.push_back(all_subtrees[i]->right);
 			}
 			i++;
 		}
+		// TODO: simplify
 
-		unordered_set<string> filtered_pert_strings;
-		vector<node> filtered_pert;
-		for (auto& node : all_pert) {
+		// TODO: normalize
+
+		// eliminate duplicates
+		/*
+		unordered_set<string> filtered_cand_strings;
+		vector<node> filtered_candidates;
+		for (auto& node : all_cand) {
 			string node_str = node.to_string();
-			if (filtered_pert_strings.contains(node_str))
+			if (filtered_cand_strings.contains(node_str))
 				continue;
-			filtered_pert_strings.insert(node_str);
-			filtered_pert.push_back(node);
-		}
-		//cout << "Kept " << filtered_pert.size() << " out of " << all_pert.size() << endl;
-		return filtered_pert;
+			filtered_cand_strings.insert(node_str);
+			filtered_candidates.push_back(node);
+		}*/
+		return all_cand;
 	}
-
+	/*
 	node* tune_constants_grad_desc(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
 		node* best_solution = node::node_copy(solution);
 		double alpha = 0.01; // learning speed
@@ -375,7 +433,7 @@ private:
 			}
 		}
 		return best_solution;
-	}
+	}*/
 
 	/// <summary>
 	/// OLS based tunning on expanded expression
@@ -384,7 +442,7 @@ private:
 	/// <param name="X"></param>
 	/// <param name="y"></param>
 	/// <returns></returns>
-	node* tune_constants(node *solution, const vector<vector<double>>& X, const vector<double>& y) {
+	node* tune_constants(node *solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		// TODO: expand to non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
 		vector<node*> all_factors = solution->expand();
 		vector<node*> factors;
@@ -395,8 +453,6 @@ private:
 		}
 		factors.push_back(node::node_constant(1)); // add free term
 		
-		vector<vector<double>> X_factors(X.size(), vector<double>(factors.size()));
-
 		Eigen::MatrixXd A(X.size(), factors.size());
 		Eigen::VectorXd b(X.size());
 
@@ -404,14 +460,10 @@ private:
 			b(i) = y[i];
 
 		for (int i = 0; i < factors.size(); i++) {
-			vector<double> factor_values = factors[i]->evaluate_all(X);
-			for (int j = 0; j < X.size(); j++) {
-				X_factors[j][i] = factor_values[j];
+			Eigen::ArrayXd factor_values = factors[i]->evaluate_all(X);
+			for (int j = 0; j < X.size(); j++) 
 				A(j, i) = factor_values[j];
-			}
 		}
-		//vector<double> coefs = run_ols(X_factors, y);
-
 
 		auto coefs = A.colPivHouseholderQr().solve(b).eval();
 		//for (auto coef : coefs)
@@ -443,7 +495,7 @@ private:
 		return ols_solution;
 	}
 
-	tuple<double, double, int> fitness(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
+	tuple<double, double, int> fitness(node* solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		fit_calls++;
 		string solution_string = solution->to_string();
 		auto it = cache_fitness.find(solution_string);
@@ -451,7 +503,7 @@ private:
 			cache_hits++;
 			return it->second;
 		}
-		vector<double> yp = solution->evaluate_all(X);
+		Eigen::ArrayXd yp = solution->evaluate_all(X);
 		double r2 = utils::R2(y, yp);
 		double rmse = utils::RMSE(y, yp);
 		int size = solution->size();
@@ -499,15 +551,19 @@ public:
 		return fit_calls >= max_fit_calls || get<0>(final_fitness) < early_exit_eps;
 	}
 
-	void fit(vector<vector<double>> X_all, vector<double> y_all) {
+	void fit(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
 		auto start = high_resolution_clock::now();
 		reset();
 		// take sample only assuming X_all and y_all are already shuffled
-		vector<vector<double>> X;
-		vector<double> y;
-		for (int i = 0; i < initial_sample_size * X_all.size(); i++) {
-			X.push_back(X_all[i]);
-			y.push_back(y_all[i]);
+		int sample_size = int(initial_sample_size * X_all.size());
+		vector<Eigen::ArrayXd> X;
+		Eigen::ArrayXd y(sample_size);
+		for (int i = 0; i < sample_size; i++) {
+			Eigen::ArrayXd x(X_all[i].size());
+			for (int j = 0; j < x.size(); j++)
+				x[j] = X_all[i][j];
+			X.push_back(x);
+			y[i] = y_all[i];
 		}
 		setup_nodes(X[0].size());
 		final_solution = node::node_constant(0);
@@ -530,15 +586,15 @@ public:
 			node* start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
-				vector<node> all_perts = all_perturbations(*final_solution);
-				vector<node> all_2_perts = all_perturbations(all_perts[rand() % all_perts.size()]);
+				vector<node> all_perts = all_candidates(*final_solution, false);
+				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()], false);
 				start_solution = &all_2_perts[rand() % all_2_perts.size()];
 				cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
 			cout << main_it << ".\tcache hits " << cache_hits << "/" << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
-			vector<node> all_perts = all_perturbations(*start_solution);
+			vector<node> all_perts = all_candidates(*start_solution, false);
 			vector<tuple<double, node>> r2_by_perts;
 			//taking the best 1-pert change
 			for (int i = 0;i < all_perts.size(); i++) {
@@ -562,26 +618,27 @@ public:
 			//	continue;
 
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
-			// taking the first 2-pert overall change
+			// local search on each of these perturbations
 			for (int i = 0;i < r2_by_perts.size(); i++) {
 				if (finished())
 					break;
 				node pert = get<1>(r2_by_perts[i]);
 				double pert_r2 = get<0>(r2_by_perts[i]);
 				//cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
-				vector<node> pert_perts = all_perturbations(pert);
+				vector<node> ls_perts = all_candidates(pert, true);
 				// actually best for a given 1-pert change
-				for (auto& pert_pert : pert_perts) {
+				for (int j = 0; j < ls_perts.size(); j++) {
+					node ls_pert = ls_perts[j];
 					if (finished())
 						break;
-					//cout << pert_pert.to_string() << endl;
-					node* pert_pert_tuned = tune_constants(&pert_pert, X, y);
-					tuple<double, double, int> pert_pert_tuned_fitness = fitness(pert_pert_tuned, X, y);
+					//cout << ls_pert.to_string() << endl;
+					node* ls_pert_tuned = tune_constants(&ls_pert, X, y);
+					tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 					//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
-					if (compare_fitness(pert_pert_tuned_fitness, final_fitness) < 0) {
+					if (compare_fitness(ls_pert_tuned_fitness, final_fitness) < 0) {
 						improved = true;
-						final_fitness = pert_pert_tuned_fitness;
-						final_solution = pert_pert_tuned;
+						final_fitness = ls_pert_tuned_fitness;
+						final_solution = ls_pert_tuned;
 						cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 						auto stop = high_resolution_clock::now();
 						best_time = duration_cast<seconds>(stop - start).count();
@@ -595,7 +652,7 @@ public:
 		total_time = duration_cast<seconds>(stop - start).count();
 	}
 
-	vector<double> predict(vector<vector<double>> X) {
+	Eigen::ArrayXd predict(vector<Eigen::ArrayXd> X) {
 		return final_solution->evaluate_all(X);
 	}
 
@@ -616,6 +673,7 @@ public:
 	}
 };
 
+/*
 static vector<vector<double>> random_data(int rows, int cols, double min_val, double max_val, int random_state) {
 	assert(max_val > min_val);
 	srand(random_state);
@@ -647,14 +705,14 @@ tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols,
 	for (auto x : X)
 		y.push_back(x[0] * x[1] + x[1] / x[0] + sin(x[0] + x[1]));
 	return tuple<vector<vector<double>>, vector<double>>{X, y};
-}
+}*/
 
 int main()
 {
 	int random_state = 23654;
 	int max_fit = 100000;
 	int max_time = 300;
-	double complexity_penalty = 0.01;
+	double complexity_penalty = 0.001;
 	double sample_size = 0.01;
 	double train_share = 0.75;
 	//tuple<vector<vector<double>>, vector<double>> dataset = sample_dataset(100, 2, -3, 5, random_state);
@@ -664,8 +722,6 @@ int main()
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
 		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") != 0)
 		//	continue;
-		vector<vector<double>> X_train, X_test;
-		vector<double> y_train, y_test;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());
 		string line;
@@ -674,6 +730,9 @@ int main()
 			lines.push_back(line);
 		// shuffling for later split between training and test set
 		shuffle(lines.begin(), lines.end(), default_random_engine(random_state));
+		int train_cnt = int(train_share * lines.size());
+		vector<Eigen::ArrayXd> X_train, X_test;
+		Eigen::ArrayXd y_train(train_cnt), y_test(lines.size() - train_cnt);
 		for (int i = 0; i < lines.size(); i++) {
 			string line = lines[i];
 			stringstream ss(line);
@@ -681,24 +740,24 @@ int main()
 			string tmp;
 			while (getline(ss, tmp, '\t'))
 				tokens.push_back(tmp);
-			vector<double> x;
+			Eigen::ArrayXd x(tokens.size());
 			for (int i = 0; i < tokens.size() - 1; i++) {
 				string str(tokens[i]);
-				x.push_back(stod(str));
+				x[i] = stod(str);
 			}
 			string str(tokens[tokens.size() - 1]);
-			if (i < train_share * lines.size()) {
+			if (i < train_cnt) {
+				y_train[X_train.size()] = stod(str);
 				X_train.push_back(x);
-				y_train.push_back(stod(str));
 			}
 			else {
+				y_test[X_test.size()] = stod(str);
 				X_test.push_back(x);
-				y_test.push_back(stod(str));
 			}
 		}
 		rils_rols rr(max_fit, max_time, fitness_type::PENALTY, complexity_penalty, sample_size, false, true, random_state);
 		rr.fit(X_train, y_train);
-		vector<double> yp_test = rr.predict(X_test);
+		Eigen::ArrayXd yp_test = rr.predict(X_test);
 		double r2 = utils::R2(y_test, yp_test);
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;

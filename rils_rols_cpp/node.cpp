@@ -1,28 +1,24 @@
 #include "node.h"
+#include "eigen/Eigen/Dense"
 #include <cassert>
 
-vector<double> node::evaluate_all(const vector<vector<double>>& X) {
+Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 	int n = X.size();
-	vector<double> yp(n), left_vals, right_vals;
+	Eigen::ArrayXd yp(n), left_vals, right_vals;
 	switch (this->arity) {
 	case 0:
-		for (int i = 0; i < n; i++)
-			yp[i] = this->evaluate_inner(X[i], NULL, NULL);
 		break;
 	case 1:
 		left_vals = this->left->evaluate_all(X);
-		for (int i = 0; i < n; i++)
-			yp[i] = this->evaluate_inner(X[i], left_vals[i], NULL);
 		break;
 	case 2:
 		left_vals = this->left->evaluate_all(X);
 		right_vals = this->right->evaluate_all(X);
-		for (int i = 0; i < n; i++)
-			yp[i] = this->evaluate_inner(X[i], left_vals[i], right_vals[i]);
 		break;
 	default:
 		throw new exception("Arity > 2 is not allowed.");
 	}
+	yp = this->evaluate_inner(X, left_vals, right_vals);
 	return yp;
 }
 

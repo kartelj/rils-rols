@@ -2,6 +2,7 @@
 #include <vector>
 #include <ostream>
 #include <string>
+#include "eigen/Eigen/Dense"
 
 using namespace std;
 
@@ -129,12 +130,19 @@ public:
 
 	static node* node_sqr() { return node_internal(node_type::SQR); }
 
-	double evaluate_inner(const vector<double>& X, const double& a, const double& b) {
+	Eigen::ArrayXd evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) {
 		switch (type) {
-		case node_type::CONST:
-			return const_value;
-		case node_type::VAR:
-			return X[var_index];
+		case node_type::CONST: {
+			Eigen::ArrayXd const_arr(X.size());
+			const_arr.fill(const_value);
+			return const_arr; 
+		}
+		case node_type::VAR: {
+			Eigen::ArrayXd var_arr(X.size());
+			for (int i = 0; i < X.size(); i++)
+				var_arr[i] = X[i][var_index];
+			return var_arr;
+		}
 		case node_type::PLUS:
 			return  a + b;
 		case node_type::MINUS:
@@ -144,15 +152,15 @@ public:
 		case node_type::DIVIDE:
 			return a / b;
 		case node_type::SIN:
-			return sin(a);
+			return a.sin();
 		case node_type::COS:
-			return cos(a);
+			return a.cos();
 		case node_type::LN:
-			return log(a);
+			return a.log();
 		case node_type::EXP:
-			return exp(a);
+			return a.exp();
 		case node_type::SQRT:
-			return sqrt(a);
+			return a.sqrt();
 		case node_type::SQR:
 			return a * a;
 		default:
@@ -191,7 +199,7 @@ public:
 		}
 	};
 
-	vector<double> evaluate_all(const vector<vector<double>> &X);
+	Eigen::ArrayXd evaluate_all(const vector<Eigen::ArrayXd>& X);
 
 	static vector<node*> all_subtrees_references(node* root);
 
