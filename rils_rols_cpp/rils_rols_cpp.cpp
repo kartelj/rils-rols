@@ -610,6 +610,10 @@ public:
 	int get_total_time() {
 		return total_time;
 	}
+
+	int get_fit_calls() {
+		return fit_calls;
+	}
 };
 
 static vector<vector<double>> random_data(int rows, int cols, double min_val, double max_val, int random_state) {
@@ -648,7 +652,7 @@ tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols,
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 1000000;
+	int max_fit = 100000;
 	int max_time = 300;
 	double complexity_penalty = 0.01;
 	double sample_size = 0.01;
@@ -658,7 +662,7 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_02_0010000_04.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") != 0)
 		//	continue;
 		vector<vector<double>> X_train, X_test;
 		vector<double> y_train, y_test;
@@ -699,7 +703,7 @@ int main()
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
-		ss <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tmodel = " << rr.get_model_string() << endl;
+		ss <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
 		cout << ss.str();
 		out_file.open("out.txt", ios_base::app);
 		out_file << ss.str();
