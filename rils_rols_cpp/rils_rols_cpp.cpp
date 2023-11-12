@@ -9,12 +9,15 @@
 #include <sstream>
 #include <random>
 #include <chrono>
+#include "eigen/Eigen/Dense"
 #include "node.h"
 #include "utils.h"
 #include "ols.h"
+#include "eigen/Eigen/Dense"
 
 using namespace std;
 using namespace std::chrono;
+
 namespace fs = std::filesystem;
 
 enum class fitness_type
@@ -394,21 +397,36 @@ private:
 		
 		vector<vector<double>> X_factors(X.size(), vector<double>(factors.size()));
 
+		Eigen::MatrixXd A(X.size(), factors.size());
+		Eigen::VectorXd b(X.size());
+
+		for (int i = 0; i < X.size(); i++)
+			b(i) = y[i];
+
 		for (int i = 0; i < factors.size(); i++) {
 			vector<double> factor_values = factors[i]->evaluate_all(X);
-			for (int j = 0; j < X.size(); j++)
+			for (int j = 0; j < X.size(); j++) {
 				X_factors[j][i] = factor_values[j];
+				A(j, i) = factor_values[j];
+			}
 		}
-		vector<double> coefs = run_ols(X_factors, y);
+		//vector<double> coefs = run_ols(X_factors, y);
+
+
+		auto coefs = A.colPivHouseholderQr().solve(b).eval();
+		//for (auto coef : coefs)
+		//	cout << coef << endl;
+
 		node* ols_solution  = NULL;
-		for (int i = 0; i < factors.size(); i++) {
+		int i = 0;
+		for (auto coef: coefs) {
 			//cout << coefs[i] << "*"<< factors[i]->to_string()<<"+";
 			node* new_fact = NULL;
 			if (factors[i]->type == node_type::CONST)
-				new_fact = node::node_constant(coefs[i] * factors[i]->const_value);
+				new_fact = node::node_constant(coef * factors[i]->const_value);
 			else {
 				new_fact = node::node_multiply();
-				new_fact->left = node::node_constant(coefs[i]);
+				new_fact->left = node::node_constant(coef);
 				new_fact->right = node::node_copy(*factors[i]);
 			}
 			if (ols_solution == NULL)
@@ -419,6 +437,7 @@ private:
 				ols_solution->left = tmp;
 				ols_solution->right = new_fact;
 			}
+			i++;
 		}
 		//cout << endl;
 		return ols_solution;
