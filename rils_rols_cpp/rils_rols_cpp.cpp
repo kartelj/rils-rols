@@ -170,19 +170,19 @@ private:
 		for (auto& n_bin : allowed_nodes) {
 			if (n_bin.arity != 2)
 				continue;
-			for (auto& n_var : allowed_nodes) {
-				if (n_var.type != node_type::VAR && n_var.type != node_type::CONST)
+			for (auto& n_var_const : allowed_nodes) {
+				if (n_var_const.type != node_type::VAR && n_var_const.type != node_type::CONST)
 					continue;
 				node* n_bin_c = node::node_copy(n_bin);
 				node* old_node_c = node::node_copy(old_node);
-				node* n_var_c = node::node_copy(n_var);
+				node* n_var_c = node::node_copy(n_var_const);
 				n_bin_c->left = old_node_c;
 				n_bin_c->right = n_var_c;
 				candidates.push_back(*n_bin_c);
 				if (!n_bin.symmetric) {
 					n_bin_c = node::node_copy(n_bin);
 					old_node_c = node::node_copy(old_node);
-					n_var_c = node::node_copy(n_var);
+					n_var_c = node::node_copy(n_var_const);
 					n_bin_c->right = old_node_c;
 					n_bin_c->left = n_var_c;
 					candidates.push_back(*n_bin_c);
@@ -292,11 +292,16 @@ private:
 			i++;
 		}
 		// TODO: simplify
+		for (int i = 0; i < all_cand.size(); i++) {
+			node node = all_cand[i];
+			//cout << i<<"\t"<< node.to_string() << "\tBEFORE" << endl;
+			node.simplify();
+			//cout <<i<<"\t"<< node.to_string() << "\tAFTER" << endl;
+		}
 
 		// TODO: normalize
 
 		// eliminate duplicates
-		/*
 		unordered_set<string> filtered_cand_strings;
 		vector<node> filtered_candidates;
 		for (auto& node : all_cand) {
@@ -305,135 +310,9 @@ private:
 				continue;
 			filtered_cand_strings.insert(node_str);
 			filtered_candidates.push_back(node);
-		}*/
-		return all_cand;
-	}
-	/*
-	node* tune_constants_grad_desc(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
-		node* best_solution = node::node_copy(solution);
-		double alpha = 0.01; // learning speed
-		double momentum = 0.9; // when 0, it is standard gradient descent
-		double h = 0.01; // step for calculating gradient
-		int max_iter = 100;
-		vector<node*> constants = best_solution->extract_constants_references();
-		if (constants.size() == 0)
-			return best_solution; // nothing to tune
-		tuple<double, double, int> best_fitness = fitness(best_solution, X, y);
-		vector<double> last_change;
-		for (auto cons : constants)
-			last_change.push_back(0);
-		while (max_iter > 0) {
-			// calculate numerical gradients 
-			vector<double> grads;
-			tuple<double, double, int> curr_fitness = fitness(best_solution, X, y);
-			double curr_fv = penalty_fitness(curr_fitness);
-			for (auto cons : constants) {
-				cons->const_value += h;
-				tuple<double, double, int> cons_h_fitness = fitness(best_solution, X, y);
-				double cons_h_fv = penalty_fitness(cons_h_fitness);
-				double grad = (cons_h_fv - curr_fv) / h;
-				grads.push_back(grad);
-				cons->const_value -= h;
-			}
-			// remember old constants values
-			vector<double> old_values;
-			// apply gradient descent rule with momentum
-			for (int i = 0; i < constants.size(); i++) {
-				old_values.push_back(constants[i]->const_value);
-				constants[i]->const_value = constants[i]->const_value - alpha * grads[i] + momentum * last_change[i];
-				last_change[i] = constants[i]->const_value - old_values[i];
-			}
-			tuple<double, double, int> new_fitness = fitness(best_solution, X, y);
-			if (compare_fitness(new_fitness, best_fitness) >= 0) {
-				// returning to previous values and exiting
-				for (int i = 0; i < constants.size(); i++)
-					constants[i]->const_value = old_values[i];
-				break;
-			}
-			else {
-				best_fitness = new_fitness;
-			}
-			max_iter--;
 		}
-		return best_solution;
+		return filtered_candidates;
 	}
-
-	node* tune_constants_randomized_gcd(const node& solution, const vector<vector<double>>& X, const vector<double>& y) {
-		node* best_solution = node::node_copy(solution);
-		tuple<double, double, int> best_fitness = fitness(best_solution, X, y);
-		if (best_solution->extract_constants_references().size() == 0)
-			return best_solution; // nothing to tune
-		int max_iter = 10;
-		double radius = 1;
-		while (max_iter > 0) {
-			node* new_solution = node::node_copy(*best_solution);
-			vector<node*> new_constants = new_solution->extract_constants_references();
-			for (auto cons : new_constants) {
-				double rv_rr = rand() * 2.0 * radius / RAND_MAX - radius;
-				cons->const_value = cons->const_value + rv_rr * cons->const_value;
-			}
-			new_solution = tune_constants_grad_desc(*new_solution, X, y);
-			tuple<double, double, int> new_fitness = fitness(new_solution, X, y);
-			if (compare_fitness(new_fitness, best_fitness) < 0) {
-				radius = 1;
-				best_solution = new_solution;
-				best_fitness = new_fitness;
-			}
-			else
-				radius *= 1.5;
-			max_iter--;
-		}
-		return best_solution;
-	}
-
-	node* tune_constants_best_impr(node* solution, const vector<vector<double>>& X, const vector<double>& y) {
-		node* best_solution = node::node_copy(*solution);
-		double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0, 1, 1.1, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
-		double adders_if_zero[] = { -1, 1 };
-		//double adders_fine[] = { -0.1, -0.01, -0.001, 0.001, 0.01, 0.1 };
-		bool impr = true;
-		vector<node*> constants = best_solution->extract_constants_references();
-		// set all constants to zero to give it fresh new start chances
-		for (auto cons : constants)
-			cons->const_value = 1;
-		tuple<double, double, int> best_fitness = fitness(best_solution, X, y);
-		while (impr) {
-			impr = false;
-			int best_i = -1;
-			double best_value = 1;
-			for (int i = 0; i < constants.size(); i++) {
-				double old_value = constants[i]->const_value;
-				vector<double> new_values;
-				if (old_value == 0)
-					for (auto add : adders_if_zero)
-						new_values.push_back(add);
-				else {
-					for (auto m : multipliers)
-						new_values.push_back(old_value * m);
-					//for (auto a : adders_fine)
-					//	new_values.push_back(old_value + a);
-				}
-				for (auto new_value : new_values) {
-					constants[i]->const_value = new_value;
-					tuple<double, double, int> new_fitness = fitness(best_solution, X, y);
-					if (compare_fitness(new_fitness, best_fitness) < 0) {
-						best_fitness = new_fitness;
-						best_i = i;
-						best_value = constants[i]->const_value;
-					}
-				}
-				constants[i]->const_value = old_value;
-			}
-			if (best_i != -1) {
-				impr = true;
-				constants[best_i]->const_value = best_value;
-				tuple<double, double, int> test_fitness = fitness(best_solution, X, y);
-				assert(compare_fitness(test_fitness, best_fitness) == 0);
-				//cout << "Improved to " << best_solution->to_string() << endl;
-			}
-		}
-		return best_solution;
-	}*/
 
 	/// <summary>
 	/// OLS based tunning on expanded expression
@@ -449,6 +328,22 @@ private:
 		for (auto f : all_factors) {
 			if (f->type == node_type::CONST)
 				continue;
+			if (f->arity==2 && f->left->type == node_type::CONST && f->right->type == node_type::CONST)
+				continue; // this is also constant so ignore it
+			if (f->type == node_type::MULTIPLY || f->type == node_type::PLUS || f->type == node_type::MINUS) { // exactly one of the terms is constant so just take another one into account because the constant will go to free term
+				if (f->left->type == node_type::CONST) {
+					factors.push_back(f->right);
+					continue;
+				}
+				else if (f->right->type == node_type::CONST) {
+					factors.push_back(f->left);
+					continue;
+				}
+			}
+			if (f->type == node_type::DIVIDE && f->right->type == node_type::CONST) { // divider is constant so just ignore it
+				factors.push_back(f->left);
+				continue;
+			}
 			factors.push_back(f);
 		}
 		factors.push_back(node::node_constant(1)); // add free term
@@ -567,17 +462,6 @@ public:
 		}
 		setup_nodes(X[0].size());
 		final_solution = node::node_constant(0);
-		//exp(2 - 2 * x0)
-		/*
-		final_solution = node::node_exp();
-		final_solution->left = node::node_minus();
-		final_solution->left->left = node::node_constant(0);
-		final_solution->left->right = node::node_multiply();
-		final_solution->left->right->left = node::node_constant(0);
-		final_solution->left->right->right = node::node_variable(0);
-		final_solution = tune_constants(*final_solution, X, y);*/
-
-
 		final_fitness = fitness(final_solution, X, y);
 		// main loop
 		bool improved = true;
@@ -614,8 +498,8 @@ public:
 					best_time = duration_cast<seconds>(stop - start).count();
 				}
 			}
-			//if (improved)
-			//	continue;
+			if (improved)
+				continue;
 
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
@@ -641,15 +525,15 @@ public:
 						final_solution = ls_pert_tuned;
 						cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 						auto stop = high_resolution_clock::now();
-						best_time = duration_cast<seconds>(stop - start).count();
+						best_time = duration_cast<milliseconds>(stop - start).count()/1000.0;
 					}
 				}
-				//if (improved)
-				//	break;
+				if (improved)
+					break;
 			}
 		}
 		auto stop = high_resolution_clock::now();
-		total_time = duration_cast<seconds>(stop - start).count();
+		total_time = duration_cast<milliseconds>(stop - start).count()/1000.0;
 	}
 
 	Eigen::ArrayXd predict(vector<Eigen::ArrayXd> X) {
@@ -664,48 +548,14 @@ public:
 		return best_time;
 	}
 
-	int get_total_time() {
+	double get_total_time() {
 		return total_time;
 	}
 
-	int get_fit_calls() {
+	double get_fit_calls() {
 		return fit_calls;
 	}
 };
-
-/*
-static vector<vector<double>> random_data(int rows, int cols, double min_val, double max_val, int random_state) {
-	assert(max_val > min_val);
-	srand(random_state);
-	vector<vector<double>> data;
-	for (int i = 0; i < rows; i++) {
-		vector<double> row(cols);
-		for (int j = 0; j < cols; j++) {
-			double rv01 = rand() * 1.0 / RAND_MAX;
-			row[j] = rv01 * (max_val - min_val) + min_val;
-		}
-		data.push_back(row);
-	}
-	return data;
-}
-
-tuple<vector<vector<double>>, vector<double>> sample_dataset(int rows, int cols, double min_val, double max_val, int random_state) {
-	assert(max_val > min_val);
-	srand(random_state);
-	vector<vector<double>> X;
-	for (int i = 0; i < rows; i++) {
-		vector<double> row(cols);
-		for (int j = 0; j < cols; j++) {
-			double rv01 = rand() * 1.0 / RAND_MAX;
-			row[j] = rv01 * (max_val - min_val) + min_val;
-		}
-		X.push_back(row);
-	}
-	vector<double> y;
-	for (auto x : X)
-		y.push_back(x[0] * x[1] + x[1] / x[0] + sin(x[0] + x[1]));
-	return tuple<vector<vector<double>>, vector<double>>{X, y};
-}*/
 
 int main()
 {
@@ -720,8 +570,8 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") != 0)
-		//	continue;
+		if (entry.path().compare("../paper_resources/random_12345_data\\random_05_01_0010000_02.data") != 0)
+			continue;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());
 		string line;
@@ -757,12 +607,15 @@ int main()
 		}
 		rils_rols rr(max_fit, max_time, fitness_type::PENALTY, complexity_penalty, sample_size, false, true, random_state);
 		rr.fit(X_train, y_train);
+		Eigen::ArrayXd yp_train = rr.predict(X_train);
+		double r2_train = utils::R2(y_train, yp_train);
+		double rmse_train = utils::RMSE(y_train, yp_train);
 		Eigen::ArrayXd yp_test = rr.predict(X_test);
 		double r2 = utils::R2(y_test, yp_test);
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
-		ss <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
+		ss <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
 		cout << ss.str();
 		out_file.open("out.txt", ios_base::app);
 		out_file << ss.str();

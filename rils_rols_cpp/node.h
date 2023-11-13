@@ -208,4 +208,6 @@ public:
 	vector<node*> expand();
 
 	int size();
+
+	void simplify();
 };
