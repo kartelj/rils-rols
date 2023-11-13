@@ -6,7 +6,8 @@
 
 using namespace std;
 
-# define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846
+#define PRECISION 1e-10
 
 enum class node_type{
 	NONE,

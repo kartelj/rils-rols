@@ -46,7 +46,7 @@ private:
 	fitness_type fitness_type;
 
 	// internal stuff
-	int ls_it, main_it, last_improved_it, time_start, time_elapsed, fit_calls;
+	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls;
 	unordered_map<string, tuple<double, double, int>> cache_fitness;
 	int cache_hits;
 	node* final_solution;
@@ -59,7 +59,6 @@ private:
 		ls_it = 0;
 		main_it = 0;
 		last_improved_it = 0;
-		time_start = 0;
 		time_elapsed = 0;
 		fit_calls = 0;
 		cache_hits = 0;
@@ -387,6 +386,7 @@ private:
 			i++;
 		}
 		//cout << endl;
+		ols_solution->simplify();
 		return ols_solution;
 	}
 
@@ -427,6 +427,31 @@ private:
 		if (fit1_tot > fit2_tot)
 			return 1;
 		return 0;
+	}
+
+	void local_search(node& curr_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+		bool improved = true;
+		tuple<double, double, int> curr_fitness = fitness(&curr_solution, X, y);
+		while (improved && !finished()) {
+			improved = false;
+			vector<node> ls_perts = all_candidates(curr_solution, true);
+			for (int j = 0; j < ls_perts.size(); j++) {
+				node ls_pert = ls_perts[j];
+				if (finished())
+					break;
+				//cout << ls_pert.to_string() << endl;
+				node* ls_pert_tuned = tune_constants(&ls_pert, X, y);
+				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
+				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
+				if (compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
+					compare_fitness(ls_pert_tuned_fitness, curr_fitness);
+					improved = true;
+					curr_solution = *ls_pert_tuned;
+					curr_fitness = ls_pert_tuned_fitness;
+					//cout << "New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution.to_string() << endl;
+				}
+			}
+		}
 	}
 
 public:
@@ -472,7 +497,7 @@ public:
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
 				vector<node> all_perts = all_candidates(*final_solution, false);
 				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()], false);
-				start_solution = &all_2_perts[rand() % all_2_perts.size()];
+				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
 				cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
@@ -492,7 +517,7 @@ public:
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
 					improved = true;
 					final_fitness = pert_tuned_fitness;
-					final_solution = pert_tuned;
+					final_solution = node::node_copy(*pert_tuned);
 					cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<seconds>(stop - start).count();
@@ -506,37 +531,26 @@ public:
 			for (int i = 0;i < r2_by_perts.size(); i++) {
 				if (finished())
 					break;
-				node pert = get<1>(r2_by_perts[i]);
-				double pert_r2 = get<0>(r2_by_perts[i]);
-				//cout << i << "/" << r2_by_perts.size() << ".\t" << pert_r2 << "\t" << pert.to_string() << endl;
-				vector<node> ls_perts = all_candidates(pert, true);
-				// actually best for a given 1-pert change
-				for (int j = 0; j < ls_perts.size(); j++) {
-					node ls_pert = ls_perts[j];
-					if (finished())
-						break;
-					//cout << ls_pert.to_string() << endl;
-					node* ls_pert_tuned = tune_constants(&ls_pert, X, y);
-					tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
-					//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
-					if (compare_fitness(ls_pert_tuned_fitness, final_fitness) < 0) {
-						improved = true;
-						final_fitness = ls_pert_tuned_fitness;
-						final_solution = ls_pert_tuned;
-						cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
-						auto stop = high_resolution_clock::now();
-						best_time = duration_cast<milliseconds>(stop - start).count()/1000.0;
-					}
-				}
-				if (improved)
+				node ls_pert = get<1>(r2_by_perts[i]);
+				double ls_pert_r2 = get<0>(r2_by_perts[i]);
+				local_search(ls_pert, X, y);
+				tuple<double, double, int> ls_pert_fitness = fitness(&ls_pert, X, y);
+				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert.to_string() << endl;
+				if(compare_fitness(ls_pert_fitness, final_fitness)<0) {
+					final_solution = node::node_copy(ls_pert);
+					final_fitness = ls_pert_fitness;
+					cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
+					auto stop = high_resolution_clock::now();
+					best_time = duration_cast<milliseconds>(stop - start).count() / 1000.0;
 					break;
+				}
 			}
 		}
 		auto stop = high_resolution_clock::now();
 		total_time = duration_cast<milliseconds>(stop - start).count()/1000.0;
 	}
 
-	Eigen::ArrayXd predict(vector<Eigen::ArrayXd> X) {
+	Eigen::ArrayXd predict(const vector<Eigen::ArrayXd> &X) {
 		return final_solution->evaluate_all(X);
 	}
 
@@ -570,7 +584,7 @@ int main()
 	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		if (entry.path().compare("../paper_resources/random_12345_data\\random_05_01_0010000_02.data") != 0)
+		if (entry.path().compare("../paper_resources/random_12345_data\\random_09_01_0010000_02.data") != 0)
 			continue;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());

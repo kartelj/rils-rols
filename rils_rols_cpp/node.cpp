@@ -12,8 +12,8 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 		left_vals = this->left->evaluate_all(X);
 		break;
 	case 2:
-		left_vals = this->left->evaluate_all(X);
 		right_vals = this->right->evaluate_all(X);
+		left_vals = this->left->evaluate_all(X);
 		break;
 	default:
 		throw new exception("Arity > 2 is not allowed.");
@@ -93,8 +93,11 @@ int node::size() {
 //    the ci are constants, and op is any of * / + -
 void node::simplify()
 {
-	if (arity == 0)
+	if (arity == 0) {
+		if (type == node_type::CONST)
+			const_value = ceil(const_value /PRECISION) * PRECISION;
 		return;
+	}
 	else if (arity == 1)
 		left->simplify();
 	else {
