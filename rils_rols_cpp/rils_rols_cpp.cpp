@@ -536,8 +536,8 @@ public:
 					best_time = duration_cast<seconds>(stop - start).count();
 				}
 			}
-			if (improved)
-				continue;
+			//if (improved)
+			//	continue;
 
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
@@ -557,7 +557,7 @@ public:
 					cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<milliseconds>(stop - start).count() / 1000.0;
-					break;
+					//break;
 				}
 			}
 		}
