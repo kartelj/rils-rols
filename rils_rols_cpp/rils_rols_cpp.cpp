@@ -538,7 +538,7 @@ public:
 			}
 			//if (improved)
 			//	continue;
-
+			continue;
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
 			for (int i = 0;i < r2_by_perts.size(); i++) {
