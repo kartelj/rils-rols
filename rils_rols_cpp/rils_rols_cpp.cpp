@@ -113,16 +113,22 @@ private:
 		}
 	}
 
-	void add_left_right(const node& old_node, vector<node>& candidates) {
+	void add_change_to_subtree(const node& old_node, vector<node>& candidates) {
 		if (old_node.arity >= 1) {
-			// change node to its left subtree
-			node* left_c = node::node_copy(*old_node.left);
-			candidates.push_back(*left_c);
+			// change node to one of its left subtrees
+			vector<node*> subtrees = node::all_subtrees_references(old_node.left);
+			for (auto n : subtrees) {
+				node* n_c = node::node_copy(*n);
+				candidates.push_back(*n_c);
+			}
 		}
 		if (old_node.arity >= 2) {
-			// change node to its right subtree
-			node* right_c = node::node_copy(*old_node.right);
-			candidates.push_back(*right_c);
+			// change node to one of its right subtrees
+			vector<node*> subtrees = node::all_subtrees_references(old_node.right);
+			for (auto n : subtrees) {
+				node* n_c = node::node_copy(*n);
+				candidates.push_back(*n_c);
+			}
 		}
 	}
 
@@ -228,7 +234,7 @@ private:
 
 	vector<node> perturb_candidates(const node& old_node) {
 		vector<node> candidates;
-		add_left_right(old_node, candidates);
+		add_change_to_subtree(old_node, candidates);
 		add_change_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
 		add_change_unary_applied(old_node, candidates); // in Python version this was just change of variable to unary applied to variable, but this looks more powerfull
 		add_change_unary_to_another(old_node, candidates);
@@ -240,7 +246,7 @@ private:
 	vector<node> change_candidates(const node& old_node) {
 		vector<node> candidates;
 		add_const_finetune(old_node, candidates);
-		add_left_right(old_node, candidates);
+		add_change_to_subtree(old_node, candidates);
 		add_change_to_var_const(old_node, candidates);
 		add_change_unary_applied(old_node, candidates);
 		add_change_unary_to_another(old_node, candidates);
