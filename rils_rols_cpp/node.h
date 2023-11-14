@@ -7,7 +7,6 @@
 using namespace std;
 
 #define M_PI 3.14159265358979323846
-#define PRECISION 1e-10
 
 enum class node_type{
 	NONE,
@@ -22,7 +21,8 @@ enum class node_type{
 	LN, 
 	EXP, 
 	SQRT, 
-	SQR
+	SQR, 
+	POW
 };
 
 class node
@@ -50,6 +50,7 @@ private:
 		switch (this->type) {
 		case node_type::MINUS:
 		case node_type::DIVIDE:
+		case node_type::POW:
 			this->symmetric = false;
 			break;
 		default:
@@ -131,6 +132,8 @@ public:
 
 	static node* node_sqr() { return node_internal(node_type::SQR); }
 
+	static node* node_pow() { return node_internal(node_type::POW); }
+
 	Eigen::ArrayXd evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) {
 		switch (type) {
 		case node_type::CONST: {
@@ -164,6 +167,8 @@ public:
 			return a.sqrt();
 		case node_type::SQR:
 			return a * a;
+		case node_type::POW:
+			return a.pow(b);
 		default:
 			throw exception("Unrecognized operation.");
 		}
@@ -195,6 +200,8 @@ public:
 			return "sqrt(" + left->to_string() + ")";
 		case node_type::SQR:
 			return left->to_string() + "*" + left->to_string();
+		case node_type::POW:
+			return "pow("+left->to_string() + "," + left->to_string()+")";
 		default:
 			throw exception("Unrecognized operation.");
 		}
@@ -206,9 +213,11 @@ public:
 
 	vector<node*> extract_constants_references();
 
-	vector<node*> expand();
+	vector<node*> extract_non_constant_factors();
 
 	int size();
 
 	void simplify();
+
+	void expand();
 };

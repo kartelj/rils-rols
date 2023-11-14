@@ -61,12 +61,13 @@ vector<node*> node::extract_constants_references() {
 	return all_cons;
 }
 
-//TODO: check if this works correctly
-vector<node*> node::expand() {
+
+
+vector<node*> node::extract_non_constant_factors() {
 	vector<node*> all_factors;
 	if (type == node_type::PLUS || type == node_type::MINUS) {
-		vector<node*> left_factors = left->expand();
-		vector<node*> right_factors = right->expand();
+		vector<node*> left_factors = left->extract_non_constant_factors();
+		vector<node*> right_factors = right->extract_non_constant_factors();
 		for (auto n : left_factors)
 			all_factors.push_back(n);
 		for (auto n : right_factors)
@@ -94,8 +95,6 @@ int node::size() {
 void node::simplify()
 {
 	if (arity == 0) {
-		if (type == node_type::CONST)
-			const_value = ceil(const_value /PRECISION) * PRECISION;
 		return;
 	}
 	else if (arity == 1)
@@ -117,8 +116,6 @@ void node::simplify()
 				const_value = left->const_value / right->const_value;
 			arity = 0;
 			type = node_type::CONST;
-			//delete left;
-			//delete right;
 			left = right = NULL;
 		}
 		else if (left->type == node_type::CONST)
@@ -133,7 +130,7 @@ void node::simplify()
 				else if(left->const_value == 1)
 					*this = *right;
 				else {
-					// some more exotic variants  
+					// some more exotic variants
 					if (right->type == node_type::MULTIPLY) {
 						if (right->left->type == node_type::CONST) {
 							// c1*c2*expr = c3*expr [c3 = c1*c2]
@@ -162,6 +159,76 @@ void node::simplify()
 					*this = *left;
 				else if (right->const_value == 0)
 					*this = *node::node_constant(0);
+				else {
+					// some more exotic variants  
+					if (left->type == node_type::MULTIPLY) {
+						if (left->left->type == node_type::CONST) {
+							// c1*expr*c2 = expr*c3 [c3 = c1*c2]
+							right->const_value *= left->left->const_value;
+							*left = *left->right;
+						}
+						else if (left->right->type == node_type::CONST) {
+							// expr*c1*c2 = expr*c3 [c3 = c1*c2]
+							right->const_value *= left->right->const_value;
+							*left = *left->left;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void node::expand() {
+	// applies distributive laws recursively to expand expressions
+	if (arity == 0) {
+		return;
+	}
+	else if (arity == 1)
+		left->expand(); // TODO: expand sqr
+	else {
+		left->expand();
+		right->expand();
+		if (this->type == node_type::MULTIPLY) {
+			if (left->type == node_type::PLUS || left->type == node_type::MINUS) {
+
+				if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
+					// (t1+-t2)*(t3+-t4) = t1*t3+-t1*t4+-t2*t3+-t2*t4
+				}
+				else {
+					// (t1+-t2)*t3 = t1*t3+-t2*t3
+					node* new_left = node::node_multiply();
+					new_left->left = node::node_copy(*left->left);
+					new_left->right = node::node_copy(*right);
+					node* new_right = node::node_multiply();
+					new_right->left = node::node_copy(*left->right);
+					new_right->right = node::node_copy(*right);
+					//delete left;
+					//delete right;
+					if (left->type == node_type::PLUS)
+						*this = *node::node_plus();
+					else
+						*this = *node::node_minus();
+					left = new_left;
+					right = new_right;
+				}
+			}
+			else if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
+				// t1*(t2+-t3) to t1*t2+-t1*t3
+				node* new_left = node::node_multiply();
+				new_left->left = node::node_copy(*left);
+				new_left->right = node::node_copy(*right->left);
+				node* new_right = node::node_multiply();
+				new_right->left = node::node_copy(*left);
+				new_right->right = node::node_copy(*right->right);
+				//delete left;
+				//delete right;
+				if (right->type == node_type::PLUS)
+					*this = *node::node_plus();
+				else
+					*this = *node::node_minus();
+				left = new_left;
+				right = new_right;
 			}
 		}
 	}

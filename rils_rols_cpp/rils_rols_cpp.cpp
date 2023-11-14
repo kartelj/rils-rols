@@ -15,8 +15,9 @@
 
 using namespace std;
 using namespace std::chrono;
-
 namespace fs = std::filesystem;
+
+# define PRECISION 12
 
 enum class fitness_type
 {
@@ -47,13 +48,11 @@ private:
 
 	// internal stuff
 	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls;
-	unordered_map<string, tuple<double, double, int>> cache_fitness;
-	int cache_hits;
 	node* final_solution;
 	tuple<double, double, int> final_fitness;
 	double best_time;
 	double total_time;
-	double early_exit_eps = 1e-7;
+	double early_exit_eps = pow(10,-PRECISION);
 
 	void reset() {
 		ls_it = 0;
@@ -61,8 +60,6 @@ private:
 		last_improved_it = 0;
 		time_elapsed = 0;
 		fit_calls = 0;
-		cache_hits = 0;
-		cache_fitness.clear();
 		srand(random_state);
 	}
 
@@ -79,11 +76,23 @@ private:
 		allowed_nodes.push_back(*node::node_exp());
 		allowed_nodes.push_back(*node::node_sqrt());
 		allowed_nodes.push_back(*node::node_sqr());
+		//allowed_nodes.push_back(*node::node_pow());
 		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10};
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < var_cnt; i++)
 			allowed_nodes.push_back(*node::node_variable(i));
+	}
+
+	void call_and_verify_simplify(node& solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+		node* solution_before = node::node_copy(solution);
+		double r2_before = get<0>(fitness(&solution, X, y));
+		solution.simplify();
+		double r2_after = get<0>(fitness(&solution, X, y));
+		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after)/abs(max(r2_before, r2_after))> 0.01) {
+				cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification "<< r2_before<< " "<<r2_after << endl;
+				exit(1);
+		}
 	}
 
 	void add_const_finetune(const node& old_node, vector<node> &candidates) {
@@ -97,6 +106,9 @@ private:
 				double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0, 1, 1.1, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
 				for (auto mult : multipliers)
 					candidates.push_back(*node::node_constant(old_node.const_value * mult));
+				//double adders[] = { -1, -0.5, 0.5, 1 };
+				//for (auto add : adders)
+				//	candidates.push_back(*node::node_constant(old_node.const_value + add));
 			}
 		}
 	}
@@ -237,7 +249,7 @@ private:
 		return candidates;
 	}
 
-	vector<node> all_candidates(const node& passed_solution, bool local_search) {
+	vector<node> all_candidates(const node& passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y, bool local_search) {
 		node* solution = node::node_copy(passed_solution);
 		vector<node> all_cand;
 		vector<node*> all_subtrees;
@@ -294,7 +306,7 @@ private:
 		for (int i = 0; i < all_cand.size(); i++) {
 			node node = all_cand[i];
 			//cout << i<<"\t"<< node.to_string() << "\tBEFORE" << endl;
-			node.simplify();
+			call_and_verify_simplify(node, X, y);
 			//cout <<i<<"\t"<< node.to_string() << "\tAFTER" << endl;
 		}
 
@@ -321,8 +333,11 @@ private:
 	/// <param name="y"></param>
 	/// <returns></returns>
 	node* tune_constants(node *solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
-		// TODO: expand to non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
-		vector<node*> all_factors = solution->expand();
+		node* solution_copy = node::node_copy(*solution);
+		// TODO: extract non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
+		solution->expand();
+		solution->simplify();
+		vector<node*> all_factors = solution->extract_non_constant_factors();
 		vector<node*> factors;
 		for (auto f : all_factors) {
 			if (f->type == node_type::CONST)
@@ -385,25 +400,16 @@ private:
 			}
 			i++;
 		}
-		//cout << endl;
-		ols_solution->simplify();
 		return ols_solution;
 	}
 
 	tuple<double, double, int> fitness(node* solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		fit_calls++;
-		string solution_string = solution->to_string();
-		auto it = cache_fitness.find(solution_string);
-		if (it != cache_fitness.end()) {
-			cache_hits++;
-			return it->second;
-		}
 		Eigen::ArrayXd yp = solution->evaluate_all(X);
 		double r2 = utils::R2(y, yp);
 		double rmse = utils::RMSE(y, yp);
 		int size = solution->size();
 		tuple<double, double, int> fit = tuple<double, double, int>{ 1 - r2, rmse, size };
-		cache_fitness.insert({ solution_string, fit });
 		return fit;
 	}
 
@@ -434,7 +440,7 @@ private:
 		tuple<double, double, int> curr_fitness = fitness(&curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
-			vector<node> ls_perts = all_candidates(curr_solution, true);
+			vector<node> ls_perts = all_candidates(curr_solution,X,y, true);
 			for (int j = 0; j < ls_perts.size(); j++) {
 				node ls_pert = ls_perts[j];
 				if (finished())
@@ -495,15 +501,15 @@ public:
 			node* start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
-				vector<node> all_perts = all_candidates(*final_solution, false);
-				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()], false);
+				vector<node> all_perts = all_candidates(*final_solution,X, y, false);
+				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()],X, y, false);
 				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
 				cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
-			cout << main_it << ".\tcache hits " << cache_hits << "/" << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
-			vector<node> all_perts = all_candidates(*start_solution, false);
+			cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
+			vector<node> all_perts = all_candidates(*start_solution,X, y, false);
 			vector<tuple<double, node>> r2_by_perts;
 			//taking the best 1-pert change
 			for (int i = 0;i < all_perts.size(); i++) {
@@ -516,8 +522,9 @@ public:
 				r2_by_perts.push_back(tuple<double, node>{get<0>(pert_tuned_fitness), *pert_tuned});
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
 					improved = true;
-					final_fitness = pert_tuned_fitness;
+					call_and_verify_simplify(*pert_tuned, X, y);
 					final_solution = node::node_copy(*pert_tuned);
+					final_fitness = pert_tuned_fitness;
 					cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<seconds>(stop - start).count();
@@ -537,6 +544,8 @@ public:
 				tuple<double, double, int> ls_pert_fitness = fitness(&ls_pert, X, y);
 				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert.to_string() << endl;
 				if(compare_fitness(ls_pert_fitness, final_fitness)<0) {
+					improved = true;
+					call_and_verify_simplify(ls_pert, X, y);
 					final_solution = node::node_copy(ls_pert);
 					final_fitness = ls_pert_fitness;
 					cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
@@ -579,13 +588,10 @@ int main()
 	double complexity_penalty = 0.001;
 	double sample_size = 0.01;
 	double train_share = 0.75;
-	//tuple<vector<vector<double>>, vector<double>> dataset = sample_dataset(100, 2, -3, 5, random_state);
-	//vector<vector<double>> X = get<0>(dataset);
-	//vector<double> y = get<1>(dataset);
 	string dir_path = "../paper_resources/random_12345_data";
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		if (entry.path().compare("../paper_resources/random_12345_data\\random_09_01_0010000_02.data") != 0)
-			continue;
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_10_01_0010000_00.data") != 0)
+		//	continue;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());
 		string line;
@@ -629,7 +635,7 @@ int main()
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
-		ss <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
+		ss << setprecision(PRECISION) <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
 		cout << ss.str();
 		out_file.open("out.txt", ios_base::app);
 		out_file << ss.str();
