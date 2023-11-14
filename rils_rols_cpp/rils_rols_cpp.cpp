@@ -538,7 +538,7 @@ public:
 			}
 			//if (improved)
 			//	continue;
-			continue;
+			//continue;
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
 			for (int i = 0;i < r2_by_perts.size(); i++) {
@@ -589,7 +589,7 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 100000;
+	int max_fit = 300000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	double sample_size = 0.01;
