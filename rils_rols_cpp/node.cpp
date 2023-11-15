@@ -183,6 +183,20 @@ void node::simplify()
 	}
 }
 
+void node::normalize_constants(node* parent) {
+	if (type == node_type::CONST) {
+		if (parent == NULL || parent->type == node_type::MULTIPLY || parent->type == node_type::DIVIDE || parent->type == node_type::PLUS || parent->type == node_type::MINUS)
+			const_value = 1;
+		else if (parent->type == node_type::POW && type == node_type::CONST && const_value != 0.5 && const_value != -0.5)
+			const_value = round(const_value);
+		return;
+	}
+	if (arity >= 1)
+		left->normalize_constants(this);
+	if (arity >= 2)
+		right->normalize_constants(this);
+}
+
 void node::expand() {
 	// applies distributive laws recursively to expand expressions
 	if (arity == 0) {

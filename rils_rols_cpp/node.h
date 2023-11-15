@@ -175,7 +175,7 @@ public:
 		}
 	};
 
-	string to_string() const {
+	inline string to_string() const {
 		switch (type) {
 		case node_type::CONST:
 			return std::to_string(const_value);
@@ -204,9 +204,31 @@ public:
 		case node_type::POW:
 			return "pow("+left->to_string() + "," + right->to_string()+")";
 		default:
-			throw exception("Unrecognized operation.");
+			return "*****UNKNOWN*****";
 		}
 	};
+
+	bool is_allowed_left(const node& node) const{
+		node_type t = node.type;
+		switch (type) {
+		case node_type::EXP:
+		case node_type::LN:
+			if (t == node_type::EXP || t == node_type::LN)
+				return false;
+			break;
+		case node_type::POW:
+			if (t == node_type::POW)
+				return false;
+			break;
+		case node_type::COS:
+		case node_type::SIN:
+			if (t == node_type::COS || t == node_type::SIN)
+				return false;
+			break;
+		default:
+			return true;
+		}
+	}
 
 	Eigen::ArrayXd evaluate_all(const vector<Eigen::ArrayXd>& X);
 
@@ -219,6 +241,8 @@ public:
 	int size();
 
 	void simplify();
+
+	void normalize_constants(node* parent);
 
 	void expand();
 };
