@@ -96,7 +96,7 @@ private:
 		double r2_after = get<0>(fitness(&solution, X, y));
 		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after)/abs(max(r2_before, r2_after))> 0.1) {
 			solution_before->simplify();
-				cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification "<< r2_before<< " "<<r2_after << endl;
+				std::cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification "<< r2_before<< " "<<r2_after << endl;
 				exit(1);
 		}
 	}
@@ -122,7 +122,7 @@ private:
 	void add_pow_exponent_increase_decrease(const node& old_node, vector<node>& candidates) {
 		if (old_node.type == node_type::POW) {
 			if (old_node.right->type != node_type::CONST) {
-				cout << "Only constants are allowed in power exponents." << endl;
+				std::cout << "Only constants are allowed in power exponents." << endl;
 				exit(1);
 			}
 			node* nc_dec = node::node_copy(old_node);
@@ -567,13 +567,13 @@ public:
 				vector<node> all_perts = all_candidates(*final_solution,X, y, false);
 				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()],X, y, false);
 				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
-				cout << "Randomized to " << start_solution->to_string() << endl;
+				std::cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
-			cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skiped_perts<<"/"<<total_perts << endl;
+			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skiped_perts<<"/"<<total_perts << endl;
 			vector<node> all_perts = all_candidates(*start_solution,X, y, false);
-			cout << "Checking " << all_perts.size() << " perturbations of starting solution" << endl;
+			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution" << endl;
 			vector<tuple<double, node>> r2_by_perts;
 			for (int i = 0;i < all_perts.size(); i++) {
 				if (finished())
@@ -597,7 +597,7 @@ public:
 					call_and_verify_simplify(*pert_tuned, X, y);
 					final_solution = node::node_copy(*pert_tuned);
 					final_fitness = pert_tuned_fitness;
-					cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
+					std::cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<seconds>(stop - start).count();
 				}
@@ -630,7 +630,7 @@ public:
 					call_and_verify_simplify(*ls_pert_tuned, X, y);
 					final_solution = node::node_copy(*ls_pert_tuned);
 					final_fitness = ls_pert_tuned_fitness;
-					cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
+					std::cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<milliseconds>(stop - start).count() / 1000.0;
 					break;
@@ -673,9 +673,14 @@ int main()
 	double sample_size = 0.01;
 	double train_share = 0.75;
 	string dir_path = "../paper_resources/random_12345_data";
+	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_02_0010000_02.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_10_01_0010000_00.data") != 0)
 		//	continue;
+		if (started || entry.path().compare("../paper_resources/random_12345_data\\random_10_01_0010000_00.data") == 0)
+			started = true;
+		else
+			continue;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());
 		string line;
@@ -721,7 +726,7 @@ int main()
 		ofstream out_file;
 		stringstream ss;
 		ss << setprecision(PRECISION) <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
-		cout << ss.str();
+		std::cout << ss.str();
 		out_file.open("out.txt", ios_base::app);
 		out_file << ss.str();
 		out_file.close();
