@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <ostream>
 #include <string>
@@ -20,8 +21,8 @@ enum class node_type{
 	COS, 
 	LN, 
 	EXP, 
-	SQRT, 
-	SQR, 
+	//SQRT, 
+	//SQR, 
 	POW
 };
 
@@ -40,8 +41,8 @@ private:
 		case node_type::COS:
 		case node_type::LN:
 		case node_type::EXP:
-		case node_type::SQRT:
-		case node_type::SQR:
+		//case node_type::SQRT:
+		//case node_type::SQR:
 			this->arity = 1;
 			break;
 		default:
@@ -50,7 +51,7 @@ private:
 		switch (this->type) {
 		case node_type::MINUS:
 		case node_type::DIVIDE:
-		case node_type::POW:
+		case node_type::POW: // pow is set to be unary because the unary changes will take care of base, and the specific method is needed to take care for exponents -- add_pow_finetune
 			this->symmetric = false;
 			break;
 		default:
@@ -128,9 +129,9 @@ public:
 
 	static node* node_exp() { return node_internal(node_type::EXP); }
 
-	static node* node_sqrt() { return node_internal(node_type::SQRT); }
+	//static node* node_sqrt() { return node_internal(node_type::SQRT); }
 
-	static node* node_sqr() { return node_internal(node_type::SQR); }
+	//static node* node_sqr() { return node_internal(node_type::SQR); }
 
 	static node* node_pow() { return node_internal(node_type::POW); }
 
@@ -163,10 +164,10 @@ public:
 			return a.log();
 		case node_type::EXP:
 			return a.exp();
-		case node_type::SQRT:
-			return a.sqrt();
-		case node_type::SQR:
-			return a * a;
+		//case node_type::SQRT:
+		//	return a.sqrt();
+		//case node_type::SQR:
+		//	return a * a;
 		case node_type::POW:
 			return a.pow(b);
 		default:
@@ -196,12 +197,12 @@ public:
 			return "ln(" + left->to_string() + ")";
 		case node_type::EXP:
 			return "exp(" + left->to_string() + ")";
-		case node_type::SQRT:
-			return "sqrt(" + left->to_string() + ")";
-		case node_type::SQR:
-			return left->to_string() + "*" + left->to_string();
+		//case node_type::SQRT:
+		//	return "sqrt(" + left->to_string() + ")";
+		//case node_type::SQR:
+		//	return left->to_string() + "*" + left->to_string();
 		case node_type::POW:
-			return "pow("+left->to_string() + "," + left->to_string()+")";
+			return "pow("+left->to_string() + "," + right->to_string()+")";
 		default:
 			throw exception("Unrecognized operation.");
 		}

@@ -74,9 +74,14 @@ private:
 		allowed_nodes.push_back(*node::node_cos());
 		allowed_nodes.push_back(*node::node_ln());
 		allowed_nodes.push_back(*node::node_exp());
-		allowed_nodes.push_back(*node::node_sqrt());
-		allowed_nodes.push_back(*node::node_sqr());
-		//allowed_nodes.push_back(*node::node_pow());
+		//allowed_nodes.push_back(*node::node_sqrt());
+		//allowed_nodes.push_back(*node::node_sqr());
+		node* sqr = node::node_pow();
+		sqr->right = node::node_constant(2);
+		allowed_nodes.push_back(*sqr);
+		node* sqrt = node::node_pow();
+		sqrt->right = node::node_constant(0.5);
+		allowed_nodes.push_back(*sqrt);
 		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10};
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
@@ -89,7 +94,8 @@ private:
 		double r2_before = get<0>(fitness(&solution, X, y));
 		solution.simplify();
 		double r2_after = get<0>(fitness(&solution, X, y));
-		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after)/abs(max(r2_before, r2_after))> 0.01) {
+		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after)/abs(max(r2_before, r2_after))> 0.1) {
+			solution_before->simplify();
 				cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification "<< r2_before<< " "<<r2_after << endl;
 				exit(1);
 		}
@@ -110,6 +116,25 @@ private:
 				//for (auto add : adders)
 				//	candidates.push_back(*node::node_constant(old_node.const_value + add));
 			}
+		}
+	}
+
+	void add_pow_exponent_increase_decrease(const node& old_node, vector<node>& candidates) {
+		if (old_node.type == node_type::POW) {
+			if (old_node.right->type != node_type::CONST) {
+				cout << "Only constants are allowed in power exponents." << endl;
+				exit(1);
+			}
+			node* nc_dec = node::node_copy(old_node);
+			nc_dec->right->const_value -= 0.5;
+			if (nc_dec->right->const_value == 0) // avoid exponent 0
+				nc_dec->right->const_value -= 0.5;
+			node* nc_inc = node::node_copy(old_node);
+			nc_inc->right->const_value += 0.5;
+			if (nc_inc->right->const_value == 0) // avoid exponent 0
+				nc_inc->right->const_value += 0.5;
+			candidates.push_back(*nc_dec);
+			candidates.push_back(*nc_inc);
 		}
 	}
 
@@ -144,15 +169,15 @@ private:
 		}
 	}
 
-	void add_change_to_var(const node& old_node, vector<node>& candidates) {
-		// change anything to variable
-		for (auto& n : allowed_nodes) {
-			if (n.type!=node_type::VAR)
-				continue;
-			if (old_node.var_index == n.var_index)
-				continue; // avoid changing to same variable
-			node* n_c = node::node_copy(n);
-			candidates.push_back(*n_c);
+	void add_change_const_to_var(const node& old_node, vector<node>& candidates) {
+		// change constant to variable
+		if (old_node.type == node_type::CONST) {
+			for (auto& n : allowed_nodes) {
+				if (n.type != node_type::VAR)
+					continue;
+				node* n_c = node::node_copy(n);
+				candidates.push_back(*n_c);
+			}
 		}
 	}
 
@@ -166,6 +191,10 @@ private:
 			n_un_c->left = old_node_c;
 			candidates.push_back(*n_un_c);
 		}
+	}
+	void add_change_variable_to_unary_applied(const node& old_node, vector<node>& candidates) {
+		if (old_node.type == node_type::VAR) 
+			add_change_unary_applied(old_node, candidates);
 	}
 
 	void add_change_unary_to_another(const node& old_node, vector<node>& candidates) {
@@ -208,6 +237,11 @@ private:
 		}
 	}
 
+	void add_change_variable_constant_to_binary_applied(const node& old_node, vector<node>& candidates) {
+		if (old_node.type == node_type::VAR || old_node.type == node_type::CONST)
+			add_change_binary_applied(old_node, candidates);
+	}
+
 	void add_change_binary_to_another(const node& old_node, vector<node>& candidates) {
 		if (old_node.arity == 2) {
 			// change one binary operation to another
@@ -234,18 +268,21 @@ private:
 
 	vector<node> perturb_candidates(const node& old_node) {
 		vector<node> candidates;
+		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
-		add_change_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
-		add_change_unary_applied(old_node, candidates); // in Python version this was just change of variable to unary applied to variable, but this looks more powerfull
+		add_change_const_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
+		add_change_variable_to_unary_applied(old_node, candidates); 
 		add_change_unary_to_another(old_node, candidates);
-		add_change_binary_applied(old_node, candidates); // in Python version this was just change of variable or constant to unary applied to variable, but this looks more powerfull
+		add_change_variable_constant_to_binary_applied(old_node, candidates);
 		add_change_binary_to_another(old_node, candidates);
+		cout << "Returning " << candidates.size() << " perturb candidates" << endl;
 		return candidates;
 	}
 
 	vector<node> change_candidates(const node& old_node) {
 		vector<node> candidates;
 		add_const_finetune(old_node, candidates);
+		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
 		add_change_to_var_const(old_node, candidates);
 		add_change_unary_applied(old_node, candidates);
@@ -536,8 +573,8 @@ public:
 					best_time = duration_cast<seconds>(stop - start).count();
 				}
 			}
-			//if (improved)
-			//	continue;
+			if (improved)
+				continue;
 			//continue;
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
@@ -557,7 +594,7 @@ public:
 					cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<milliseconds>(stop - start).count() / 1000.0;
-					//break;
+					break;
 				}
 			}
 		}

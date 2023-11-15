@@ -3,21 +3,19 @@
 #include <cassert>
 
 Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
+	if (arity < 0 || arity>2) {
+		cout << "Arity > 2 or <0 is not allowed." << endl;
+		exit(1);
+	}
 	int n = X.size();
 	Eigen::ArrayXd yp(n), left_vals, right_vals;
-	switch (this->arity) {
-	case 0:
-		break;
-	case 1:
+
+	if (this->arity >= 1) 
 		left_vals = this->left->evaluate_all(X);
-		break;
-	case 2:
+	if (this->arity >= 2/* || type == node_type::POW*/) {
 		right_vals = this->right->evaluate_all(X);
-		left_vals = this->left->evaluate_all(X);
-		break;
-	default:
-		throw new exception("Arity > 2 is not allowed.");
 	}
+	
 	yp = this->evaluate_inner(X, left_vals, right_vals);
 	return yp;
 }
@@ -114,6 +112,12 @@ void node::simplify()
 				const_value = left->const_value * right->const_value;
 			else if (type == node_type::DIVIDE)
 				const_value = left->const_value / right->const_value;
+			else if (type == node_type::POW)
+				const_value = pow(left->const_value, right->const_value);
+			else {
+				cout << "Simplification is not supported for this binary operator!" << endl;
+				exit(1);
+			}
 			arity = 0;
 			type = node_type::CONST;
 			left = right = NULL;
