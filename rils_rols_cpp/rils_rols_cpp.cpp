@@ -48,7 +48,7 @@ private:
 
 	// internal stuff
 	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls;
-	node* final_solution;
+	shared_ptr < node> final_solution;
 	tuple<double, double, int> final_fitness;
 	double best_time;
 	double total_time;
@@ -76,10 +76,10 @@ private:
 		allowed_nodes.push_back(*node::node_exp());
 		//allowed_nodes.push_back(*node::node_sqrt());
 		//allowed_nodes.push_back(*node::node_sqr());
-		node* sqr = node::node_pow();
+		shared_ptr<node> sqr = node::node_pow();
 		sqr->right = node::node_constant(2);
 		allowed_nodes.push_back(*sqr);
-		node* sqrt = node::node_pow();
+		shared_ptr < node> sqrt = node::node_pow();
 		sqrt->right = node::node_constant(0.5);
 		allowed_nodes.push_back(*sqrt);
 		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10};
@@ -90,11 +90,11 @@ private:
 		cout << "Finished creating allowed nodes"<<endl;
 	}
 
-	void call_and_verify_simplify(node& solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
-		unique_ptr<node> solution_before = node::node_copy(solution);
-		double r2_before = get<0>(fitness(&solution, X, y));
-		solution.simplify();
-		double r2_after = get<0>(fitness(&solution, X, y));
+	void call_and_verify_simplify(shared_ptr<node> solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+		shared_ptr<node> solution_before = node::node_copy(*solution);
+		double r2_before = get<0>(fitness(solution, X, y));
+		solution->simplify();
+		double r2_after = get<0>(fitness(solution, X, y));
 		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after)/abs(max(r2_before, r2_after))> 0.1) {
 			solution_before->simplify();
 				std::cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification "<< r2_before<< " "<<r2_after << endl;
@@ -126,11 +126,11 @@ private:
 				std::cout << "Only constants are allowed in power exponents." << endl;
 				exit(1);
 			}
-			unique_ptr <node> nc_dec = node::node_copy(old_node);
+			shared_ptr <node> nc_dec = node::node_copy(old_node);
 			nc_dec->right->const_value -= 0.5;
 			if (nc_dec->right->const_value == 0) // avoid exponent 0
 				nc_dec->right->const_value -= 0.5;
-			unique_ptr <node> nc_inc = node::node_copy(old_node);
+			shared_ptr <node> nc_inc = node::node_copy(old_node);
 			nc_inc->right->const_value += 0.5;
 			if (nc_inc->right->const_value == 0) // avoid exponent 0
 				nc_inc->right->const_value += 0.5;
@@ -142,17 +142,17 @@ private:
 	void add_change_to_subtree(const node& old_node, vector<node>& candidates) {
 		if (old_node.arity >= 1) {
 			// change node to one of its left subtrees
-			vector<node*> subtrees = node::all_subtrees_references(old_node.left);
+			vector< shared_ptr<node>> subtrees = node::all_subtrees_references(old_node.left);
 			for (auto n : subtrees) {
-				node* n_c = node::node_copy(*n);
+				shared_ptr<node> n_c = node::node_copy(*n);
 				candidates.push_back(*n_c);
 			}
 		}
 		if (old_node.arity >= 2) {
 			// change node to one of its right subtrees
-			vector<node*> subtrees = node::all_subtrees_references(old_node.right);
+			vector< shared_ptr<node>> subtrees = node::all_subtrees_references(old_node.right);
 			for (auto n : subtrees) {
-				node* n_c = node::node_copy(*n);
+				shared_ptr < node> n_c = node::node_copy(*n);
 				candidates.push_back(*n_c);
 			}
 		}
@@ -165,7 +165,7 @@ private:
 				continue;
 			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
 				continue; // avoid changing to same variable
-			node* n_c = node::node_copy(n);
+			shared_ptr < node> n_c = node::node_copy(n);
 			candidates.push_back(*n_c);
 		}
 	}
@@ -176,7 +176,7 @@ private:
 			for (auto& n : allowed_nodes) {
 				if (n.type != node_type::VAR)
 					continue;
-				node* n_c = node::node_copy(n);
+				shared_ptr < node> n_c = node::node_copy(n);
 				candidates.push_back(*n_c);
 			}
 		}
@@ -189,8 +189,8 @@ private:
 				continue;
 			if (!n_un.is_allowed_left(old_node))
 				continue;
-			node* n_un_c = node::node_copy(n_un);
-			node* old_node_c = node::node_copy(old_node);
+			shared_ptr < node> n_un_c = node::node_copy(n_un);
+			shared_ptr < node> old_node_c = node::node_copy(old_node);
 			n_un_c->left = old_node_c;
 			candidates.push_back(*n_un_c);
 		}
@@ -208,8 +208,8 @@ private:
 					continue;
 				if (!n_un.is_allowed_left(*old_node.left))
 					continue;
-				node* n_un_c = node::node_copy(n_un);
-				node* old_left_c = node::node_copy(*old_node.left);
+				shared_ptr < node> n_un_c = node::node_copy(n_un);
+				shared_ptr < node> old_left_c = node::node_copy(*old_node.left);
 				n_un_c->left = old_left_c;
 				candidates.push_back(*n_un_c);
 			}
@@ -225,17 +225,17 @@ private:
 				if (n_var_const.type != node_type::VAR && n_var_const.type != node_type::CONST)
 					continue;
 				if (n_bin.is_allowed_left(old_node)) {
-					node* n_bin_c = node::node_copy(n_bin);
-					node* old_node_c = node::node_copy(old_node);
-					node* n_var_c = node::node_copy(n_var_const);
+					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
+					shared_ptr < node> old_node_c = node::node_copy(old_node);
+					shared_ptr < node> n_var_c = node::node_copy(n_var_const);
 					n_bin_c->left = old_node_c;
 					n_bin_c->right = n_var_c;
 					candidates.push_back(*n_bin_c);
 				}
 				if (!n_bin.symmetric && n_bin.is_allowed_left(n_var_const)) {
-					node* n_bin_c = node::node_copy(n_bin);
-					node* old_node_c = node::node_copy(old_node);
-					node* n_var_c = node::node_copy(n_var_const);
+					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
+					shared_ptr < node> old_node_c = node::node_copy(old_node);
+					shared_ptr < node> n_var_c = node::node_copy(n_var_const);
 					n_bin_c->right = old_node_c;
 					n_bin_c->left = n_var_c;
 					candidates.push_back(*n_bin_c);
@@ -256,17 +256,17 @@ private:
 				if (n_bin.arity != 2 || n_bin.type == old_node.type)
 					continue;
 				if (n_bin.is_allowed_left(*old_node.left)) {
-					node* n_bin_c = node::node_copy(n_bin);
-					node* old_left_c = node::node_copy(*old_node.left);
-					node* old_right_c = node::node_copy(*old_node.right);
+					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
+					shared_ptr < node> old_left_c = node::node_copy(*old_node.left);
+					shared_ptr < node> old_right_c = node::node_copy(*old_node.right);
 					n_bin_c->left = old_left_c;
 					n_bin_c->right = old_right_c;
 					candidates.push_back(*n_bin_c);
 				}
 				if (!n_bin.symmetric && n_bin.is_allowed_left(*old_node.right)) {
-					node* n_bin_c = node::node_copy(n_bin);
-					node* old_left_c = node::node_copy(*old_node.left);
-					node* old_right_c = node::node_copy(*old_node.right);
+					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
+					shared_ptr < node> old_left_c = node::node_copy(*old_node.left);
+					shared_ptr < node> old_right_c = node::node_copy(*old_node.right);
 					n_bin_c->right = old_left_c;
 					n_bin_c->left = old_right_c;
 					candidates.push_back(*n_bin_c);
@@ -300,10 +300,10 @@ private:
 		return candidates;
 	}
 
-	vector<node> all_candidates(const node& passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y, bool local_search) {
-		node* solution = node::node_copy(passed_solution);
+	vector<node> all_candidates(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y, bool local_search) {
+		shared_ptr < node> solution = node::node_copy(*passed_solution);
 		vector<node> all_cand;
-		vector<node*> all_subtrees;
+		vector<shared_ptr<node>> all_subtrees;
 		all_subtrees.push_back(solution);
 		int i = 0;
 		while (i < all_subtrees.size()) {
@@ -324,11 +324,11 @@ private:
 					candidates = change_candidates(*all_subtrees[i]->left);
 				else
 					candidates = perturb_candidates(*all_subtrees[i]->left);
-				node* old_left = node::node_copy(*all_subtrees[i]->left);
+				shared_ptr < node> old_left = node::node_copy(*all_subtrees[i]->left);
 				for (auto& cand : candidates) {
-					node* cand_c = node::node_copy(cand);
+					shared_ptr < node> cand_c = node::node_copy(cand);
 					all_subtrees[i]->left = cand_c;
-					node* solution_copy = node::node_copy(*solution);
+					shared_ptr < node> solution_copy = node::node_copy(*solution);
 					all_cand.push_back(*solution_copy);
 				}
 				all_subtrees[i]->left = old_left;
@@ -341,11 +341,11 @@ private:
 					candidates = change_candidates(*all_subtrees[i]->right);
 				else
 					candidates = perturb_candidates(*all_subtrees[i]->right);
-				node* old_right = node::node_copy(*all_subtrees[i]->right);
+				shared_ptr < node> old_right = node::node_copy(*all_subtrees[i]->right);
 				for (auto& cand : candidates) {
-					node* cand_c = node::node_copy(cand);
+					shared_ptr < node> cand_c = node::node_copy(cand);
 					all_subtrees[i]->right = cand_c;
-					node* solution_copy = node::node_copy(*solution);
+					shared_ptr < node> solution_copy = node::node_copy(*solution);
 					all_cand.push_back(*solution_copy);
 				}
 				all_subtrees[i]->right = old_right;
@@ -360,7 +360,7 @@ private:
 			//while (true) {
 			//string before = node.to_string();
 			node.expand();
-			node.normalize_constants(NULL);
+			node.normalize_constants(node_type::NONE);
 			node.simplify();
 			//cout << "Try " << k++ << " after: " << node.to_string() << " before: "<<before<< endl;
 			//if (node.to_string().compare(before) == 0)
@@ -393,13 +393,13 @@ private:
 	/// <param name="X"></param>
 	/// <param name="y"></param>
 	/// <returns></returns>
-	node* tune_constants(node *solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
-		node* solution_copy = node::node_copy(*solution);
+	shared_ptr < node> tune_constants(shared_ptr<node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
+		shared_ptr < node> solution_copy = node::node_copy(*solution);
 		// TODO: extract non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
 		solution->expand();
 		solution->simplify();
-		vector<node*> all_factors = solution->extract_non_constant_factors();
-		vector<node*> factors;
+		vector<shared_ptr<node>> all_factors = solution->extract_non_constant_factors();
+		vector<shared_ptr<node>> factors;
 		for (auto f : all_factors) {
 			if (f->type == node_type::CONST)
 				continue;
@@ -439,11 +439,11 @@ private:
 		//for (auto coef : coefs)
 		//	cout << coef << endl;
 
-		node* ols_solution  = NULL;
+		shared_ptr < node> ols_solution  = NULL;
 		int i = 0;
 		for (auto coef: coefs) {
 			//cout << coefs[i] << "*"<< factors[i]->to_string()<<"+";
-			node* new_fact = NULL;
+			shared_ptr < node> new_fact = NULL;
 			if (factors[i]->type == node_type::CONST)
 				new_fact = node::node_constant(coef * factors[i]->const_value);
 			else {
@@ -454,7 +454,7 @@ private:
 			if (ols_solution == NULL)
 				ols_solution = new_fact;
 			else {
-				node* tmp = ols_solution;
+				shared_ptr < node> tmp = ols_solution;
 				ols_solution = node::node_plus();
 				ols_solution->left = tmp;
 				ols_solution->right = new_fact;
@@ -464,7 +464,7 @@ private:
 		return ols_solution;
 	}
 
-	tuple<double, double, int> fitness(node* solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
+	tuple<double, double, int> fitness(shared_ptr < node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		fit_calls++;
 		Eigen::ArrayXd yp = solution->evaluate_all(X);
 		double r2 = utils::R2(y, yp);
@@ -496,26 +496,25 @@ private:
 		return 0;
 	}
 
-	void local_search(node& curr_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+	void local_search(shared_ptr<node> curr_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
 		bool improved = true;
-		tuple<double, double, int> curr_fitness = fitness(&curr_solution, X, y);
+		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
 			vector<node> ls_perts = all_candidates(curr_solution,X,y, true);
 			for (int j = 0; j < ls_perts.size(); j++) {
-				node ls_pert = ls_perts[j];
+				shared_ptr<node> ls_pert = make_shared<node>(ls_perts[j]);
 				if (finished())
 					break;
-				//cout << ls_pert.to_string() << endl;
-				node* ls_pert_tuned = tune_constants(&ls_pert, X, y);
+				//cout << ls_pert->to_string() << endl;
+				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
 				if (compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
-					compare_fitness(ls_pert_tuned_fitness, curr_fitness);
 					improved = true;
-					curr_solution = *ls_pert_tuned;
+					curr_solution = ls_pert_tuned;
 					curr_fitness = ls_pert_tuned_fitness;
-					//cout << "New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution.to_string() << endl;
+					//cout << "New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution->to_string() << endl;
 				}
 			}
 		}
@@ -562,24 +561,20 @@ public:
 		while (!finished()) {
 			main_it += 1;
 
-			node* start_solution = final_solution;
+			shared_ptr < node> start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
-				vector<node> all_perts = all_candidates(*final_solution,X, y, false);
-				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()],X, y, false);
+				vector<node> all_perts = all_candidates(final_solution,X, y, false);
+				vector<node> all_2_perts = all_candidates(make_shared<node>(all_perts[rand() % all_perts.size()]),X, y, false);
 				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
-				for (int i = 0; i < all_perts.size(); i++)
-					all_perts[i].delete_recursively();
-				for (int i = 0; i < all_2_perts.size(); i++)
-					all_2_perts[i].delete_recursively();
 				std::cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
 			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skiped_perts<<"/"<<total_perts << endl;
-			vector<node> all_perts = all_candidates(*start_solution,X, y, false);
+			vector<node> all_perts = all_candidates(start_solution,X, y, false);
 			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution" << endl;
-			vector<tuple<double, node>> r2_by_perts;
+			vector<tuple<double, shared_ptr<node>>> r2_by_perts;
 			for (int i = 0;i < all_perts.size(); i++) {
 				if (finished())
 					break;
@@ -594,9 +589,9 @@ public:
 				checked_perts.insert(pert_str);
 				//cout << pert_str << endl;
 				//local_search(pert, X, y);
-				node* pert_tuned = tune_constants(&pert, X, y);
+				shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
-				r2_by_perts.push_back(tuple<double, node>{get<0>(pert_tuned_fitness), *pert_tuned});
+				r2_by_perts.push_back(tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
 				/*
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
 					improved = true;
@@ -608,9 +603,6 @@ public:
 					best_time = duration_cast<seconds>(stop - start).count();
 				}*/
 			}
-			for(int i=0; i<all_perts.size(); i++)
-				all_perts[i].delete_recursively();
-
 			if (improved)
 				continue;
 			//continue;
@@ -619,11 +611,11 @@ public:
 			for (int i = 0;i < r2_by_perts.size(); i++) {
 				if (finished())
 					break;
-				node ls_pert = get<1>(r2_by_perts[i]);
+				shared_ptr<node> ls_pert = get<1>(r2_by_perts[i]);
 				double ls_pert_r2 = get<0>(r2_by_perts[i]);
 
 				// checking if pert was already checked
-				string pert_str = ls_pert.to_string();
+				string pert_str = ls_pert->to_string();
 				total_perts++;
 				if (checked_perts.find(pert_str) != checked_perts.end()) {
 					skiped_perts++;
@@ -631,12 +623,12 @@ public:
 				}
 				checked_perts.insert(pert_str);
 				local_search(ls_pert, X, y);
-				node* ls_pert_tuned = tune_constants(&ls_pert, X, y);
-				tuple<double, double, int> ls_pert_tuned_fitness = fitness(&ls_pert, X, y);
+				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
+				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert, X, y);
 				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert.to_string() << endl;
 				if(compare_fitness(ls_pert_tuned_fitness, final_fitness)<0) {
 					improved = true;
-					call_and_verify_simplify(*ls_pert_tuned, X, y);
+					call_and_verify_simplify(ls_pert_tuned, X, y);
 					final_solution = node::node_copy(*ls_pert_tuned);
 					final_fitness = ls_pert_tuned_fitness;
 					std::cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
@@ -684,10 +676,10 @@ int main()
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
 		//if (entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") != 0)
 		//	continue;
-		if (started || entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") == 0)
-			started = true;
-		else
-			continue;
+		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") == 0)
+		//	started = true;
+		//else
+		//	continue;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());
 		string line;

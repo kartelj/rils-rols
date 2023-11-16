@@ -12,7 +12,7 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 
 	if (this->arity >= 1) 
 		left_vals = this->left->evaluate_all(X);
-	if (this->arity >= 2/* || type == node_type::POW*/) {
+	if (this->arity >= 2) {
 		right_vals = this->right->evaluate_all(X);
 	}
 	
@@ -20,15 +20,15 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 	return yp;
 }
 
-vector<node*> node::all_subtrees_references(node* root) {
+vector< shared_ptr<node>> node::all_subtrees_references(shared_ptr<node> root) {
 	if (root == NULL)
-		return vector<node*>();
-	vector<node*> queue;
+		return vector<shared_ptr<node>>();
+	vector<shared_ptr<node>> queue;
 	queue.push_back(root);
 	int pos = 0;
 	while (pos < queue.size()) {
 		// adding children of current element
-		node* curr = queue[pos];
+		shared_ptr<node> curr = queue[pos];
 		if (curr->left != NULL)
 			queue.push_back(curr->left);
 		if (curr->right != NULL)
@@ -39,20 +39,20 @@ vector<node*> node::all_subtrees_references(node* root) {
 	return queue;
 }
 
-vector<node*> node::extract_constants_references() {
+vector<shared_ptr<node>> node::extract_constants_references() {
 	if (this == NULL)
-		return vector<node*>();
-	vector<node*> all_cons;
+		return vector<shared_ptr<node>>();
+	vector<shared_ptr<node>> all_cons;
 	if (this->type == node_type::CONST) {
-		all_cons.push_back(this);
+		all_cons.push_back(shared_from_this());
 	}
 	if (this->arity >= 1) {
-		vector<node*> left_cons = this->left->extract_constants_references();
+		vector<shared_ptr<node>> left_cons = this->left->extract_constants_references();
 		for (int i = 0; i < left_cons.size(); i++)
 			all_cons.push_back(left_cons[i]);
 	}
 	if (this->arity >= 2) {
-		vector<node*> right_cons = this->right->extract_constants_references();
+		vector<shared_ptr<node>> right_cons = this->right->extract_constants_references();
 		for (int i = 0; i < right_cons.size(); i++)
 			all_cons.push_back(right_cons[i]);
 	}
@@ -61,18 +61,18 @@ vector<node*> node::extract_constants_references() {
 
 
 
-vector<node*> node::extract_non_constant_factors() {
-	vector<node*> all_factors;
+vector<shared_ptr<node>> node::extract_non_constant_factors() {
+	vector<shared_ptr<node>> all_factors;
 	if (type == node_type::PLUS || type == node_type::MINUS) {
-		vector<node*> left_factors = left->extract_non_constant_factors();
-		vector<node*> right_factors = right->extract_non_constant_factors();
-		for (auto n : left_factors)
-			all_factors.push_back(n);
-		for (auto n : right_factors)
-			all_factors.push_back(n);
+		vector<shared_ptr<node>> left_factors = left->extract_non_constant_factors();
+		vector<shared_ptr<node>> right_factors = right->extract_non_constant_factors();
+		for (int i = 0; i < left_factors.size(); i++)
+			all_factors.push_back(left_factors[i]);
+		for (int i=0; i<right_factors.size(); i++)
+			all_factors.push_back(right_factors[i]);
 	}
 	else if (type != node_type::CONST)
-		all_factors.push_back(this);
+		all_factors.push_back(shared_from_this());
 	return all_factors;
 }
 
@@ -120,61 +120,62 @@ void node::simplify()
 			}
 			arity = 0;
 			type = node_type::CONST;
-			left = right = NULL;
+			left = NULL;
+			right = NULL;
 		}
 		else if (left->type == node_type::CONST)
 		{
 			if (type == node_type::PLUS) {
 				if(left->const_value == 0)
-					*this = *right;
+					this->update_with(right);
 			}
 			else if (type == node_type::MULTIPLY) {
 				if (left->const_value == 0)
 					*this = *node::node_constant(0);
-				else if(left->const_value == 1)
-					*this = *right;
+				else if (left->const_value == 1)
+					this->update_with(right);
 				else {
 					// some more exotic variants
 					if (right->type == node_type::MULTIPLY) {
 						if (right->left->type == node_type::CONST) {
 							// c1*c2*expr = c3*expr [c3 = c1*c2]
 							left->const_value *= right->left->const_value;
-							*right = *right->right;
+							right->update_with(right->right);
 						}
 						else if (right->right->type == node_type::CONST) {
 							// c1*expr*c2 = c3*expr [c3 = c1*c2]
 							left->const_value *= right->right->const_value;
-							*right = *right->left;
+							right->update_with(right->left);
 						}
 					}
 				}
 			}
 			else if (type == node_type::DIVIDE && left->const_value == 0)
-				*this = *node::node_constant(0);
+				this->update_with(node::node_constant(0));
 		}
 		else if (right->type == node_type::CONST)
 		{
 			if (type == node_type::PLUS && right->const_value == 0)
-				*this = *left;
+				this->update_with(left);
 			else if (type == node_type::MINUS && right->const_value == 0)
-				*this = *left;
+				this->update_with(left);
 			else if (type == node_type::MULTIPLY) {
 				if(right->const_value == 1)
-					*this = *left;
+					this->update_with(left);
 				else if (right->const_value == 0)
-					*this = *node::node_constant(0);
+					this->update_with(node::node_constant(0));
 				else {
 					// some more exotic variants  
 					if (left->type == node_type::MULTIPLY) {
 						if (left->left->type == node_type::CONST) {
 							// c1*expr*c2 = expr*c3 [c3 = c1*c2]
 							right->const_value *= left->left->const_value;
-							*left = *left->right;
+							left->update_with(left->right);
 						}
 						else if (left->right->type == node_type::CONST) {
 							// expr*c1*c2 = expr*c3 [c3 = c1*c2]
 							right->const_value *= left->right->const_value;
-							*left = *left->left;
+							left->update_with(left->left);
 						}
 					}
 				}
@@ -183,18 +184,18 @@ void node::simplify()
 	}
 }
 
-void node::normalize_constants(node* parent) {
+void node::normalize_constants(node_type parent_type) {
 	if (type == node_type::CONST) {
-		if (parent == NULL || parent->type == node_type::MULTIPLY || parent->type == node_type::DIVIDE || parent->type == node_type::PLUS || parent->type == node_type::MINUS)
+		if (parent_type == node_type::NONE || parent_type == node_type::MULTIPLY || parent_type == node_type::DIVIDE || parent_type == node_type::PLUS || parent_type == node_type::MINUS)
 			const_value = 1;
-		else if (parent->type == node_type::POW && type == node_type::CONST && const_value != 0.5 && const_value != -0.5)
+		else if (parent_type == node_type::POW && type == node_type::CONST && const_value != 0.5 && const_value != -0.5)
 			const_value = round(const_value);
 		return;
 	}
 	if (arity >= 1)
-		left->normalize_constants(this);
+		left->normalize_constants(type);
 	if (arity >= 2)
-		right->normalize_constants(this);
+		right->normalize_constants(type);
 }
 
 void node::expand() {
@@ -215,10 +216,10 @@ void node::expand() {
 				}
 				else {
 					// (t1+-t2)*t3 = t1*t3+-t2*t3
-					node* new_left = node::node_multiply();
+					shared_ptr<node> new_left = node::node_multiply();
 					new_left->left = node::node_copy(*left->left);
 					new_left->right = node::node_copy(*right);
-					node* new_right = node::node_multiply();
+					shared_ptr<node> new_right = node::node_multiply();
 					new_right->left = node::node_copy(*left->right);
 					new_right->right = node::node_copy(*right);
 					//delete left;
@@ -233,10 +234,10 @@ void node::expand() {
 			}
 			else if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
 				// t1*(t2+-t3) to t1*t2+-t1*t3
-				node* new_left = node::node_multiply();
+				shared_ptr<node> new_left = node::node_multiply();
 				new_left->left = node::node_copy(*left);
 				new_left->right = node::node_copy(*right->left);
-				node* new_right = node::node_multiply();
+				shared_ptr<node> new_right = node::node_multiply();
 				new_right->left = node::node_copy(*left);
 				new_right->right = node::node_copy(*right->right);
 				//delete left;

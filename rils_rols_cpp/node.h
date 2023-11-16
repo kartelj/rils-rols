@@ -26,12 +26,12 @@ enum class node_type{
 	POW
 };
 
-class node
+class node : public std::enable_shared_from_this<node>
 {
 
 public:
-	unique_ptr<node> left = NULL;
-	unique_ptr<node> right = NULL;
+	shared_ptr<node> left = NULL;
+	shared_ptr<node> right = NULL;
 	int arity;
 	bool symmetric;
 	node_type type;
@@ -46,6 +46,16 @@ public:
 		var_index = -1;
 		symmetric = false;
 		type = node_type::NONE;
+	}
+
+	void update_with(shared_ptr<node> src) {
+		left = src->left;
+		right = src->right;
+		arity = src->arity;
+		const_value = src->const_value;
+		var_index = src->var_index;
+		symmetric = src->symmetric;
+		type = src->type;
 	}
 
 	node(node_type type) {
@@ -81,20 +91,8 @@ public:
 		this->const_value = 0;
 	}
 
-	void delete_recursively() {
-		if (arity>=1)
-			left->delete_recursively();
-		if (arity>=2)
-			right->delete_recursively();
-		delete this;
-	}
-
-	//~node() {
-	//	cout << "Deleted object" << endl;
-	//}
-
-	static unique_ptr<node> node_copy(const node &n) {
-		unique_ptr<node> nc = make_unique<node>(n.type);
+	static shared_ptr<node> node_copy(const node &n) {
+		shared_ptr<node> nc = make_shared<node>(n.type);
 		nc->type = n.type;
 		nc->arity = n.arity;
 		nc->symmetric = n.symmetric;
@@ -107,44 +105,44 @@ public:
 		return nc;
 	}
 
-	static node* node_internal(node_type type) {
-		node* n = new node(type);
+	static shared_ptr < node> node_internal(node_type type) {
+		shared_ptr < node> n = make_shared< node>(type);
 		return n;
 	}
 
-	static node* node_constant(double const_value) {
-		node* n = new node(node_type::CONST);
+	static shared_ptr < node> node_constant(double const_value) {
+		shared_ptr < node> n = make_shared< node>(node_type::CONST);
 		n->const_value = const_value;
 		return n;
 	}
 
-	static node* node_variable(int var_index) {
-		node* n = new node(node_type::VAR);
+	static shared_ptr < node> node_variable(int var_index) {
+		shared_ptr < node> n = make_shared< node>(node_type::VAR);
 		n->var_index = var_index;
 		return n;
 	}
 
-	static node* node_minus() { return node_internal(node_type::MINUS); }
+	static shared_ptr < node> node_minus() { return node_internal(node_type::MINUS); }
 
-	static node* node_plus() { return node_internal(node_type::PLUS); }
+	static shared_ptr < node> node_plus() { return node_internal(node_type::PLUS); }
 
-	static node* node_multiply() { return node_internal(node_type::MULTIPLY); }
+	static shared_ptr < node> node_multiply() { return node_internal(node_type::MULTIPLY); }
 
-	static node* node_divide() { return node_internal(node_type::DIVIDE); }
+	static shared_ptr < node> node_divide() { return node_internal(node_type::DIVIDE); }
 
-	static node* node_sin() { return node_internal(node_type::SIN); }
+	static shared_ptr < node> node_sin() { return node_internal(node_type::SIN); }
 
-	static node* node_cos() { return node_internal(node_type::COS); }
+	static shared_ptr < node> node_cos() { return node_internal(node_type::COS); }
 
-	static node* node_ln() { return node_internal(node_type::LN); }
+	static shared_ptr < node> node_ln() { return node_internal(node_type::LN); }
 
-	static node* node_exp() { return node_internal(node_type::EXP); }
+	static shared_ptr < node> node_exp() { return node_internal(node_type::EXP); }
 
 	//static node* node_sqrt() { return node_internal(node_type::SQRT); }
 
 	//static node* node_sqr() { return node_internal(node_type::SQR); }
 
-	static node* node_pow() { return node_internal(node_type::POW); }
+	static shared_ptr < node> node_pow() { return node_internal(node_type::POW); }
 
 	Eigen::ArrayXd evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) {
 		switch (type) {
@@ -243,17 +241,17 @@ public:
 
 	Eigen::ArrayXd evaluate_all(const vector<Eigen::ArrayXd>& X);
 
-	static vector<node*> all_subtrees_references(node* root);
+	static vector< shared_ptr<node>> all_subtrees_references(shared_ptr < node> root);
 
-	vector<node*> extract_constants_references();
+	vector< shared_ptr<node>> extract_constants_references();
 
-	vector<node*> extract_non_constant_factors();
+	vector< shared_ptr<node>> extract_non_constant_factors();
 
 	int size();
 
 	void simplify();
 
-	void normalize_constants(node* parent);
+	void normalize_constants(node_type parent_type);
 
 	void expand();
 };
