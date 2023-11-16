@@ -87,10 +87,11 @@ private:
 			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < var_cnt; i++)
 			allowed_nodes.push_back(*node::node_variable(i));
+		cout << "Finished creating allowed nodes"<<endl;
 	}
 
 	void call_and_verify_simplify(node& solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
-		node* solution_before = node::node_copy(solution);
+		unique_ptr<node> solution_before = node::node_copy(solution);
 		double r2_before = get<0>(fitness(&solution, X, y));
 		solution.simplify();
 		double r2_after = get<0>(fitness(&solution, X, y));
@@ -125,11 +126,11 @@ private:
 				std::cout << "Only constants are allowed in power exponents." << endl;
 				exit(1);
 			}
-			node* nc_dec = node::node_copy(old_node);
+			unique_ptr <node> nc_dec = node::node_copy(old_node);
 			nc_dec->right->const_value -= 0.5;
 			if (nc_dec->right->const_value == 0) // avoid exponent 0
 				nc_dec->right->const_value -= 0.5;
-			node* nc_inc = node::node_copy(old_node);
+			unique_ptr <node> nc_inc = node::node_copy(old_node);
 			nc_inc->right->const_value += 0.5;
 			if (nc_inc->right->const_value == 0) // avoid exponent 0
 				nc_inc->right->const_value += 0.5;
@@ -534,7 +535,7 @@ public:
 	}
 
 	bool finished() {
-		return fit_calls >= max_fit_calls || get<0>(final_fitness) < early_exit_eps;
+		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness)<early_exit_eps);
 	}
 
 	void fit(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
@@ -567,6 +568,10 @@ public:
 				vector<node> all_perts = all_candidates(*final_solution,X, y, false);
 				vector<node> all_2_perts = all_candidates(all_perts[rand() % all_perts.size()],X, y, false);
 				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
+				for (int i = 0; i < all_perts.size(); i++)
+					all_perts[i].delete_recursively();
+				for (int i = 0; i < all_2_perts.size(); i++)
+					all_2_perts[i].delete_recursively();
 				std::cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
@@ -592,6 +597,7 @@ public:
 				node* pert_tuned = tune_constants(&pert, X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
 				r2_by_perts.push_back(tuple<double, node>{get<0>(pert_tuned_fitness), *pert_tuned});
+				/*
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
 					improved = true;
 					call_and_verify_simplify(*pert_tuned, X, y);
@@ -600,8 +606,11 @@ public:
 					std::cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<seconds>(stop - start).count();
-				}
+				}*/
 			}
+			for(int i=0; i<all_perts.size(); i++)
+				all_perts[i].delete_recursively();
+
 			if (improved)
 				continue;
 			//continue;
@@ -665,19 +674,17 @@ public:
 int main()
 {
 	int random_state = 23654;
-	default_random_engine engine;
-	engine.seed(random_state);
 	int max_fit = 1000000;
 	int max_time = 300;
-	double complexity_penalty = 0.01;
+	double complexity_penalty = 0.001;
 	double sample_size = 0.01;
 	double train_share = 0.75;
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_10_01_0010000_00.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") != 0)
 		//	continue;
-		if (started || entry.path().compare("../paper_resources/random_12345_data\\random_10_01_0010000_00.data") == 0)
+		if (started || entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") == 0)
 			started = true;
 		else
 			continue;
@@ -689,7 +696,7 @@ int main()
 			lines.push_back(line);
 		srand(random_state);
 		// shuffling for later split between training and test set
-		shuffle(lines.begin(), lines.end(), engine);
+		shuffle(lines.begin(), lines.end(), default_random_engine(random_state));
 		int train_cnt = int(train_share * lines.size());
 		vector<Eigen::ArrayXd> X_train, X_test;
 		Eigen::ArrayXd y_train(train_cnt), y_test(lines.size() - train_cnt);

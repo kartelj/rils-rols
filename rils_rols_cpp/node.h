@@ -28,7 +28,25 @@ enum class node_type{
 
 class node
 {
-private:
+
+public:
+	unique_ptr<node> left = NULL;
+	unique_ptr<node> right = NULL;
+	int arity;
+	bool symmetric;
+	node_type type;
+	int var_index;
+	double const_value;
+
+	node() {
+		left = NULL;
+		right = NULL;
+		arity = 0;
+		const_value = 0;
+		var_index = -1;
+		symmetric = false;
+		type = node_type::NONE;
+	}
 
 	node(node_type type) {
 		this->type = type;
@@ -41,8 +59,8 @@ private:
 		case node_type::COS:
 		case node_type::LN:
 		case node_type::EXP:
-		//case node_type::SQRT:
-		//case node_type::SQR:
+			//case node_type::SQRT:
+			//case node_type::SQR:
 			this->arity = 1;
 			break;
 		default:
@@ -63,27 +81,20 @@ private:
 		this->const_value = 0;
 	}
 
-public:
-	node* left;
-	node* right;
-	int arity;
-	bool symmetric;
-	node_type type;
-	int var_index;
-	double const_value;
-
-	node() {
-		left = NULL;
-		right = NULL;
-		arity = 0;
-		const_value = 0;
-		var_index = -1;
-		symmetric = false;
-		type = node_type::NONE;
+	void delete_recursively() {
+		if (arity>=1)
+			left->delete_recursively();
+		if (arity>=2)
+			right->delete_recursively();
+		delete this;
 	}
 
-	static node* node_copy(const node &n) {
-		node* nc = new node(n.type);
+	//~node() {
+	//	cout << "Deleted object" << endl;
+	//}
+
+	static unique_ptr<node> node_copy(const node &n) {
+		unique_ptr<node> nc = make_unique<node>(n.type);
 		nc->type = n.type;
 		nc->arity = n.arity;
 		nc->symmetric = n.symmetric;
