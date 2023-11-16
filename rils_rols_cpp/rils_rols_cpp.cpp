@@ -496,8 +496,9 @@ private:
 		return 0;
 	}
 
-	void local_search(shared_ptr<node> curr_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+	shared_ptr<node> local_search(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
 		bool improved = true;
+		shared_ptr<node> curr_solution = node::node_copy(*passed_solution);
 		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
@@ -518,6 +519,7 @@ private:
 				}
 			}
 		}
+		return curr_solution;
 	}
 
 public:
@@ -588,7 +590,7 @@ public:
 				}
 				checked_perts.insert(pert_str);
 				//cout << pert_str << endl;
-				//local_search(pert, X, y);
+				//pert = local_search(pert, X, y);
 				shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
 				r2_by_perts.push_back(tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
@@ -603,8 +605,8 @@ public:
 					best_time = duration_cast<seconds>(stop - start).count();
 				}*/
 			}
-			if (improved)
-				continue;
+			//if (improved)
+			//	continue;
 			//continue;
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
@@ -622,10 +624,11 @@ public:
 					continue; // already checked before
 				}
 				checked_perts.insert(pert_str);
-				local_search(ls_pert, X, y);
+				//cout << pert_str << endl;
+				ls_pert = local_search(ls_pert, X, y);
 				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert, X, y);
-				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert.to_string() << endl;
+				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_tuned_fitness) << "\t" << ls_pert->to_string() << endl;
 				if(compare_fitness(ls_pert_tuned_fitness, final_fitness)<0) {
 					improved = true;
 					call_and_verify_simplify(ls_pert_tuned, X, y);
@@ -674,7 +677,7 @@ int main()
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_00.data") != 0)
 		//	continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") == 0)
 		//	started = true;
