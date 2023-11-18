@@ -367,16 +367,16 @@ private:
 			}
 			i++;
 		}
-		for (int i = 0; i < all_cand.size(); i++) {
-			node node = all_cand[i];
-			//cout << node.to_string() << "\tBEFORE EXPAND, NORMALIZATION AND SIMPLIFICATION" << endl;
-			//int k = 0;
-			//while (true) {
-			//string before = node.to_string();
+		for (auto &node: all_cand) {
+			//cout << "Before: " << node.to_string() << endl;
 			node.expand();
-			node.normalize_factor_constants(node_type::NONE, false);
-			node.simplify();
-			node.normalize_factor_constants(node_type::NONE, false); // again to change for example 2, 10, ... to 1
+			while(true) {
+				int size = node.size();
+				node.normalize_factor_constants(node_type::NONE, false);
+				node.simplify();
+				if (node.size() == size)
+					break;
+			}
 			//cout << "After: " << node.to_string() << endl;
 			//if (node.to_string().compare(before) == 0)
 			//	break; // no further change
@@ -646,10 +646,8 @@ public:
 				shared_ptr<node> ls_pert = get<1>(r2_by_perts[i]);
 				double ls_pert_r2 = get<0>(r2_by_perts[i]);
 				string pert_str = ls_pert->to_string();
-				cout << pert_str << endl;
+				//cout << pert_str << endl;
 				checked_perts.insert(pert_str);
-				if (pert_str.compare("(exp(x0)+1.000000)") == 0)
-					cout << "Bla" << endl;
 				ls_pert = local_search(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
 				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert->to_string() << endl;
@@ -702,7 +700,7 @@ int main()
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_04.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") != 0)
 		//	continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
