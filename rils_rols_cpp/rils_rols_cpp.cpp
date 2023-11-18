@@ -17,8 +17,6 @@ using namespace std;
 using namespace std::chrono;
 namespace fs = std::filesystem;
 
-# define PRECISION 12
-
 enum class fitness_type
 {
 	BIC = 1,
@@ -74,14 +72,14 @@ private:
 		allowed_nodes.push_back(*node::node_cos());
 		allowed_nodes.push_back(*node::node_ln());
 		allowed_nodes.push_back(*node::node_exp());
-		//allowed_nodes.push_back(*node::node_sqrt());
-		//allowed_nodes.push_back(*node::node_sqr());
-		shared_ptr<node> sqr = node::node_pow();
+		allowed_nodes.push_back(*node::node_sqrt());
+		allowed_nodes.push_back(*node::node_sqr());
+		/*shared_ptr<node> sqr = node::node_pow();
 		sqr->right = node::node_constant(2);
 		allowed_nodes.push_back(*sqr);
 		shared_ptr < node> sqrt = node::node_pow();
 		sqrt->right = node::node_constant(0.5);
-		allowed_nodes.push_back(*sqrt);
+		allowed_nodes.push_back(*sqrt);*/
 		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10};
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
@@ -303,10 +301,13 @@ private:
 	vector<node> all_candidates(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y, bool local_search) {
 		shared_ptr < node> solution = node::node_copy(*passed_solution);
 		vector<node> all_cand;
+		unordered_set<string> all_cand_str;
 		vector<shared_ptr<node>> all_subtrees;
 		all_subtrees.push_back(solution);
 		int i = 0;
+		//cout << "Subtrees of " << passed_solution->to_string() << "\n--------------------------------" << endl;
 		while (i < all_subtrees.size()) {
+			//cout << all_subtrees[i]->to_string() << endl;
 			if (all_subtrees[i]->size() == solution->size()) {
 				// the whole tree is being changed
 				vector<node> candidates;
@@ -314,8 +315,13 @@ private:
 					candidates = change_candidates(*all_subtrees[i]);
 				else
 					candidates = perturb_candidates(*all_subtrees[i]);
-				for (auto& cand : candidates)
+				for (auto& cand : candidates) {
+					string cand_str = cand.to_string();
+					if (all_cand_str.find(cand_str) != all_cand_str.end())
+						continue;
 					all_cand.push_back(cand);
+					all_cand_str.insert(cand_str);
+				}
 			}
 			if (all_subtrees[i]->arity >= 1) {
 				// the left subtree is being changed
@@ -329,7 +335,11 @@ private:
 					shared_ptr < node> cand_c = node::node_copy(cand);
 					all_subtrees[i]->left = cand_c;
 					shared_ptr < node> solution_copy = node::node_copy(*solution);
+					string cand_str = solution_copy->to_string();
+					if (all_cand_str.find(cand_str) != all_cand_str.end())
+						continue;
 					all_cand.push_back(*solution_copy);
+					all_cand_str.insert(cand_str);
 				}
 				all_subtrees[i]->left = old_left;
 				all_subtrees.push_back(all_subtrees[i]->left);
@@ -346,7 +356,11 @@ private:
 					shared_ptr < node> cand_c = node::node_copy(cand);
 					all_subtrees[i]->right = cand_c;
 					shared_ptr < node> solution_copy = node::node_copy(*solution);
+					string cand_str = solution_copy->to_string();
+					if (all_cand_str.find(cand_str) != all_cand_str.end())
+						continue;
 					all_cand.push_back(*solution_copy);
+					all_cand_str.insert(cand_str);
 				}
 				all_subtrees[i]->right = old_right;
 				all_subtrees.push_back(all_subtrees[i]->right);
@@ -360,18 +374,18 @@ private:
 			//while (true) {
 			//string before = node.to_string();
 			node.expand();
-			node.normalize_constants(node_type::NONE);
+			node.normalize_factor_constants(node_type::NONE, false);
 			node.simplify();
-			//cout << "Try " << k++ << " after: " << node.to_string() << " before: "<<before<< endl;
+			node.normalize_factor_constants(node_type::NONE, false); // again to change for example 2, 10, ... to 1
+			//cout << "After: " << node.to_string() << endl;
 			//if (node.to_string().compare(before) == 0)
 			//	break; // no further change
 			//}
 			//cout << node.to_string() << "\tAFTER" << endl;
 			//cout << endl;
 		}
-		return all_cand;
-		/*
-		// eliminate duplicates -- because of to_string this is too slow, so we are not doing it
+		
+		// eliminate duplicates -- TODO: to_string() is slow, fix this
 		unordered_set<string> filtered_cand_strings;
 		vector<node> filtered_candidates;
 		for (auto& node : all_cand) {
@@ -383,7 +397,7 @@ private:
 			filtered_cand_strings.insert(node_str);
 			filtered_candidates.push_back(node);
 		}
-		return filtered_candidates;*/
+		return filtered_candidates;
 	}
 
 	/// <summary>
@@ -443,13 +457,21 @@ private:
 		int i = 0;
 		for (auto coef: coefs) {
 			//cout << coefs[i] << "*"<< factors[i]->to_string()<<"+";
+			if (value_zero(coef)) {
+				i++;
+				continue;
+			}
 			shared_ptr < node> new_fact = NULL;
 			if (factors[i]->type == node_type::CONST)
 				new_fact = node::node_constant(coef * factors[i]->const_value);
 			else {
-				new_fact = node::node_multiply();
-				new_fact->left = node::node_constant(coef);
-				new_fact->right = node::node_copy(*factors[i]);
+				if (value_one(coef))
+					new_fact = node::node_copy(*factors[i]);
+				else {
+					new_fact = node::node_multiply();
+					new_fact->left = node::node_constant(coef);
+					new_fact->right = node::node_copy(*factors[i]);
+				}
 			}
 			if (ols_solution == NULL)
 				ols_solution = new_fact;
@@ -461,6 +483,9 @@ private:
 			}
 			i++;
 		}
+		if (ols_solution == NULL)
+			ols_solution = node::node_constant(0);
+		//ols_solution->simplify();
 		return ols_solution;
 	}
 
@@ -470,6 +495,8 @@ private:
 		double r2 = utils::R2(y, yp);
 		double rmse = utils::RMSE(y, yp);
 		int size = solution->size();
+		if (r2 != r2 || rmse != rmse) // true only for NaN values
+			return make_tuple<double, double, int>(1000, 1000, 1000);
 		tuple<double, double, int> fit = tuple<double, double, int>{ 1 - r2, rmse, size };
 		return fit;
 	}
@@ -499,6 +526,7 @@ private:
 	shared_ptr<node> local_search(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
 		bool improved = true;
 		shared_ptr<node> curr_solution = node::node_copy(*passed_solution);
+		curr_solution = tune_constants(curr_solution, X, y);
 		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
@@ -575,7 +603,7 @@ public:
 			//if(main_it%100==0)
 			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skiped_perts<<"/"<<total_perts << endl;
 			vector<node> all_perts = all_candidates(start_solution,X, y, false);
-			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution" << endl;
+			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution." << endl;
 			vector<tuple<double, shared_ptr<node>>> r2_by_perts;
 			for (int i = 0;i < all_perts.size(); i++) {
 				if (finished())
@@ -591,7 +619,8 @@ public:
 				checked_perts.insert(pert_str);
 				//cout << pert_str << endl;
 				//pert = local_search(pert, X, y);
-				shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
+				shared_ptr < node> pert_tuned = node::node_copy(pert); // do nothing
+				//shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
 				r2_by_perts.push_back(tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
 				/*
@@ -608,6 +637,7 @@ public:
 			//if (improved)
 			//	continue;
 			//continue;
+			std::cout << "Preserved " << all_perts.size() << " perturbations after removing already done." << endl;
 			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
 			for (int i = 0;i < r2_by_perts.size(); i++) {
@@ -615,25 +645,20 @@ public:
 					break;
 				shared_ptr<node> ls_pert = get<1>(r2_by_perts[i]);
 				double ls_pert_r2 = get<0>(r2_by_perts[i]);
-
-				// checking if pert was already checked
 				string pert_str = ls_pert->to_string();
-				total_perts++;
-				if (checked_perts.find(pert_str) != checked_perts.end()) {
-					skiped_perts++;
-					continue; // already checked before
-				}
+				cout << pert_str << endl;
 				checked_perts.insert(pert_str);
-				//cout << pert_str << endl;
+				if (pert_str.compare("(exp(x0)+1.000000)") == 0)
+					cout << "Bla" << endl;
 				ls_pert = local_search(ls_pert, X, y);
-				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
-				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert, X, y);
-				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_tuned_fitness) << "\t" << ls_pert->to_string() << endl;
-				if(compare_fitness(ls_pert_tuned_fitness, final_fitness)<0) {
+				tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
+				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert->to_string() << endl;
+				int cmp = compare_fitness(ls_pert_fitness, final_fitness);
+				if(cmp<0) {
 					improved = true;
-					call_and_verify_simplify(ls_pert_tuned, X, y);
-					final_solution = node::node_copy(*ls_pert_tuned);
-					final_fitness = ls_pert_tuned_fitness;
+					call_and_verify_simplify(ls_pert, X, y);
+					final_solution = node::node_copy(*ls_pert);
+					final_fitness = ls_pert_fitness;
 					std::cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<milliseconds>(stop - start).count() / 1000.0;
@@ -669,7 +694,7 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 10000000;
+	int max_fit = 1000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	double sample_size = 0.01;
@@ -677,9 +702,9 @@ int main()
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_00.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_04_01_0010000_04.data") != 0)
 		//	continue;
-		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_09_04_0010000_04.data") == 0)
+		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
 		//else
 		//	continue;

@@ -9,6 +9,9 @@ using namespace std;
 
 #define M_PI 3.14159265358979323846
 
+# define PRECISION 12
+# define EPS pow(10, -PRECISION)
+
 enum class node_type{
 	NONE,
 	CONST, 
@@ -21,8 +24,8 @@ enum class node_type{
 	COS, 
 	LN, 
 	EXP, 
-	//SQRT, 
-	//SQR, 
+	SQRT, 
+	SQR, 
 	POW
 };
 
@@ -69,8 +72,8 @@ public:
 		case node_type::COS:
 		case node_type::LN:
 		case node_type::EXP:
-			//case node_type::SQRT:
-			//case node_type::SQR:
+			case node_type::SQRT:
+			case node_type::SQR:
 			this->arity = 1;
 			break;
 		default:
@@ -138,9 +141,9 @@ public:
 
 	static shared_ptr < node> node_exp() { return node_internal(node_type::EXP); }
 
-	//static node* node_sqrt() { return node_internal(node_type::SQRT); }
+	static shared_ptr < node> node_sqrt() { return node_internal(node_type::SQRT); }
 
-	//static node* node_sqr() { return node_internal(node_type::SQR); }
+	static shared_ptr < node> node_sqr() { return node_internal(node_type::SQR); }
 
 	static shared_ptr < node> node_pow() { return node_internal(node_type::POW); }
 
@@ -173,10 +176,10 @@ public:
 			return a.log();
 		case node_type::EXP:
 			return a.exp();
-		//case node_type::SQRT:
-		//	return a.sqrt();
-		//case node_type::SQR:
-		//	return a * a;
+		case node_type::SQRT:
+			return a.sqrt();
+		case node_type::SQR:
+			return a * a;
 		case node_type::POW:
 			return a.pow(b);
 		default:
@@ -206,10 +209,10 @@ public:
 			return "ln(" + left->to_string() + ")";
 		case node_type::EXP:
 			return "exp(" + left->to_string() + ")";
-		//case node_type::SQRT:
-		//	return "sqrt(" + left->to_string() + ")";
-		//case node_type::SQR:
-		//	return left->to_string() + "*" + left->to_string();
+		case node_type::SQRT:
+			return "sqrt(" + left->to_string() + ")";
+		case node_type::SQR:
+			return left->to_string() + "*" + left->to_string();
 		case node_type::POW:
 			return "pow("+left->to_string() + "," + right->to_string()+")";
 		default:
@@ -253,5 +256,16 @@ public:
 
 	void normalize_constants(node_type parent_type);
 
+	void normalize_factor_constants(node_type parent_type, bool inside_factor);
+
 	void expand();
 };
+
+// TODO: define these two as macros to speed up
+inline bool value_zero(double val) {
+	return abs(val) < EPS;
+}
+
+inline bool value_one(double val) {
+	return abs(val - 1) < EPS;
+}

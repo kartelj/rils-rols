@@ -126,13 +126,13 @@ void node::simplify()
 		else if (left->type == node_type::CONST)
 		{
 			if (type == node_type::PLUS) {
-				if(left->const_value == 0)
+				if(value_zero(left->const_value))
 					this->update_with(right);
 			}
 			else if (type == node_type::MULTIPLY) {
-				if (left->const_value == 0)
+				if (value_zero(left->const_value))
 					*this = *node::node_constant(0);
-				else if (left->const_value == 1)
+				else if (value_one(left->const_value))
 					this->update_with(right);
 				else {
 					// some more exotic variants
@@ -150,19 +150,19 @@ void node::simplify()
 					}
 				}
 			}
-			else if (type == node_type::DIVIDE && left->const_value == 0)
+			else if (type == node_type::DIVIDE && value_zero(left->const_value))
 				this->update_with(node::node_constant(0));
 		}
 		else if (right->type == node_type::CONST)
 		{
-			if (type == node_type::PLUS && right->const_value == 0)
+			if (type == node_type::PLUS && value_zero(right->const_value))
 				this->update_with(left);
-			else if (type == node_type::MINUS && right->const_value == 0)
+			else if (type == node_type::MINUS && value_zero(right->const_value))
 				this->update_with(left);
 			else if (type == node_type::MULTIPLY) {
-				if(right->const_value == 1)
+				if(value_one(right->const_value))
 					this->update_with(left);
-				else if (right->const_value == 0)
+				else if (value_zero(right->const_value))
 					this->update_with(node::node_constant(0));
 				else {
 					// some more exotic variants  
@@ -196,6 +196,23 @@ void node::normalize_constants(node_type parent_type) {
 		left->normalize_constants(type);
 	if (arity >= 2)
 		right->normalize_constants(type);
+}
+
+void node::normalize_factor_constants(node_type parent_type, bool inside_factor) {
+	if (type == node_type::CONST) 
+		const_value = 1;
+	else if (!inside_factor && (type == node_type::PLUS || type == node_type::MINUS)) {
+		left->normalize_factor_constants(type, false);
+		right->normalize_factor_constants(type, false);
+	}
+	else if (!inside_factor) {
+		if (type == node_type::MULTIPLY) {
+			left->normalize_factor_constants(type, true);
+			right->normalize_factor_constants(type, true);
+		}
+		else if (type == node_type::DIVIDE)
+			right->normalize_factor_constants(type, true);
+	}
 }
 
 void node::expand() {
