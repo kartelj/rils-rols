@@ -125,28 +125,51 @@ void node::simplify()
 		}
 		else if (left->type == node_type::CONST)
 		{
-			if (type == node_type::PLUS) {
+			if (type == node_type::PLUS || type==node_type::MINUS) {
 				if(value_zero(left->const_value))
-					this->update_with(right);
+					this->update_with(right); // 0+t = t || 0-t = -t
+				else if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
+					if (right->left->type == node_type::CONST) {
+						// c1+-(c2+-t) = c3+-t [c3 = c1+-c2]
+						if (type == node_type::PLUS)
+							left->const_value += right->left->const_value;
+						else
+							left->const_value -= right->left->const_value;
+						right->update_with(right->right);
+					}
+					else if (right->right->type == node_type::CONST) {
+						// c1+-(t+-c2) = c3+-t [c3 = c1+-c2]
+						if (type == node_type::PLUS) {
+							if (right->type == node_type::PLUS)
+								left->const_value += right->right->const_value;
+							else
+								left->const_value -= right->right->const_value;
+						}
+						else {
+							if (right->type == node_type::PLUS)
+								left->const_value -= right->right->const_value;
+							else
+								left->const_value += right->right->const_value;
+						}
+						right->update_with(right->left);
+					}
+				}
 			}
 			else if (type == node_type::MULTIPLY) {
 				if (value_zero(left->const_value))
 					*this = *node::node_constant(0);
 				else if (value_one(left->const_value))
 					this->update_with(right);
-				else {
-					// some more exotic variants
-					if (right->type == node_type::MULTIPLY) {
-						if (right->left->type == node_type::CONST) {
-							// c1*c2*expr = c3*expr [c3 = c1*c2]
-							left->const_value *= right->left->const_value;
-							right->update_with(right->right);
-						}
-						else if (right->right->type == node_type::CONST) {
-							// c1*expr*c2 = c3*expr [c3 = c1*c2]
-							left->const_value *= right->right->const_value;
-							right->update_with(right->left);
-						}
+				else if(right->type == node_type::MULTIPLY) {
+					if (right->left->type == node_type::CONST) {
+						// c1*c2*expr = c3*expr [c3 = c1*c2]
+						left->const_value *= right->left->const_value;
+						right->update_with(right->right);
+					}
+					else if (right->right->type == node_type::CONST) {
+						// c1*expr*c2 = c3*expr [c3 = c1*c2]
+						left->const_value *= right->right->const_value;
+						right->update_with(right->left);
 					}
 				}
 			}
@@ -155,11 +178,28 @@ void node::simplify()
 		}
 		else if (right->type == node_type::CONST)
 		{
-			if (type == node_type::PLUS && value_zero(right->const_value))
-				this->update_with(left);
-			else if (type == node_type::MINUS && value_zero(right->const_value))
-				this->update_with(left);
-			else if (type == node_type::MULTIPLY) {
+			if (type == node_type::PLUS || type == node_type::MINUS) {
+				if (value_zero(right->const_value))
+					this->update_with(left);
+				else if (left->type == node_type::PLUS || left->type == node_type::MINUS) {
+					if (left->left->type == node_type::CONST) {
+						// (c1+-t)+-c2 = c3+-t+-0 [c3 = c1+-c2]  // this 0 will be further removed with next simplification call
+						if (type == node_type::PLUS)
+							left->left->const_value += right->const_value;
+						else
+							left->left->const_value -= right->const_value;
+						right->const_value = 0;
+					}
+					else if (left->right->type == node_type::CONST) {
+						// (t+-c1)+-c2 = (t+-0)+-c3 [c3 = c1+-c2] 
+						if (left->type == node_type::PLUS)
+							right->const_value += left->right->const_value;
+						else
+							right->const_value -= left->right->const_value;
+						left->right->const_value = 0;
+					}
+				}
+			}else if (type == node_type::MULTIPLY) {
 				if(value_one(right->const_value))
 					this->update_with(left);
 				else if (value_zero(right->const_value))
@@ -215,21 +255,62 @@ void node::normalize_factor_constants(node_type parent_type, bool inside_factor)
 	}
 }
 
+shared_ptr<node> binomial_mult(shared_ptr<node> left, shared_ptr<node> right) {
+	// (t1+-t2)*(t3+-t4) = t1*t3+-t1*t4+-t2*t3+-t2*t4
+	shared_ptr<node> f1 = node::node_multiply();
+	f1->left = node::node_copy(*left->left);
+	f1->right = node::node_copy(*right->left);
+	shared_ptr<node> f2 = node::node_multiply();
+	f2->left = node::node_copy(*left->left);
+	f2->right = node::node_copy(*right->right);
+	shared_ptr<node> f3 = node::node_multiply();
+	f3->left = node::node_copy(*left->right);
+	f3->right = node::node_copy(*right->left);
+	shared_ptr<node> f4 = node::node_multiply();
+	f4->left = node::node_copy(*left->right);
+	f4->right = node::node_copy(*right->right);
+	shared_ptr<node> new_left = NULL;
+	shared_ptr<node> new_right = NULL;
+	shared_ptr<node> result = NULL;
+	if (left->type == node_type::PLUS)
+		result = node::node_plus();
+	else
+		result = node::node_minus();
+	if (right->type == node_type::PLUS) {
+		new_left = node::node_plus();
+		new_right = node::node_plus();
+	}
+	else {
+		new_left = node::node_minus();
+		new_right = node::node_minus();
+	}
+	new_left->left = f1;
+	new_left->right = f2;
+	new_right->left = f3;
+	new_right->right = f4;
+	result->left = new_left;
+	result->right = new_right;
+	return result;
+}
+
 void node::expand() {
 	// applies distributive laws recursively to expand expressions
 	if (arity == 0) {
 		return;
 	}
-	else if (arity == 1)
-		left->expand(); // TODO: expand sqr
+	else if (arity == 1) {
+		left->expand();
+		if (type == node_type::SQR && left->arity==2){
+			*this = *binomial_mult(left, left);
+		}
+	}
 	else {
 		left->expand();
 		right->expand();
 		if (this->type == node_type::MULTIPLY) {
 			if (left->type == node_type::PLUS || left->type == node_type::MINUS) {
-
 				if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
-					// (t1+-t2)*(t3+-t4) = t1*t3+-t1*t4+-t2*t3+-t2*t4
+					*this = *binomial_mult(left, right);
 				}
 				else {
 					// (t1+-t2)*t3 = t1*t3+-t2*t3
@@ -239,8 +320,6 @@ void node::expand() {
 					shared_ptr<node> new_right = node::node_multiply();
 					new_right->left = node::node_copy(*left->right);
 					new_right->right = node::node_copy(*right);
-					//delete left;
-					//delete right;
 					if (left->type == node_type::PLUS)
 						*this = *node::node_plus();
 					else
@@ -257,8 +336,6 @@ void node::expand() {
 				shared_ptr<node> new_right = node::node_multiply();
 				new_right->left = node::node_copy(*left);
 				new_right->right = node::node_copy(*right->right);
-				//delete left;
-				//delete right;
 				if (right->type == node_type::PLUS)
 					*this = *node::node_plus();
 				else

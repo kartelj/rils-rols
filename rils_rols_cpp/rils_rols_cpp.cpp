@@ -40,7 +40,7 @@ class rils_rols {
 private:
 	// control parameters
 	int max_fit_calls, max_seconds, random_state;
-	double complexity_penalty, initial_sample_size;
+	double complexity_penalty, initial_sample_size, max_complexity;
 	bool random_perturbations_order, verbose;
 	fitness_type fitness_type;
 
@@ -369,13 +369,15 @@ private:
 		}
 		for (auto &node: all_cand) {
 			//cout << "Before: " << node.to_string() << endl;
-			node.expand();
-			while(true) {
+			int it_max = 5;
+			while(it_max>0) {
 				int size = node.size();
+				node.expand();
 				node.normalize_factor_constants(node_type::NONE, false);
 				node.simplify();
 				if (node.size() == size)
 					break;
+				it_max--;
 			}
 			//cout << "After: " << node.to_string() << endl;
 			//if (node.to_string().compare(before) == 0)
@@ -506,6 +508,12 @@ private:
 	}
 
 	int compare_fitness(tuple<double, double, int> fit1, tuple<double, double, int> fit2) {
+		// if one of the models is too large, do not accept it
+		int size1 = get<2>(fit1);
+		int size2 = get<2>(fit2);
+		// if at least one of the complexities is to high and they are different, this is a clear criterion
+		if ((size1 > max_complexity || size2 > max_complexity) && size1 != size2)
+			return size1 - size2; 
 		double fit1_tot, fit2_tot;
 		switch (this->fitness_type)
 		{
@@ -541,9 +549,18 @@ private:
 				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
 				if (compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
 					improved = true;
+					int it_max = 5;
+					while (it_max>0) {
+						int size = ls_pert_tuned->size();
+						ls_pert_tuned->expand();
+						ls_pert_tuned->simplify();
+						if (size == ls_pert_tuned->size())
+							break;
+						it_max--;
+					}
 					curr_solution = ls_pert_tuned;
 					curr_fitness = ls_pert_tuned_fitness;
-					//cout << "New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution->to_string() << endl;
+					//cout << fit_calls << " New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution->to_string() << endl;
 				}
 			}
 		}
@@ -551,11 +568,12 @@ private:
 	}
 
 public:
-	rils_rols(int max_fit_calls, int max_seconds, enum fitness_type fitness_type, double complexity_penalty, double initial_sample_size, bool random_perturbations_order, bool verbose, int random_state) {
+	rils_rols(int max_fit_calls, int max_seconds, enum fitness_type fitness_type, double complexity_penalty, int max_complexity, double initial_sample_size, bool random_perturbations_order, bool verbose, int random_state) {
 		this->max_fit_calls = max_fit_calls;
 		this->max_seconds = max_seconds;
 		this->fitness_type = fitness_type;
 		this->complexity_penalty = complexity_penalty;
+		this->max_complexity = max_complexity;
 		this->initial_sample_size = initial_sample_size;
 		this->random_perturbations_order = random_perturbations_order;
 		this->verbose = verbose;
@@ -695,12 +713,13 @@ int main()
 	int max_fit = 1000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
+	int max_complexity = 200;
 	double sample_size = 0.01;
 	double train_share = 0.75;
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_08_02_0010000_03.data") != 0)
 		//	continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
@@ -740,7 +759,7 @@ int main()
 				X_test.push_back(x);
 			}
 		}
-		rils_rols rr(max_fit, max_time, fitness_type::PENALTY, complexity_penalty, sample_size, false, true, random_state);
+		rils_rols rr(max_fit, max_time, fitness_type::PENALTY, complexity_penalty, max_complexity, sample_size, false, true, random_state);
 		rr.fit(X_train, y_train);
 		Eigen::ArrayXd yp_train = rr.predict(X_train);
 		double r2_train = utils::R2(y_train, yp_train);
