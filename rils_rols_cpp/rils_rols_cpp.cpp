@@ -45,7 +45,9 @@ private:
 	fitness_type fitness_type;
 
 	// internal stuff
-	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls;
+	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls, skipped_perts, total_perts;
+	unordered_set<string> checked_perts;
+	chrono::time_point<chrono::high_resolution_clock> start_time;
 	shared_ptr < node> final_solution;
 	tuple<double, double, int> final_fitness;
 	double best_time;
@@ -58,6 +60,10 @@ private:
 		last_improved_it = 0;
 		time_elapsed = 0;
 		fit_calls = 0;
+		start_time = high_resolution_clock::now();
+		checked_perts.clear();
+		skipped_perts = 0;
+		total_perts = 0;
 		srand(random_state);
 	}
 
@@ -288,13 +294,23 @@ private:
 	vector<node> change_candidates(const node& old_node) {
 		vector<node> candidates;
 		add_const_finetune(old_node, candidates);
+		//cout << "---------------------" << endl;
+		//cout<< candidates.size() << " After finetune " << endl;
 		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
+		//cout << candidates.size() << " After subtree " << endl;
 		add_change_to_var_const(old_node, candidates);
-		add_change_unary_applied(old_node, candidates);
+		//cout << candidates.size() << " After to var const " << endl;
+		//add_change_unary_applied(old_node, candidates);
+		add_change_variable_to_unary_applied(old_node, candidates);
+		//cout << candidates.size() << " After unary applied " << endl;
 		add_change_unary_to_another(old_node, candidates);
-		add_change_binary_applied(old_node, candidates);
+		//cout << candidates.size() << " After unary another " << endl;
+		//add_change_binary_applied(old_node, candidates);
+		add_change_variable_constant_to_binary_applied(old_node, candidates);
+		//cout << candidates.size() << " After binary applied " << endl;
 		add_change_binary_to_another(old_node, candidates);
+		//cout << candidates.size() << " After binary another " << endl;
 		return candidates;
 	}
 
@@ -538,12 +554,18 @@ private:
 		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
+			//cout << "Doing LS on " << curr_solution->to_string() <<endl<< "----------------------------"<<endl;
 			vector<node> ls_perts = all_candidates(curr_solution,X,y, true);
 			for (int j = 0; j < ls_perts.size(); j++) {
 				shared_ptr<node> ls_pert = make_shared<node>(ls_perts[j]);
 				if (finished())
 					break;
-				//cout << ls_pert->to_string() << endl;
+				//string pert_str = ls_pert->to_string();
+				//if (check_skip(pert_str)) {
+				//	cout << "SKIPPED" << endl;
+				//	continue;
+				//}
+				//cout << j<<".\t"<< pert_str << endl;
 				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
@@ -582,13 +604,21 @@ public:
 	}
 
 	bool finished() {
-		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness)<early_exit_eps);
+		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness)<early_exit_eps) || duration_cast<seconds>(high_resolution_clock::now() - start_time).count()>max_seconds;
+	}
+
+	bool check_skip(const string& pert_str) {
+		// checking if pert was already checked
+		total_perts++;
+		if (checked_perts.find(pert_str) != checked_perts.end()) {
+			skipped_perts++;
+			return true;
+		}
+		checked_perts.insert(pert_str);
+		return false;
 	}
 
 	void fit(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
-		auto start = high_resolution_clock::now();
-		unordered_set<string> checked_perts;
-		int skiped_perts = 0, total_perts = 0;
 		reset();
 		// take sample only assuming X_all and y_all are already shuffled
 		int sample_size = int(initial_sample_size * X_all.size());
@@ -619,7 +649,7 @@ public:
 			}
 			improved = false;
 			//if(main_it%100==0)
-			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skiped_perts<<"/"<<total_perts << endl;
+			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skipped_perts<<"/"<<total_perts << endl;
 			vector<node> all_perts = all_candidates(start_solution,X, y, false);
 			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution." << endl;
 			vector<tuple<double, shared_ptr<node>>> r2_by_perts;
@@ -627,14 +657,9 @@ public:
 				if (finished())
 					break;
 				node pert = all_perts[i];
-				// checking if pert was already checked
 				string pert_str = pert.to_string();
-				total_perts++;
-				if (checked_perts.find(pert_str) != checked_perts.end()) {
-					skiped_perts++;
-					continue; // already checked before
-				}
-				checked_perts.insert(pert_str);
+				if (check_skip(pert_str))
+					continue;
 				//cout << pert_str << endl;
 				//pert = local_search(pert, X, y);
 				shared_ptr < node> pert_tuned = node::node_copy(pert); // do nothing
@@ -677,13 +702,13 @@ public:
 					final_fitness = ls_pert_fitness;
 					std::cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
 					auto stop = high_resolution_clock::now();
-					best_time = duration_cast<milliseconds>(stop - start).count() / 1000.0;
+					best_time = duration_cast<milliseconds>(stop - start_time).count() / 1000.0;
 					//break;
 				}
 			}
 		}
 		auto stop = high_resolution_clock::now();
-		total_time = duration_cast<milliseconds>(stop - start).count()/1000.0;
+		total_time = duration_cast<milliseconds>(stop - start_time).count()/1000.0;
 	}
 
 	Eigen::ArrayXd predict(const vector<Eigen::ArrayXd> &X) {
@@ -710,7 +735,7 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 10000000;
+	int max_fit = 1000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	int max_complexity = 200;
@@ -719,7 +744,7 @@ int main()
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_08_02_0010000_03.data") != 0)
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_15_04_0010000_03.data") != 0)
 		//	continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
