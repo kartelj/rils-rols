@@ -12,9 +12,11 @@
 #include "node.h"
 #include "utils.h"
 #include "eigen/Eigen/Dense"
+//#include <boost/python.hpp>
 
 using namespace std;
 using namespace std::chrono;
+//using namespace boost::python;
 namespace fs = std::filesystem;
 
 enum class fitness_type
@@ -174,6 +176,20 @@ private:
 		}
 	}
 
+	void add_change_to_var_or_1(const node& old_node, vector<node>& candidates) {
+		// change anything to variable or constant
+		for (auto& n : allowed_nodes) {
+			if (n.type!=node_type::VAR)
+				continue;
+			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
+				continue; // avoid changing to same variable
+			shared_ptr < node> n_c = node::node_copy(n);
+			candidates.push_back(*n_c);
+		}
+		candidates.push_back(*node::node_constant(1));
+	}
+
+
 	void add_change_const_to_var(const node& old_node, vector<node>& candidates) {
 		// change constant to variable
 		if (old_node.type == node_type::CONST) {
@@ -283,7 +299,8 @@ private:
 		vector<node> candidates;
 		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
-		add_change_const_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
+		//add_change_const_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
+		add_change_to_var_or_1(old_node, candidates);
 		add_change_variable_to_unary_applied(old_node, candidates); 
 		add_change_unary_to_another(old_node, candidates);
 		add_change_variable_constant_to_binary_applied(old_node, candidates);
@@ -299,7 +316,8 @@ private:
 		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
 		//cout << candidates.size() << " After subtree " << endl;
-		add_change_to_var_const(old_node, candidates);
+		//add_change_to_var_const(old_node, candidates);
+		add_change_to_var_or_1(old_node, candidates);
 		//cout << candidates.size() << " After to var const " << endl;
 		//add_change_unary_applied(old_node, candidates);
 		add_change_variable_to_unary_applied(old_node, candidates);
@@ -801,3 +819,13 @@ int main()
 		out_file.close();
 	}
 }
+
+// python integration stuff
+/*
+BOOST_PYTHON_MODULE(rils_rols_ext) {
+	class_<rils_rols>("rils_rols")
+		.def(init<int, int, int, fitness_type, double, int, double, bool, bool, int>())
+		.def("fit", &rils_rols::fit)
+		;
+}
+*/
