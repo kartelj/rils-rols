@@ -735,7 +735,7 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 1000000;
+	int max_fit = 10000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	int max_complexity = 200;
