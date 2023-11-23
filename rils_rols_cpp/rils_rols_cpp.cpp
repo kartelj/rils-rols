@@ -12,20 +12,13 @@
 #include "node.h"
 #include "utils.h"
 #include "eigen/Eigen/Dense"
-//#include <boost/python.hpp>
+//#include <Python.h>
+//#include <pybind11/pybind11.h>
 
 using namespace std;
 using namespace std::chrono;
-//using namespace boost::python;
 namespace fs = std::filesystem;
-
-enum class fitness_type
-{
-	BIC = 1,
-	SRM = 2,
-	PENALTY = 3,
-	JACCARD = 4
-};
+//namespace py = pybind11;
 
 template<int M, template<typename> class F = std::less>
 struct TupleCompare
@@ -44,14 +37,13 @@ private:
 	int max_fit_calls, max_seconds, random_state;
 	double complexity_penalty, initial_sample_size, max_complexity;
 	bool random_perturbations_order, verbose;
-	fitness_type fitness_type;
 
 	// internal stuff
 	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls, skipped_perts, total_perts;
 	unordered_set<string> checked_perts;
 	chrono::time_point<chrono::high_resolution_clock> start_time;
 	shared_ptr < node> final_solution;
-	tuple<double, double, int> final_fitness;
+	std::tuple<double, double, int> final_fitness;
 	double best_time;
 	double total_time;
 	double early_exit_eps = pow(10,-PRECISION);
@@ -525,39 +517,31 @@ private:
 		return ols_solution;
 	}
 
-	tuple<double, double, int> fitness(shared_ptr < node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
+	std::tuple<double, double, int> fitness(shared_ptr < node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		fit_calls++;
 		Eigen::ArrayXd yp = solution->evaluate_all(X);
-		double r2 = utils::R2(y, yp);
-		double rmse = utils::RMSE(y, yp);
+		double r2 = utils::R2e(y, yp);
+		double rmse = utils::RMSEe(y, yp);
 		int size = solution->size();
 		if (r2 != r2 || rmse != rmse) // true only for NaN values
 			return make_tuple<double, double, int>(1000, 1000, 1000);
-		tuple<double, double, int> fit = tuple<double, double, int>{ 1 - r2, rmse, size };
+		std::tuple<double, double, int> fit = std::tuple<double, double, int>{ 1 - r2, rmse, size };
 		return fit;
 	}
 
-	double penalty_fitness(tuple<double, double, int> fit) {
+	double penalty_fitness(std::tuple<double, double, int> fit) {
 		return (1 + get<0>(fit)) * (1 + get<1>(fit)) * (1 + get<2>(fit) * this->complexity_penalty);
 	}
 
-	int compare_fitness(tuple<double, double, int> fit1, tuple<double, double, int> fit2) {
+	int compare_fitness(std::tuple<double, double, int> fit1, std::tuple<double, double, int> fit2) {
 		// if one of the models is too large, do not accept it
 		int size1 = get<2>(fit1);
 		int size2 = get<2>(fit2);
 		// if at least one of the complexities is to high and they are different, this is a clear criterion
 		if ((size1 > max_complexity || size2 > max_complexity) && size1 != size2)
 			return size1 - size2; 
-		double fit1_tot, fit2_tot;
-		switch (this->fitness_type)
-		{
-		case fitness_type::PENALTY:
-			fit1_tot = penalty_fitness(fit1);
-			fit2_tot = penalty_fitness(fit2);
-			break;
-		default:
-			throw exception("Not implemented fitness type.");
-		}
+		double fit1_tot = penalty_fitness(fit1);
+		double fit2_tot = penalty_fitness(fit2);
 		if (fit1_tot < fit2_tot)
 			return -1;
 		if (fit1_tot > fit2_tot)
@@ -569,7 +553,7 @@ private:
 		bool improved = true;
 		shared_ptr<node> curr_solution = node::node_copy(*passed_solution);
 		curr_solution = tune_constants(curr_solution, X, y);
-		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
+		std::tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
 			//cout << "Doing LS on " << curr_solution->to_string() <<endl<< "----------------------------"<<endl;
@@ -585,7 +569,7 @@ private:
 				//}
 				//cout << j<<".\t"<< pert_str << endl;
 				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
-				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
+				std::tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
 				if (compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
 					improved = true;
@@ -608,14 +592,12 @@ private:
 	}
 
 public:
-	rils_rols(int max_fit_calls, int max_seconds, enum fitness_type fitness_type, double complexity_penalty, int max_complexity, double initial_sample_size, bool random_perturbations_order, bool verbose, int random_state) {
+	rils_rols(int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double initial_sample_size,bool verbose, int random_state) {
 		this->max_fit_calls = max_fit_calls;
 		this->max_seconds = max_seconds;
-		this->fitness_type = fitness_type;
 		this->complexity_penalty = complexity_penalty;
 		this->max_complexity = max_complexity;
 		this->initial_sample_size = initial_sample_size;
-		this->random_perturbations_order = random_perturbations_order;
 		this->verbose = verbose;
 		this->random_state = random_state;
 		reset();
@@ -636,16 +618,14 @@ public:
 		return false;
 	}
 
-	void fit(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
+	void fit(vector<vector<double>> X_all, vector<double> y_all) {
 		reset();
 		// take sample only assuming X_all and y_all are already shuffled
 		int sample_size = int(initial_sample_size * X_all.size());
 		vector<Eigen::ArrayXd> X;
 		Eigen::ArrayXd y(sample_size);
 		for (int i = 0; i < sample_size; i++) {
-			Eigen::ArrayXd x(X_all[i].size());
-			for (int j = 0; j < x.size(); j++)
-				x[j] = X_all[i][j];
+			Eigen::ArrayXd x = utils::vector_to_eigen_array(X_all[i]);
 			X.push_back(x);
 			y[i] = y_all[i];
 		}
@@ -670,7 +650,7 @@ public:
 			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skipped_perts<<"/"<<total_perts << endl;
 			vector<node> all_perts = all_candidates(start_solution,X, y, false);
 			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution." << endl;
-			vector<tuple<double, shared_ptr<node>>> r2_by_perts;
+			vector<std::tuple<double, shared_ptr<node>>> r2_by_perts;
 			for (int i = 0;i < all_perts.size(); i++) {
 				if (finished())
 					break;
@@ -682,8 +662,8 @@ public:
 				//pert = local_search(pert, X, y);
 				shared_ptr < node> pert_tuned = node::node_copy(pert); // do nothing
 				//shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
-				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
-				r2_by_perts.push_back(tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
+				std::tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
+				r2_by_perts.push_back(std::tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
 				/*
 				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
 					improved = true;
@@ -710,7 +690,7 @@ public:
 				//cout << pert_str << endl;
 				checked_perts.insert(pert_str);
 				ls_pert = local_search(ls_pert, X, y);
-				tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
+				std::tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
 				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert->to_string() << endl;
 				int cmp = compare_fitness(ls_pert_fitness, final_fitness);
 				if(cmp<0) {
@@ -729,15 +709,22 @@ public:
 		total_time = duration_cast<milliseconds>(stop - start_time).count()/1000.0;
 	}
 
-	Eigen::ArrayXd predict(const vector<Eigen::ArrayXd> &X) {
-		return final_solution->evaluate_all(X);
+	vector<double> predict(const vector<vector<double>> &X) {
+		vector<Eigen::ArrayXd> Xe;
+		for (int i = 0; i < X.size(); i++) {
+			Eigen::ArrayXd x = utils::vector_to_eigen_array(X[i]);
+			Xe.push_back(x);
+		}
+		Eigen::ArrayXd res = final_solution->evaluate_all(Xe);
+		vector<double> vec_res = utils::eigen_array_to_vector(res);
+		return vec_res;
 	}
 
 	string get_model_string() {
 		return final_solution->to_string();
 	}
 
-	int get_best_time() {
+	double get_best_time() {
 		return best_time;
 	}
 
@@ -778,8 +765,8 @@ int main()
 		// shuffling for later split between training and test set
 		shuffle(lines.begin(), lines.end(), default_random_engine(random_state));
 		int train_cnt = int(train_share * lines.size());
-		vector<Eigen::ArrayXd> X_train, X_test;
-		Eigen::ArrayXd y_train(train_cnt), y_test(lines.size() - train_cnt);
+		vector<vector<double>> X_train, X_test;
+		vector<double> y_train(train_cnt), y_test(lines.size() - train_cnt);
 		for (int i = 0; i < lines.size(); i++) {
 			string line = lines[i];
 			stringstream ss(line);
@@ -787,7 +774,7 @@ int main()
 			string tmp;
 			while (getline(ss, tmp, '\t'))
 				tokens.push_back(tmp);
-			Eigen::ArrayXd x(tokens.size());
+			vector<double> x(tokens.size());
 			for (int i = 0; i < tokens.size() - 1; i++) {
 				string str(tokens[i]);
 				x[i] = stod(str);
@@ -802,12 +789,12 @@ int main()
 				X_test.push_back(x);
 			}
 		}
-		rils_rols rr(max_fit, max_time, fitness_type::PENALTY, complexity_penalty, max_complexity, sample_size, false, true, random_state);
+		rils_rols rr(max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
 		rr.fit(X_train, y_train);
-		Eigen::ArrayXd yp_train = rr.predict(X_train);
+		vector<double> yp_train = rr.predict(X_train);
 		double r2_train = utils::R2(y_train, yp_train);
 		double rmse_train = utils::RMSE(y_train, yp_train);
-		Eigen::ArrayXd yp_test = rr.predict(X_test);
+		vector<double> yp_test = rr.predict(X_test);
 		double r2 = utils::R2(y_test, yp_test);
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
@@ -819,13 +806,16 @@ int main()
 		out_file.close();
 	}
 }
-
-// python integration stuff
 /*
-BOOST_PYTHON_MODULE(rils_rols_ext) {
-	class_<rils_rols>("rils_rols")
-		.def(init<int, int, int, fitness_type, double, int, double, bool, bool, int>())
+
+PYBIND11_MODULE(rils_rols_cpp, m) {
+	py::class_<rils_rols>(m, "rils_rols")
+		.def(py::init<int, int, double, int, double, bool, int>())
 		.def("fit", &rils_rols::fit)
-		;
+		.def("predict", &rils_rols::predict)
+		.def("get_model_string", &rils_rols::get_model_string)
+		.def("get_best_time", &rils_rols::get_best_time)
+		.def("get_fit_calls", &rils_rols::get_fit_calls)
+		.def("get_total_time", &rils_rols::get_total_time);
 }
 */
