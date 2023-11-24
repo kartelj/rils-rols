@@ -53,7 +53,7 @@ for fpath in instance_files:
 
     for sample_size in initial_sample_sizes:
         if parallelism==1:
-            rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, initial_sample_size=sample_size, verbose=verbose)
+            rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, sample_size=sample_size, verbose=verbose)
         elif parallelism>1:
             rils = RILSROLSEnsembleRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, parallelism=parallelism, initial_sample_size=sample_size, verbose=verbose)
         else:

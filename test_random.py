@@ -11,11 +11,13 @@ from rils_rols.rils_rols_ensemble import RILSROLSEnsembleRegressor
 instances_dir = "paper_resources/random_12345_data" 
 random_state = 23654
 train_perc = 0.75
-time = 300
-max_fit = 100000
+time = 1200
+max_fit = 1000000
 noise_level = 0
 complexity_penalty = 0.001 # 0.001 default
+max_complexity = 200
 parallelism = 1
+sample_size = 0.01
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 
@@ -23,7 +25,7 @@ out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 with open(out_path, "w") as f:
     f.write("Tests started\n")
 
-for fpath in instance_files:
+for fpath in  instance_files:
     print("Running instance "+fpath)
     with open(instances_dir+"/"+ fpath) as f:
         lines = f.readlines()
@@ -45,16 +47,10 @@ for fpath in instance_files:
             else:
                 X_test.append(newX)
                 y_test.append(newY)
-
         y_train = utils.noisefy(y_train, noise_level, random_state)
 
-    if parallelism==1:
-        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty)
-    elif parallelism>1:
-        rils = RILSROLSEnsembleRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, parallelism=parallelism)
-    else:
-        raise Exception("Parallelism parameter must be >= 1.")
-
+    rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, sample_size=sample_size, max_complexity=max_complexity, complexity_penalty=complexity_penalty, verbose=True)
+    
     rils.fit(X_train, y_train)
     report_string = rils.fit_report_string(X_train, y_train)
     rils_R2 = -1

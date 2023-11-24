@@ -1,4 +1,3 @@
-Tests started
 random_03_01_0010000_00.data	maxTime=300	maxFitCalls=100000	seed=23654	sizePenalty=0.001	R2=1.0000000	RMSE=0.0000000	size=1	sec=0.2	mainIt=1	lsIt=1	fitCalls=207	expr=x0	exprSimp=x0	errTol=1e-16	fitType=FitnessType.PENALTY	initSampleSize=0.01	randomPert=False	TestR2=1.00000000	TestRMSE=0.00000000
 random_03_01_0010000_01.data	maxTime=300	maxFitCalls=100000	seed=23654	sizePenalty=0.001	R2=1.0000000	RMSE=0.0000000	size=3	sec=0.9	mainIt=1	lsIt=3	fitCalls=794	expr=pow(x0,4.0)	exprSimp=x0**4	errTol=1e-16	fitType=FitnessType.PENALTY	initSampleSize=0.01	randomPert=False	TestR2=1.00000000	TestRMSE=0.00000000
 random_03_01_0010000_02.data	maxTime=300	maxFitCalls=100000	seed=23654	sizePenalty=0.001	R2=1.0000000	RMSE=0.0000000	size=3	sec=0.5	mainIt=1	lsIt=2	fitCalls=476	expr=(1.0+x0)	exprSimp=x0+1	errTol=1e-16	fitType=FitnessType.PENALTY	initSampleSize=0.01	randomPert=False	TestR2=1.00000000	TestRMSE=0.00000000

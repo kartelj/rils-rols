@@ -3,33 +3,31 @@ from random import Random
 import time
 from sklearn.base import BaseEstimator
 from sympy import *
-from .node import Node
-from .rils_rols import RILSROLSRegressor, FitnessType
+from .rils_rols import RILSROLSRegressor
 from joblib import Parallel, delayed
 
 import warnings
 
-from .solution import Solution
 warnings.filterwarnings("ignore")
 
 class RILSROLSEnsembleRegressor(BaseEstimator):
 
-    def __init__(self, max_fit_calls=100000, max_seconds=100, fitness_type=FitnessType.PENALTY, complexity_penalty=0.001, initial_sample_size=0.01, parallelism = 8, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, initial_sample_size=0.01, parallelism = 8, verbose=False, random_state=0):
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
         self.complexity_penalty = complexity_penalty
         self.random_state = random_state
         self.parallelism = parallelism
         self.verbose = verbose
-        self.fitness_type = fitness_type
         self.initial_sample_size = initial_sample_size
         rg = Random(random_state)
         random_states = [rg.randint(10000, 99999) for i in range(self.parallelism)]
-        self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds, fitness_type=fitness_type, 
-                                                  complexity_penalty=complexity_penalty, initial_sample_size=initial_sample_size,
-                                                  random_perturbations_order=True, verbose=verbose, random_state=random_states[i]) 
+        self.base_regressors = [RILSROLSRegressor(max_fit_calls=max_fit_calls, max_seconds=max_seconds,
+                                                  complexity_penalty=complexity_penalty, sample_size=initial_sample_size,verbose=verbose, random_state=random_states[i]) 
                                                   for i in range(len(random_states))]
 
+# TODO: fix ensemble
+'''
     def fit(self, X, y):
         self.start = time.time()
         # now run each base regressor (RILSROLSRegressor) as a separate process
@@ -75,3 +73,4 @@ class RILSROLSEnsembleRegressor(BaseEstimator):
         for arg in preorder_traversal(self.model_simp):
             c += 1
         return c
+'''

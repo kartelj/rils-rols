@@ -25,26 +25,23 @@ from math import sin, log
 ''' RILSROLSRegressor parameters:
     1. max_fit_calls=100000             -- maximal number of fitness function calls
     2. max_seconds=100                  -- maximal running time in seconds
-    3. fitness_type=FitnessType.PENALTY -- function that guides the search process, other possibilities are: FitnessType.BIC and FitnessType.SRM
-    4. complexity_penalty=0.001         -- expression size penalty (used for FitnessType.PENALTY) -- larger value means size is more important
-    5. initial_sample_size=0.01         -- the size of the sample taken from the training part (initially)
-    6. random_perturbations_order=False -- if True, perturbations are checked in a random order, otherwise, according to R^2 of perturbation 
-    7. verbose=False                    -- if True, the output during the program execution contains more details
-    8. random_state=0                   -- random seed -- when 0 (default), the algorithm might produce different results in different runs
+    3. complexity_penalty=0.001         -- expression size penalty (used for FitnessType.PENALTY) -- larger value means size is more important
+    4. initial_sample_size=0.01         -- the size of the sample taken from the training part (initially)
+    5. verbose=False                    -- if True, the output during the program execution contains more details
+    6. random_state=0                   -- random seed -- when 0 (default), the algorithm might produce different results in different runs
 '''
 
 ''' RILSROLSEnsembleRegressor parameters:
     1. max_fit_calls=100000             -- maximal number of fitness function calls
     2. max_seconds=100                  -- maximal running time in seconds
-    3. fitness_type=FitnessType.PENALTY -- function that guides the search process, other possibilities are: FitnessType.BIC and FitnessType.SRM
-    4. complexity_penalty=0.001         -- expression size penalty (used for FitnessType.PENALTY) -- larger value means size is more important
-    5. initial_sample_size=0.01         -- the size of the sample taken from the training part (initially)
-    6. parallelism=8                    -- determines the number of RILS-ROLS regressors used in the ensemble
-    7. verbose=False                    -- if True, the output during the program execution contains more details
-    8. random_state=0                   -- random seed -- when 0 (default), the algorithm might produce different results in different runs
+    3. complexity_penalty=0.001         -- expression size penalty (used for FitnessType.PENALTY) -- larger value means size is more important
+    4. initial_sample_size=0.01         -- the size of the sample taken from the training part (initially)
+    5. parallelism=8                    -- determines the number of RILS-ROLS regressors used in the ensemble
+    6. verbose=False                    -- if True, the output during the program execution contains more details
+    7. random_state=0                   -- random seed -- when 0 (default), the algorithm might produce different results in different runs
 '''
 
-regressors = [RILSROLSRegressor(), RILSROLSEnsembleRegressor()]
+regressors = [RILSROLSRegressor()] #, RILSROLSEnsembleRegressor()]
 
 # toy dataset 
 X = [[3, 4], [1, 2], [-10, 20], [10, 10], [100, 100], [22, 23]]

@@ -12,13 +12,20 @@
 #include "node.h"
 #include "utils.h"
 #include "eigen/Eigen/Dense"
-//#include <Python.h>
-//#include <pybind11/pybind11.h>
+
+#define PYTHON_WRAPPER 1 // comment this to run pure CPP
+
+#ifdef PYTHON_WRAPPER
+
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+namespace py = pybind11;
+
+#endif
 
 using namespace std;
 using namespace std::chrono;
 namespace fs = std::filesystem;
-//namespace py = pybind11;
 
 template<int M, template<typename> class F = std::less>
 struct TupleCompare
@@ -29,6 +36,7 @@ struct TupleCompare
 		return F<typename tuple_element<M, T>::type>()(std::get<M>(t1), std::get<M>(t2));
 	}
 };
+
 
 class rils_rols {
 
@@ -43,10 +51,10 @@ private:
 	unordered_set<string> checked_perts;
 	chrono::time_point<chrono::high_resolution_clock> start_time;
 	shared_ptr < node> final_solution;
-	std::tuple<double, double, int> final_fitness;
+	tuple<double, double, int> final_fitness;
 	double best_time;
 	double total_time;
-	double early_exit_eps = pow(10,-PRECISION);
+	double early_exit_eps = pow(10, -PRECISION);
 
 	void reset() {
 		ls_it = 0;
@@ -80,27 +88,27 @@ private:
 		shared_ptr < node> sqrt = node::node_pow();
 		sqrt->right = node::node_constant(0.5);
 		allowed_nodes.push_back(*sqrt);*/
-		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10};
+		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10 };
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < var_cnt; i++)
 			allowed_nodes.push_back(*node::node_variable(i));
-		cout << "Finished creating allowed nodes"<<endl;
+		cout << "Finished creating allowed nodes" << endl;
 	}
 
-	void call_and_verify_simplify(shared_ptr<node> solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+	void call_and_verify_simplify(shared_ptr<node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		shared_ptr<node> solution_before = node::node_copy(*solution);
 		double r2_before = get<0>(fitness(solution, X, y));
 		solution->simplify();
 		double r2_after = get<0>(fitness(solution, X, y));
-		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after)/abs(max(r2_before, r2_after))> 0.1) {
+		if (abs(r2_before - r2_after) > 0.0001 && abs(r2_before - r2_after) / abs(max(r2_before, r2_after)) > 0.1) {
 			solution_before->simplify();
-				std::cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification "<< r2_before<< " "<<r2_after << endl;
-				exit(1);
+			std::cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification " << r2_before << " " << r2_after << endl;
+			exit(1);
 		}
 	}
 
-	void add_const_finetune(const node& old_node, vector<node> &candidates) {
+	void add_const_finetune(const node& old_node, vector<node>& candidates) {
 		if (old_node.type == node_type::CONST) {
 			//finetune constants
 			if (old_node.const_value == 0) {
@@ -171,7 +179,7 @@ private:
 	void add_change_to_var_or_1(const node& old_node, vector<node>& candidates) {
 		// change anything to variable or constant
 		for (auto& n : allowed_nodes) {
-			if (n.type!=node_type::VAR)
+			if (n.type != node_type::VAR)
 				continue;
 			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
 				continue; // avoid changing to same variable
@@ -208,7 +216,7 @@ private:
 		}
 	}
 	void add_change_variable_to_unary_applied(const node& old_node, vector<node>& candidates) {
-		if (old_node.type == node_type::VAR) 
+		if (old_node.type == node_type::VAR)
 			add_change_unary_applied(old_node, candidates);
 	}
 
@@ -230,26 +238,34 @@ private:
 
 	void add_change_binary_applied(const node& old_node, vector<node>& candidates) {
 		// change anything to binary operation with some variable or constant  -- increases the model size
+		vector<shared_ptr<node>> subtrees = node::all_subtrees_references(make_shared<node>(old_node));
+		vector<node> args;
+		for (auto subtree : subtrees)
+			args.push_back(*subtree);
+		for (auto& n_var_const : allowed_nodes) {
+			if (n_var_const.type != node_type::VAR && n_var_const.type != node_type::CONST)
+				continue;
+			args.push_back(n_var_const);
+		}
+
 		for (auto& n_bin : allowed_nodes) {
 			if (n_bin.arity != 2)
 				continue;
-			for (auto& n_var_const : allowed_nodes) {
-				if (n_var_const.type != node_type::VAR && n_var_const.type != node_type::CONST)
-					continue;
+			for (auto& n_arg: args){
 				if (n_bin.is_allowed_left(old_node)) {
 					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
 					shared_ptr < node> old_node_c = node::node_copy(old_node);
-					shared_ptr < node> n_var_c = node::node_copy(n_var_const);
+					shared_ptr < node> n_arg_c = node::node_copy(n_arg);
 					n_bin_c->left = old_node_c;
-					n_bin_c->right = n_var_c;
+					n_bin_c->right = n_arg_c;
 					candidates.push_back(*n_bin_c);
 				}
-				if (!n_bin.symmetric && n_bin.is_allowed_left(n_var_const)) {
+				if (!n_bin.symmetric && n_bin.is_allowed_left(n_arg)) {
 					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
 					shared_ptr < node> old_node_c = node::node_copy(old_node);
-					shared_ptr < node> n_var_c = node::node_copy(n_var_const);
+					shared_ptr < node> n_arg_c = node::node_copy(n_arg);
 					n_bin_c->right = old_node_c;
-					n_bin_c->left = n_var_c;
+					n_bin_c->left = n_arg_c;
 					candidates.push_back(*n_bin_c);
 				}
 			}
@@ -293,7 +309,7 @@ private:
 		add_change_to_subtree(old_node, candidates);
 		//add_change_const_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
 		add_change_to_var_or_1(old_node, candidates);
-		add_change_variable_to_unary_applied(old_node, candidates); 
+		add_change_variable_to_unary_applied(old_node, candidates);
 		add_change_unary_to_another(old_node, candidates);
 		add_change_variable_constant_to_binary_applied(old_node, candidates);
 		add_change_binary_to_another(old_node, candidates);
@@ -303,24 +319,15 @@ private:
 	vector<node> change_candidates(const node& old_node) {
 		vector<node> candidates;
 		add_const_finetune(old_node, candidates);
-		//cout << "---------------------" << endl;
-		//cout<< candidates.size() << " After finetune " << endl;
-		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
-		//cout << candidates.size() << " After subtree " << endl;
 		//add_change_to_var_const(old_node, candidates);
 		add_change_to_var_or_1(old_node, candidates);
-		//cout << candidates.size() << " After to var const " << endl;
-		//add_change_unary_applied(old_node, candidates);
-		add_change_variable_to_unary_applied(old_node, candidates);
-		//cout << candidates.size() << " After unary applied " << endl;
+		add_change_unary_applied(old_node, candidates);
+		//add_change_variable_to_unary_applied(old_node, candidates);
 		add_change_unary_to_another(old_node, candidates);
-		//cout << candidates.size() << " After unary another " << endl;
-		//add_change_binary_applied(old_node, candidates);
-		add_change_variable_constant_to_binary_applied(old_node, candidates);
-		//cout << candidates.size() << " After binary applied " << endl;
+		add_change_binary_applied(old_node, candidates);
+		//add_change_variable_constant_to_binary_applied(old_node, candidates);
 		add_change_binary_to_another(old_node, candidates);
-		//cout << candidates.size() << " After binary another " << endl;
 		return candidates;
 	}
 
@@ -393,10 +400,10 @@ private:
 			}
 			i++;
 		}
-		for (auto &node: all_cand) {
+		for (auto& node : all_cand) {
 			//cout << "Before: " << node.to_string() << endl;
 			int it_max = 5;
-			while(it_max>0) {
+			while (it_max > 0) {
 				int size = node.size();
 				node.expand();
 				node.normalize_factor_constants(node_type::NONE, false);
@@ -412,7 +419,7 @@ private:
 			//cout << node.to_string() << "\tAFTER" << endl;
 			//cout << endl;
 		}
-		
+
 		// eliminate duplicates -- TODO: to_string() is slow, fix this
 		unordered_set<string> filtered_cand_strings;
 		vector<node> filtered_candidates;
@@ -445,7 +452,7 @@ private:
 		for (auto f : all_factors) {
 			if (f->type == node_type::CONST)
 				continue;
-			if (f->arity==2 && f->left->type == node_type::CONST && f->right->type == node_type::CONST)
+			if (f->arity == 2 && f->left->type == node_type::CONST && f->right->type == node_type::CONST)
 				continue; // this is also constant so ignore it
 			if (f->type == node_type::MULTIPLY || f->type == node_type::PLUS || f->type == node_type::MINUS) { // exactly one of the terms is constant so just take another one into account because the constant will go to free term
 				if (f->left->type == node_type::CONST) {
@@ -464,7 +471,7 @@ private:
 			factors.push_back(f);
 		}
 		factors.push_back(node::node_constant(1)); // add free term
-		
+
 		Eigen::MatrixXd A(X.size(), factors.size());
 		Eigen::VectorXd b(X.size());
 
@@ -473,7 +480,7 @@ private:
 
 		for (int i = 0; i < factors.size(); i++) {
 			Eigen::ArrayXd factor_values = factors[i]->evaluate_all(X);
-			for (int j = 0; j < X.size(); j++) 
+			for (int j = 0; j < X.size(); j++)
 				A(j, i) = factor_values[j];
 		}
 
@@ -481,9 +488,9 @@ private:
 		//for (auto coef : coefs)
 		//	cout << coef << endl;
 
-		shared_ptr < node> ols_solution  = NULL;
+		shared_ptr < node> ols_solution = NULL;
 		int i = 0;
-		for (auto coef: coefs) {
+		for (auto coef : coefs) {
 			//cout << coefs[i] << "*"<< factors[i]->to_string()<<"+";
 			if (value_zero(coef)) {
 				i++;
@@ -517,31 +524,32 @@ private:
 		return ols_solution;
 	}
 
-	std::tuple<double, double, int> fitness(shared_ptr < node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
+	tuple<double, double, int> fitness(shared_ptr < node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		fit_calls++;
 		Eigen::ArrayXd yp = solution->evaluate_all(X);
-		double r2 = utils::R2e(y, yp);
-		double rmse = utils::RMSEe(y, yp);
+		double r2 = utils::R2(y, yp);
+		double rmse = utils::RMSE(y, yp);
 		int size = solution->size();
 		if (r2 != r2 || rmse != rmse) // true only for NaN values
 			return make_tuple<double, double, int>(1000, 1000, 1000);
-		std::tuple<double, double, int> fit = std::tuple<double, double, int>{ 1 - r2, rmse, size };
+		tuple<double, double, int> fit = tuple<double, double, int>{ 1 - r2, rmse, size };
 		return fit;
 	}
 
-	double penalty_fitness(std::tuple<double, double, int> fit) {
+	double penalty_fitness(tuple<double, double, int> fit) {
 		return (1 + get<0>(fit)) * (1 + get<1>(fit)) * (1 + get<2>(fit) * this->complexity_penalty);
 	}
 
-	int compare_fitness(std::tuple<double, double, int> fit1, std::tuple<double, double, int> fit2) {
+	int compare_fitness(tuple<double, double, int> fit1, tuple<double, double, int> fit2) {
 		// if one of the models is too large, do not accept it
 		int size1 = get<2>(fit1);
 		int size2 = get<2>(fit2);
 		// if at least one of the complexities is to high and they are different, this is a clear criterion
 		if ((size1 > max_complexity || size2 > max_complexity) && size1 != size2)
-			return size1 - size2; 
-		double fit1_tot = penalty_fitness(fit1);
-		double fit2_tot = penalty_fitness(fit2);
+			return size1 - size2;
+		double fit1_tot, fit2_tot;
+		fit1_tot = penalty_fitness(fit1);
+		fit2_tot = penalty_fitness(fit2);
 		if (fit1_tot < fit2_tot)
 			return -1;
 		if (fit1_tot > fit2_tot)
@@ -549,15 +557,15 @@ private:
 		return 0;
 	}
 
-	shared_ptr<node> local_search(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd> &X, const Eigen::ArrayXd &y) {
+	shared_ptr<node> local_search(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		bool improved = true;
 		shared_ptr<node> curr_solution = node::node_copy(*passed_solution);
 		curr_solution = tune_constants(curr_solution, X, y);
-		std::tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
+		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
 			//cout << "Doing LS on " << curr_solution->to_string() <<endl<< "----------------------------"<<endl;
-			vector<node> ls_perts = all_candidates(curr_solution,X,y, true);
+			vector<node> ls_perts = all_candidates(curr_solution, X, y, true);
 			for (int j = 0; j < ls_perts.size(); j++) {
 				shared_ptr<node> ls_pert = make_shared<node>(ls_perts[j]);
 				if (finished())
@@ -569,12 +577,12 @@ private:
 				//}
 				//cout << j<<".\t"<< pert_str << endl;
 				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
-				std::tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
+				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
 				if (compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
 					improved = true;
 					int it_max = 5;
-					while (it_max>0) {
+					while (it_max > 0) {
 						int size = ls_pert_tuned->size();
 						ls_pert_tuned->expand();
 						ls_pert_tuned->simplify();
@@ -592,7 +600,7 @@ private:
 	}
 
 public:
-	rils_rols(int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double initial_sample_size,bool verbose, int random_state) {
+	rils_rols(int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double initial_sample_size, bool verbose, int random_state) {
 		this->max_fit_calls = max_fit_calls;
 		this->max_seconds = max_seconds;
 		this->complexity_penalty = complexity_penalty;
@@ -604,7 +612,7 @@ public:
 	}
 
 	bool finished() {
-		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness)<early_exit_eps) || duration_cast<seconds>(high_resolution_clock::now() - start_time).count()>max_seconds;
+		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness) < early_exit_eps) || duration_cast<seconds>(high_resolution_clock::now() - start_time).count() > max_seconds;
 	}
 
 	bool check_skip(const string& pert_str) {
@@ -618,14 +626,70 @@ public:
 		return false;
 	}
 
-	void fit(vector<vector<double>> X_all, vector<double> y_all) {
+#ifdef PYTHON_WRAPPER
+	void fit(py::array_t<double> X, py::array_t<double> y, int data_cnt, int feat_cnt) {
+		py::buffer_info buf_X = X.request();
+		double* ptr_X = (double*)buf_X.ptr;
+		if (buf_X.size != data_cnt * feat_cnt) {
+			cout << "Size of X " << buf_X.size << " is not the same as the product of data count and feature count " << data_cnt * feat_cnt << endl;
+			exit(1);
+		}
+		// now resize X
+		vector<Eigen::ArrayXd> Xe;
+		for (int i = 0; i < data_cnt; i++) {
+			Eigen::ArrayXd x(feat_cnt);
+			for (int j = 0; j < feat_cnt; j++)
+				x[j] = ptr_X[i * feat_cnt + j];
+			Xe.push_back(x);
+		}
+
+		py::buffer_info buf_y = y.request();
+		double* ptr_y = (double*)buf_y.ptr;
+		if (buf_y.size != data_cnt) {
+			cout << "Size of y " << buf_y.size << " is not the same as the data count " << data_cnt << endl;
+			exit(1);
+		}
+		Eigen::ArrayXd ye(data_cnt);
+		for (int i = 0; i < data_cnt; i++)
+			ye[i] = ptr_y[i];
+		fit_inner(Xe, ye);
+	}
+
+	py::array_t<double> predict(py::array_t<double> X, int data_cnt, int feat_cnt) {
+		py::buffer_info buf_X = X.request();
+		double* ptr_X = (double*)buf_X.ptr;
+		if (buf_X.size != data_cnt * feat_cnt) {
+			cout << "Size of X " << buf_X.size << " is not the same as the product of data count and feature count " << data_cnt * feat_cnt << endl;
+			exit(1);
+		}
+		// now resize X
+		vector<Eigen::ArrayXd> Xe;
+		for (int i = 0; i < data_cnt; i++) {
+			Eigen::ArrayXd x(feat_cnt);
+			for (int j = 0; j < feat_cnt; j++)
+				x[j] = ptr_X[i * feat_cnt + j];
+			Xe.push_back(x);
+		}
+		Eigen::ArrayXd res =  final_solution->evaluate_all(Xe);
+		py::array_t<double> res_np = py::array_t<double>(data_cnt);
+		py::buffer_info buf_res_np = res_np.request();
+		double* ptr_res_np = (double*)buf_res_np.ptr;
+		for (int i = 0; i < data_cnt; i++)
+			ptr_res_np[i] = res[i];
+		return res_np;
+	}
+#endif
+
+	void fit_inner(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
 		reset();
 		// take sample only assuming X_all and y_all are already shuffled
 		int sample_size = int(initial_sample_size * X_all.size());
 		vector<Eigen::ArrayXd> X;
 		Eigen::ArrayXd y(sample_size);
 		for (int i = 0; i < sample_size; i++) {
-			Eigen::ArrayXd x = utils::vector_to_eigen_array(X_all[i]);
+			Eigen::ArrayXd x(X_all[i].size());
+			for (int j = 0; j < x.size(); j++)
+				x[j] = X_all[i][j];
 			X.push_back(x);
 			y[i] = y_all[i];
 		}
@@ -640,18 +704,18 @@ public:
 			shared_ptr < node> start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
-				vector<node> all_perts = all_candidates(final_solution,X, y, false);
-				vector<node> all_2_perts = all_candidates(make_shared<node>(all_perts[rand() % all_perts.size()]),X, y, false);
+				vector<node> all_perts = all_candidates(final_solution, X, y, false);
+				vector<node> all_2_perts = all_candidates(make_shared<node>(all_perts[rand() % all_perts.size()]), X, y, false);
 				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
 				std::cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
 			//if(main_it%100==0)
-			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: "<<skipped_perts<<"/"<<total_perts << endl;
-			vector<node> all_perts = all_candidates(start_solution,X, y, false);
+			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: " << skipped_perts << "/" << total_perts << endl;
+			vector<node> all_perts = all_candidates(start_solution, X, y, false);
 			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution." << endl;
-			vector<std::tuple<double, shared_ptr<node>>> r2_by_perts;
-			for (int i = 0;i < all_perts.size(); i++) {
+			vector<tuple<double, shared_ptr<node>>> r2_by_perts;
+			for (int i = 0; i < all_perts.size(); i++) {
 				if (finished())
 					break;
 				node pert = all_perts[i];
@@ -662,26 +726,13 @@ public:
 				//pert = local_search(pert, X, y);
 				shared_ptr < node> pert_tuned = node::node_copy(pert); // do nothing
 				//shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
-				std::tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
-				r2_by_perts.push_back(std::tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
-				/*
-				if (compare_fitness(pert_tuned_fitness, final_fitness) < 0) {
-					improved = true;
-					call_and_verify_simplify(*pert_tuned, X, y);
-					final_solution = node::node_copy(*pert_tuned);
-					final_fitness = pert_tuned_fitness;
-					std::cout << "New best in phase 1:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
-					auto stop = high_resolution_clock::now();
-					best_time = duration_cast<seconds>(stop - start).count();
-				}*/
+				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
+				r2_by_perts.push_back(tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
 			}
-			//if (improved)
-			//	continue;
-			//continue;
 			std::cout << "Preserved " << all_perts.size() << " perturbations after removing already done." << endl;
-			sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
+			std::sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
-			for (int i = 0;i < r2_by_perts.size(); i++) {
+			for (int i = 0; i < r2_by_perts.size(); i++) {
 				if (finished())
 					break;
 				shared_ptr<node> ls_pert = get<1>(r2_by_perts[i]);
@@ -690,10 +741,10 @@ public:
 				//cout << pert_str << endl;
 				checked_perts.insert(pert_str);
 				ls_pert = local_search(ls_pert, X, y);
-				std::tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
+				tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
 				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert->to_string() << endl;
 				int cmp = compare_fitness(ls_pert_fitness, final_fitness);
-				if(cmp<0) {
+				if (cmp < 0) {
 					improved = true;
 					call_and_verify_simplify(ls_pert, X, y);
 					final_solution = node::node_copy(*ls_pert);
@@ -706,25 +757,19 @@ public:
 			}
 		}
 		auto stop = high_resolution_clock::now();
-		total_time = duration_cast<milliseconds>(stop - start_time).count()/1000.0;
+		total_time = duration_cast<milliseconds>(stop - start_time).count() / 1000.0;
 	}
 
-	vector<double> predict(const vector<vector<double>> &X) {
-		vector<Eigen::ArrayXd> Xe;
-		for (int i = 0; i < X.size(); i++) {
-			Eigen::ArrayXd x = utils::vector_to_eigen_array(X[i]);
-			Xe.push_back(x);
-		}
-		Eigen::ArrayXd res = final_solution->evaluate_all(Xe);
-		vector<double> vec_res = utils::eigen_array_to_vector(res);
-		return vec_res;
+	Eigen::ArrayXd predict_inner(const vector<Eigen::ArrayXd>& X) {
+		return final_solution->evaluate_all(X);
 	}
+
 
 	string get_model_string() {
 		return final_solution->to_string();
 	}
 
-	double get_best_time() {
+	int get_best_time() {
 		return best_time;
 	}
 
@@ -732,7 +777,7 @@ public:
 		return total_time;
 	}
 
-	double get_fit_calls() {
+	int get_fit_calls() {
 		return fit_calls;
 	}
 };
@@ -740,7 +785,7 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 10000000;
+	int max_fit = 1000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	int max_complexity = 200;
@@ -748,8 +793,8 @@ int main()
 	double train_share = 0.75;
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
-	for (const auto& entry :  fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_15_04_0010000_03.data") != 0)
+	for (const auto& entry : fs::directory_iterator(dir_path)) {
+		//if (entry.path().compare("../paper_resources/random_12345_data\\random_15_03_0010000_03.data") != 0)
 		//	continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
@@ -765,8 +810,8 @@ int main()
 		// shuffling for later split between training and test set
 		shuffle(lines.begin(), lines.end(), default_random_engine(random_state));
 		int train_cnt = int(train_share * lines.size());
-		vector<vector<double>> X_train, X_test;
-		vector<double> y_train(train_cnt), y_test(lines.size() - train_cnt);
+		vector<Eigen::ArrayXd> X_train, X_test;
+		Eigen::ArrayXd y_train(train_cnt), y_test(lines.size() - train_cnt);
 		for (int i = 0; i < lines.size(); i++) {
 			string line = lines[i];
 			stringstream ss(line);
@@ -774,7 +819,7 @@ int main()
 			string tmp;
 			while (getline(ss, tmp, '\t'))
 				tokens.push_back(tmp);
-			vector<double> x(tokens.size());
+			Eigen::ArrayXd x(tokens.size());
 			for (int i = 0; i < tokens.size() - 1; i++) {
 				string str(tokens[i]);
 				x[i] = stod(str);
@@ -790,23 +835,24 @@ int main()
 			}
 		}
 		rils_rols rr(max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
-		rr.fit(X_train, y_train);
-		vector<double> yp_train = rr.predict(X_train);
+		rr.fit_inner(X_train, y_train);
+		Eigen::ArrayXd yp_train = rr.predict_inner(X_train);
 		double r2_train = utils::R2(y_train, yp_train);
 		double rmse_train = utils::RMSE(y_train, yp_train);
-		vector<double> yp_test = rr.predict(X_test);
+		Eigen::ArrayXd yp_test = rr.predict_inner(X_test);
 		double r2 = utils::R2(y_test, yp_test);
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
-		ss << setprecision(PRECISION) <<  entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time="<<rr.get_total_time() << "\tbest_time="<<rr.get_best_time() << "\tfit_calls="<< rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
+		ss << setprecision(PRECISION) << entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time=" << rr.get_total_time() << "\tbest_time=" << rr.get_best_time() << "\tfit_calls=" << rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
 		std::cout << ss.str();
 		out_file.open("out.txt", ios_base::app);
 		out_file << ss.str();
 		out_file.close();
 	}
 }
-/*
+
+#ifdef PYTHON_WRAPPER
 
 PYBIND11_MODULE(rils_rols_cpp, m) {
 	py::class_<rils_rols>(m, "rils_rols")
@@ -818,4 +864,5 @@ PYBIND11_MODULE(rils_rols_cpp, m) {
 		.def("get_fit_calls", &rils_rols::get_fit_calls)
 		.def("get_total_time", &rils_rols::get_total_time);
 }
-*/
+
+#endif
