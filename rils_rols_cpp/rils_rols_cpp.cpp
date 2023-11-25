@@ -13,7 +13,7 @@
 #include "utils.h"
 #include "eigen/Eigen/Dense"
 
-#define PYTHON_WRAPPER 1 // comment this to run pure CPP
+//#define PYTHON_WRAPPER 1 // comment this to run pure CPP
 
 #ifdef PYTHON_WRAPPER
 
@@ -47,7 +47,7 @@ private:
 	bool random_perturbations_order, verbose;
 
 	// internal stuff
-	int ls_it, main_it, last_improved_it, time_elapsed, fit_calls, skipped_perts, total_perts;
+	int  main_it, last_improved_it, time_elapsed, fit_calls, ls_calls, skipped_perts, total_perts;
 	unordered_set<string> checked_perts;
 	chrono::time_point<chrono::high_resolution_clock> start_time;
 	shared_ptr < node> final_solution;
@@ -57,11 +57,11 @@ private:
 	double early_exit_eps = pow(10, -PRECISION);
 
 	void reset() {
-		ls_it = 0;
 		main_it = 0;
 		last_improved_it = 0;
 		time_elapsed = 0;
 		fit_calls = 0;
+		ls_calls = 0;
 		start_time = high_resolution_clock::now();
 		checked_perts.clear();
 		skipped_perts = 0;
@@ -96,6 +96,7 @@ private:
 		cout << "Finished creating allowed nodes" << endl;
 	}
 
+	/*
 	void call_and_verify_simplify(shared_ptr<node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		shared_ptr<node> solution_before = node::node_copy(*solution);
 		double r2_before = get<0>(fitness(solution, X, y));
@@ -106,7 +107,7 @@ private:
 			std::cout << "Error in simplification logic -- non acceptable difference in R2 before and after simplification " << r2_before << " " << r2_after << endl;
 			exit(1);
 		}
-	}
+	}*/
 
 	void add_const_finetune(const node& old_node, vector<node>& candidates) {
 		if (old_node.type == node_type::CONST) {
@@ -412,15 +413,8 @@ private:
 					break;
 				it_max--;
 			}
-			//cout << "After: " << node.to_string() << endl;
-			//if (node.to_string().compare(before) == 0)
-			//	break; // no further change
-			//}
-			//cout << node.to_string() << "\tAFTER" << endl;
-			//cout << endl;
 		}
 
-		// eliminate duplicates -- TODO: to_string() is slow, fix this
 		unordered_set<string> filtered_cand_strings;
 		vector<node> filtered_candidates;
 		for (auto& node : all_cand) {
@@ -435,13 +429,6 @@ private:
 		return filtered_candidates;
 	}
 
-	/// <summary>
-	/// OLS based tunning on expanded expression
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <param name="X"></param>
-	/// <param name="y"></param>
-	/// <returns></returns>
 	shared_ptr < node> tune_constants(shared_ptr<node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		shared_ptr < node> solution_copy = node::node_copy(*solution);
 		// TODO: extract non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
@@ -557,29 +544,58 @@ private:
 		return 0;
 	}
 
+	void print_state(const tuple<double,double,int> &curr_fitness) {		
+
+		std::cout << "it=" << main_it << "\tfit_calls=" << fit_calls <<"\tls_calls="<<ls_calls;
+		std::cout << "\tcurr_R2=" << (1 - get<0>(curr_fitness)) << "\tcurr_RMSE=" << get<1>(curr_fitness)<<"\tcurr_size="<<get<2>(curr_fitness);
+		std::cout << "\tfinal_R2=" << (1 - get<0>(final_fitness)) << "\tfinal_RMSE=" << get<1>(final_fitness) <<"\tfinal_size="<<get<2>(final_fitness)<< "\tchecks_skip=" << skipped_perts << "/" << total_perts << "\tsol=";
+		string sol_string = final_solution->to_string();
+		if (sol_string.length() < 100)
+			cout << sol_string << endl;
+		else
+			cout << sol_string.substr(0, 100) << "..." << endl;
+	}
+
+	bool dominates(const tuple<double, double, int>& p_fit, const tuple<double, double, int>& fit) {
+		return get<0>(p_fit) <= get<0>(fit) && get<1>(p_fit) <= get<1>(fit) && get<2>(p_fit) <= get<2>(fit);
+	}
+
+	bool is_dominated(const vector<tuple<double, double, int>>& pareto, const tuple<double, double, int>& fit) {
+		for (const auto &p_fit : pareto)
+			if (dominates(p_fit, fit))
+				return true;
+		return false;
+	}
+
+	void add_to_pareto(vector<tuple<double, double, int>> &pareto, const tuple<double, double, int>& fit) {
+		if (is_dominated(pareto, fit))
+			return;
+		for (int i = pareto.size() - 1; i >= 0; i--) 
+			if (dominates(fit, pareto[i]))
+				pareto.erase(pareto.begin() + i);
+		pareto.push_back(fit);
+	}
+
 	shared_ptr<node> local_search(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
+		//vector<tuple<double, double, int>> pareto;
+		ls_calls++;
 		bool improved = true;
 		shared_ptr<node> curr_solution = node::node_copy(*passed_solution);
 		curr_solution = tune_constants(curr_solution, X, y);
 		tuple<double, double, int> curr_fitness = fitness(curr_solution, X, y);
 		while (improved && !finished()) {
 			improved = false;
-			//cout << "Doing LS on " << curr_solution->to_string() <<endl<< "----------------------------"<<endl;
 			vector<node> ls_perts = all_candidates(curr_solution, X, y, true);
 			for (int j = 0; j < ls_perts.size(); j++) {
 				shared_ptr<node> ls_pert = make_shared<node>(ls_perts[j]);
 				if (finished())
 					break;
-				//string pert_str = ls_pert->to_string();
-				//if (check_skip(pert_str)) {
-				//	cout << "SKIPPED" << endl;
-				//	continue;
-				//}
-				//cout << j<<".\t"<< pert_str << endl;
 				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
-				//cout << get<0>(pert_pert_tuned_fitness) <<"\t" << pert_pert.to_string() << endl;
-				if (compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
+				if (verbose && fit_calls % 10000 == 0)
+					print_state(curr_fitness);
+				//bool is_dom = is_dominated(pareto, ls_pert_tuned_fitness);
+				if (/*!is_dom &&*/ compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
 					improved = true;
 					int it_max = 5;
 					while (it_max > 0) {
@@ -590,8 +606,10 @@ private:
 							break;
 						it_max--;
 					}
+					ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 					curr_solution = ls_pert_tuned;
 					curr_fitness = ls_pert_tuned_fitness;
+					//add_to_pareto(pareto, ls_pert_tuned_fitness);
 					//cout << fit_calls << " New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution->to_string() << endl;
 				}
 			}
@@ -707,13 +725,13 @@ public:
 				vector<node> all_perts = all_candidates(final_solution, X, y, false);
 				vector<node> all_2_perts = all_candidates(make_shared<node>(all_perts[rand() % all_perts.size()]), X, y, false);
 				start_solution = node::node_copy(all_2_perts[rand() % all_2_perts.size()]);
-				std::cout << "Randomized to " << start_solution->to_string() << endl;
+				if(verbose)
+					std::cout << "Randomized to " << start_solution->to_string() << endl;
 			}
 			improved = false;
-			//if(main_it%100==0)
-			std::cout << main_it << ". " << fit_calls << "\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << "\tchecks skipped: " << skipped_perts << "/" << total_perts << endl;
 			vector<node> all_perts = all_candidates(start_solution, X, y, false);
-			std::cout << "Checking " << all_perts.size() << " perturbations of starting solution." << endl;
+			if(verbose)
+				std::cout << "Checking " << all_perts.size() << " perturbations of starting solution." << endl;
 			vector<tuple<double, shared_ptr<node>>> r2_by_perts;
 			for (int i = 0; i < all_perts.size(); i++) {
 				if (finished())
@@ -722,14 +740,11 @@ public:
 				string pert_str = pert.to_string();
 				if (check_skip(pert_str))
 					continue;
-				//cout << pert_str << endl;
-				//pert = local_search(pert, X, y);
 				shared_ptr < node> pert_tuned = node::node_copy(pert); // do nothing
 				//shared_ptr < node> pert_tuned = tune_constants(make_shared<node>(pert), X, y);
 				tuple<double, double, int> pert_tuned_fitness = fitness(pert_tuned, X, y);
 				r2_by_perts.push_back(tuple<double, shared_ptr<node>>{get<0>(pert_tuned_fitness), pert_tuned});
 			}
-			std::cout << "Preserved " << all_perts.size() << " perturbations after removing already done." << endl;
 			std::sort(r2_by_perts.begin(), r2_by_perts.end(), TupleCompare<0>());
 			// local search on each of these perturbations
 			for (int i = 0; i < r2_by_perts.size(); i++) {
@@ -742,14 +757,14 @@ public:
 				checked_perts.insert(pert_str);
 				ls_pert = local_search(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
-				//cout << "LS:\t" << i << "/" << r2_by_perts.size()<<".\t"<< get<0>(ls_pert_fitness) << "\t" << ls_pert->to_string() << endl;
 				int cmp = compare_fitness(ls_pert_fitness, final_fitness);
 				if (cmp < 0) {
 					improved = true;
-					call_and_verify_simplify(ls_pert, X, y);
+					//call_and_verify_simplify(ls_pert, X, y);
 					final_solution = node::node_copy(*ls_pert);
 					final_fitness = ls_pert_fitness;
-					std::cout << "New best in phase 2:\t" << get<0>(final_fitness) << "\t" << final_solution->to_string() << endl;
+					if (verbose)
+						print_state(final_fitness);
 					auto stop = high_resolution_clock::now();
 					best_time = duration_cast<milliseconds>(stop - start_time).count() / 1000.0;
 					//break;
@@ -785,7 +800,7 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 1000000;
+	int max_fit = 10000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	int max_complexity = 200;
@@ -794,8 +809,8 @@ int main()
 	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry : fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare("../paper_resources/random_12345_data\\random_15_03_0010000_03.data") != 0)
-		//	continue;
+		if (entry.path().compare("../paper_resources/random_12345_data\\random_13_04_0010000_01.data") != 0)
+			continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
 		//else
