@@ -9,12 +9,12 @@ ext_modules=[Pybind11Extension(
         sources=['rils_rols_cpp/rils_rols_cpp.cpp', 
                 'rils_rols_cpp/node.cpp',
                 'rils_rols_cpp/utils.cpp'], 
-        extra_compile_args = ["/std:c++20", "/I C:\Python312\include", "/Ox"]
+        extra_compile_args = ["/std:c++20", "/I C:\Python311\include", "/O2"]
     )]
 
 setup(
     name='rils-rols',
-    version='1.4',
+    version='1.4.1',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",

@@ -25,7 +25,7 @@ out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 with open(out_path, "w") as f:
     f.write("Tests started\n")
 
-for fpath in  instance_files:
+for fpath in instance_files: #['random_13_04_0010000_01.data']
     print("Running instance "+fpath)
     with open(instances_dir+"/"+ fpath) as f:
         lines = f.readlines()

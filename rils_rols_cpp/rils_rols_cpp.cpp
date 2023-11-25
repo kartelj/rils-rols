@@ -13,7 +13,7 @@
 #include "utils.h"
 #include "eigen/Eigen/Dense"
 
-//#define PYTHON_WRAPPER 1 // comment this to run pure CPP
+#define PYTHON_WRAPPER 1 // comment this to run pure CPP
 
 #ifdef PYTHON_WRAPPER
 

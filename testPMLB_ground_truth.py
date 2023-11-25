@@ -26,6 +26,7 @@ noise_level = float(sys.argv[7])
 test_size = 0.25
 label="target"
 max_complexity = 50
+verbose = True
 
 pmlb_cache = "../pmlb/datasets"
 
@@ -55,9 +56,9 @@ for i in range(len(ground_truth_regr_datasets)):
     y_train = noisefy(y_train, noise_level, seed)
     
     if noise_level==0:
-        rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, max_complexity=max_complexity, sample_size=0.1, complexity_penalty=complexity_penalty)
+        rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, max_complexity=max_complexity, sample_size=0.1, complexity_penalty=complexity_penalty, verbose=verbose)
     else:
-        rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, max_complexity=max_complexity, complexity_penalty=complexity_penalty, sample_size=0.1, error_tolerance=noise_level)
+        rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, max_complexity=max_complexity, complexity_penalty=complexity_penalty, sample_size=0.1,verbose=verbose, error_tolerance=noise_level)
     rils.fit(X_train, y_train)
     report_string = rils.fit_report_string(X_train, y_train)
     rils_R2 = ""
