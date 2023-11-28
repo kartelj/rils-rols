@@ -38,7 +38,11 @@ double utils::average_log_loss(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp
 	double ll = 0;
 	for (int i = 0; i < y.size(); i++) {
 		double yib = y[i] >= 0.5 ? 1 : 0;
-		double lli = (1 - yib) * log(1 - yp[i]) + yib * log(yp[i]);
+		//double ypi = yp[i];
+		//if (ypi != 0)
+		//	ypi = ypi;
+		double prob = 1.0 / (1 + exp(-2 * (yp[i] - 0.5))); // logistic function for mean at 0.5
+		double lli = (1 - yib) * log(1 - prob) + yib * log(prob);
 		ll -= lli;
 	}
 	return ll / y.size();

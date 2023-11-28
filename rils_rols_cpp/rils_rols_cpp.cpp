@@ -13,7 +13,7 @@
 #include "utils.h"
 #include "eigen/Eigen/Dense"
 
-//#define PYTHON_WRAPPER 1 // comment this to run pure CPP
+#define PYTHON_WRAPPER 1 // comment this to run pure CPP
 
 #ifdef PYTHON_WRAPPER
 
@@ -43,7 +43,7 @@ class rils_rols {
 private:
 	// control parameters
 	int max_fit_calls, max_seconds, random_state, max_feat = 200;
-	double complexity_penalty, initial_sample_size, max_complexity;
+	double complexity_penalty, sample_size, max_complexity;
 	bool classification, verbose;
 
 	// internal stuff
@@ -512,7 +512,7 @@ private:
 		tuple<double, double, int> fit;
 		
 		if (classification) {
-			double loss = 1 - utils::classification_accuracy(y, yp);
+			double loss = utils::average_log_loss(y, yp);// 1 - utils::classification_accuracy(y, yp);
 			double rmse = 0;// utils::RMSE(y, yp);
 			if (loss != loss || rmse!=rmse)// true only for NaN values
 				return make_tuple<double, double, int>(1000, 1000, 1000);
@@ -631,13 +631,13 @@ private:
 	}
 
 public:
-	rils_rols(bool classification, int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double initial_sample_size, bool verbose, int random_state) {
+	rils_rols(bool classification, int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double sample_size, bool verbose, int random_state) {
 		this->classification = classification;
 		this->max_fit_calls = max_fit_calls;
 		this->max_seconds = max_seconds;
 		this->complexity_penalty = complexity_penalty;
 		this->max_complexity = max_complexity;
-		this->initial_sample_size = initial_sample_size;
+		this->sample_size = sample_size;
 		this->verbose = verbose;
 		this->random_state = random_state;
 		reset();
@@ -740,20 +740,20 @@ public:
 
 	void fit_inner(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
 		reset();
-		int sample_size = int(initial_sample_size * X_all.size());
+		int sample_cnt = int(sample_size * X_all.size());
 		vector<int> selected;
 		for (int i = 0; i < X_all.size(); i++)
 			selected.push_back(i);
 		shuffle(selected.begin(), selected.end(), default_random_engine(random_state));
 		vector<Eigen::ArrayXd> X;
-		Eigen::ArrayXd y(sample_size);
-		for (int ix = 0; ix < sample_size; ix++) {
+		Eigen::ArrayXd y(sample_cnt);
+		for (int ix = 0; ix < sample_cnt; ix++) {
 			int i = selected[ix];
 			Eigen::ArrayXd x(X_all[i].size());
 			for (int j = 0; j < x.size(); j++)
 				x[j] = X_all[i][j];
 			X.push_back(x);
-			y[i] = y_all[i];
+			y[ix] = y_all[i];
 		}
 		// find at most max_feat relevant features and do not look the other ones
 		vector<int> rel_feat = relevant_features(X, y);
@@ -849,7 +849,7 @@ int main()
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	int max_complexity = 200;
-	double sample_size = 1;
+	double sample_size = 0.5;
 	double train_share = 0.75;
 	bool classification = true;
 	string dir_path = ".";// "../paper_resources/random_12345_data";
