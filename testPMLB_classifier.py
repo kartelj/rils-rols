@@ -1,9 +1,10 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.model_selection import train_test_split
-from rils_rols.rils_rols import RILSROLSClassifier, RILSROLSRegressor
-from rils_rols.node import Node
+from sklearn.tree import DecisionTreeClassifier
+from rils_rols.rils_rols import RILSROLSClassifier
+from rils_rols.rils_rols_ensemble import RILSROLSEnsembleClassifier
 import sys
 #from sklearn.utils.estimator_checks import check_estimator
 import numpy as np
@@ -14,6 +15,7 @@ import cProfile
 
 #check_estimator(RILSROLSRegressor())
 
+'''
 if len(sys.argv)!=4:
     print("Usage: <random seed> <max fit calls> <threads>")
     print("Passed parameters were:")
@@ -23,14 +25,22 @@ if len(sys.argv)!=4:
 RANDOM_STATE = int(sys.argv[1])
 ITER_LIMIT = int(sys.argv[2])
 THREADS = int(sys.argv[3])
+'''
+RANDOM_STATE = 23654
+ITER_LIMIT = 1000000
+SAMPLE_SIZE = 1
+TIME_LIMIT = 100
+CLASSIFIERS_CNT = 10
+COMPLEXITY_PENALTY = 0.001
 
 DATASET_MIN_SIZE = 1000
-MAX_FEATURES = 100
+MAX_FEATURES = 10000
 datasets={}
 for name in classification_dataset_names:
     df = fetch_data(dataset_name=name, local_cache_dir="../pmlb/datasets")
     if len(df) < DATASET_MIN_SIZE or len(df.columns)>MAX_FEATURES:
         continue
+    df.to_csv(f"class_datasets/{name}.csv")
     # binary classification problem
     if df['target'].nunique() == 2:
         # some datasetts have classes [1 2] or [0 2]
@@ -41,12 +51,13 @@ for name in classification_dataset_names:
 
 results = pd.DataFrame(columns=['dataset', 'samples', 'features', 'regressor','time','acc_score', 'll_score', 'model'])
 classificators = [
-    #['CatBoostClassifier', CatBoostClassifier, {'silent':True, 'random_state':RANDOM_STATE}],
-    #['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
-    #['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
-    #['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
-    ['RILSROLSClassifier', RILSROLSClassifier, {'initial_sample_size':1, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':100, 'verbose':True}],
-]
+    ['AdaBoostClassifier', AdaBoostClassifier, {'random_state':RANDOM_STATE}],
+    ['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
+    ['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
+    ['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
+    ['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}],
+    ['RILSROLSEnsembleClassifier', RILSROLSEnsembleClassifier, {'sample_size':SAMPLE_SIZE/10,'max_fit_calls_per_estimator':ITER_LIMIT, 'max_seconds_per_estimator':TIME_LIMIT/CLASSIFIERS_CNT,'estimator_cnt': CLASSIFIERS_CNT,  'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'verbose':True}],
+  ]
 
 for name, df in datasets.items():
     _X = df.drop('target', axis=1)
@@ -59,17 +70,13 @@ for name, df in datasets.items():
     for clf_name, clf_type, clf_params in classificators:
         clf = clf_type(**clf_params)
         start = time.time()
-        cProfile.run('clf.fit(X_train, y_train)', 'restats')
-
-        #clf.fit(X_train, y_train)
+        #cProfile.run('clf.fit(X_train, y_train)', 'restats')
+        clf.fit(X_train, y_train)
         fit_time = time.time() - start
-        eq = None
-        #if clf_type is NLLRegressor:
-        #    try:
-        #        eq = get_eq(_X, clf.sexpr)
-        #    except Exception as e:
-        #        print('get_eq ' + str(e))
-        #        eq = clf.sexpr
+        try:
+            eq = clf.model_string()
+        except:
+            eq = None
         preds = np.nan_to_num(clf.predict(X_test))
         preds_train = np.nan_to_num(clf.predict(X_train))
         proba = np.nan_to_num(clf.predict_proba(X_test))
@@ -82,7 +89,7 @@ for name, df in datasets.items():
             flog.write(log_txt+'\n')
         results.loc[len(results)] = [name, _X.shape[0], _X.shape[1], clf_name, fit_time, acc, ll, eq]   
 
-results.to_csv('results.csv')
+results.to_csv(f'results_cp_{COMPLEXITY_PENALTY}_sz_{SAMPLE_SIZE}_il_{ITER_LIMIT}.csv')
 
 classifiers = results['regressor'].unique()
 print('MEAN')

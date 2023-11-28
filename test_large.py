@@ -55,7 +55,7 @@ for fpath in instance_files:
         if parallelism==1:
             rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, sample_size=sample_size, verbose=verbose)
         elif parallelism>1:
-            rils = RILSROLSEnsembleRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, parallelism=parallelism, initial_sample_size=sample_size, verbose=verbose)
+            rils = RILSROLSEnsembleRegressor(max_fit_calls_per_regressor=max_fit, max_seconds_per_regressor=time, random_state = random_state, complexity_penalty=complexity_penalty, estimator_cnt=parallelism, sample_size=sample_size, verbose=verbose)
         else:
             raise Exception("Parallelism parameter must be >= 1.")
         rils.fit(X_train, y_train)

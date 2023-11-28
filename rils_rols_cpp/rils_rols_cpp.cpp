@@ -13,7 +13,7 @@
 #include "utils.h"
 #include "eigen/Eigen/Dense"
 
-#define PYTHON_WRAPPER 1 // comment this to run pure CPP
+//#define PYTHON_WRAPPER 1 // comment this to run pure CPP
 
 #ifdef PYTHON_WRAPPER
 
@@ -42,9 +42,9 @@ class rils_rols {
 
 private:
 	// control parameters
-	int max_fit_calls, max_seconds, random_state;
+	int max_fit_calls, max_seconds, random_state, max_feat = 200;
 	double complexity_penalty, initial_sample_size, max_complexity;
-	bool random_perturbations_order, verbose;
+	bool classification, verbose;
 
 	// internal stuff
 	int  main_it, last_improved_it, time_elapsed, fit_calls, ls_calls, skipped_perts, total_perts;
@@ -71,7 +71,7 @@ private:
 
 	vector<node> allowed_nodes;
 
-	void setup_nodes(int var_cnt) {
+	void setup_nodes(vector<int> rel_feat) {
 		allowed_nodes.push_back(*node::node_plus());
 		allowed_nodes.push_back(*node::node_minus());
 		allowed_nodes.push_back(*node::node_multiply());
@@ -82,17 +82,11 @@ private:
 		allowed_nodes.push_back(*node::node_exp());
 		allowed_nodes.push_back(*node::node_sqrt());
 		allowed_nodes.push_back(*node::node_sqr());
-		/*shared_ptr<node> sqr = node::node_pow();
-		sqr->right = node::node_constant(2);
-		allowed_nodes.push_back(*sqr);
-		shared_ptr < node> sqrt = node::node_pow();
-		sqrt->right = node::node_constant(0.5);
-		allowed_nodes.push_back(*sqrt);*/
 		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10 };
 		for (auto c : constants)
 			allowed_nodes.push_back(*node::node_constant(c));
-		for (int i = 0; i < var_cnt; i++)
-			allowed_nodes.push_back(*node::node_variable(i));
+		for (int i = 0; i < rel_feat.size(); i++)
+			allowed_nodes.push_back(*node::node_variable(rel_feat[i]));
 		cout << "Finished creating allowed nodes" << endl;
 	}
 
@@ -514,16 +508,27 @@ private:
 	tuple<double, double, int> fitness(shared_ptr < node> solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
 		fit_calls++;
 		Eigen::ArrayXd yp = solution->evaluate_all(X);
-		double r2 = utils::R2(y, yp);
-		double rmse = utils::RMSE(y, yp);
 		int size = solution->size();
-		if (r2 != r2 || rmse != rmse) // true only for NaN values
-			return make_tuple<double, double, int>(1000, 1000, 1000);
-		tuple<double, double, int> fit = tuple<double, double, int>{ 1 - r2, rmse, size };
+		tuple<double, double, int> fit;
+		
+		if (classification) {
+			double loss = 1 - utils::classification_accuracy(y, yp);
+			double rmse = 0;// utils::RMSE(y, yp);
+			if (loss != loss || rmse!=rmse)// true only for NaN values
+				return make_tuple<double, double, int>(1000, 1000, 1000);
+			fit = tuple<double, double, int>{ loss, rmse,size };
+		}
+		else {
+			double r2 = utils::R2(y, yp);
+			double rmse = utils::RMSE(y, yp);
+			if (r2 != r2 || rmse != rmse) // true only for NaN values
+				return make_tuple<double, double, int>(1000, 1000, 1000);
+			fit = tuple<double, double, int>{ 1 - r2, rmse, size };
+		}
 		return fit;
 	}
 
-	double penalty_fitness(tuple<double, double, int> fit) {
+	double fitness_value(tuple<double, double, int> fit) {
 		return (1 + get<0>(fit)) * (1 + get<1>(fit)) * (1 + get<2>(fit) * this->complexity_penalty);
 	}
 
@@ -535,8 +540,8 @@ private:
 		if ((size1 > max_complexity || size2 > max_complexity) && size1 != size2)
 			return size1 - size2;
 		double fit1_tot, fit2_tot;
-		fit1_tot = penalty_fitness(fit1);
-		fit2_tot = penalty_fitness(fit2);
+		fit1_tot = fitness_value(fit1);
+		fit2_tot = fitness_value(fit2);
 		if (fit1_tot < fit2_tot)
 			return -1;
 		if (fit1_tot > fit2_tot)
@@ -544,11 +549,17 @@ private:
 		return 0;
 	}
 
-	void print_state(const tuple<double,double,int> &curr_fitness) {		
-
-		std::cout << "it=" << main_it << "\tfit_calls=" << fit_calls <<"\tls_calls="<<ls_calls;
-		std::cout << "\tcurr_R2=" << (1 - get<0>(curr_fitness)) << "\tcurr_RMSE=" << get<1>(curr_fitness)<<"\tcurr_size="<<get<2>(curr_fitness);
-		std::cout << "\tfinal_R2=" << (1 - get<0>(final_fitness)) << "\tfinal_RMSE=" << get<1>(final_fitness) <<"\tfinal_size="<<get<2>(final_fitness)<< "\tchecks_skip=" << skipped_perts << "/" << total_perts << "\tsol=";
+	void print_state(const tuple<double, double, int>& curr_fitness) {
+		std::cout << "it=" << main_it << "\tfit_calls=" << fit_calls << "\tls_calls=" << ls_calls;
+		if (classification) {
+			std::cout << "\tcurr_LOSS=" << get<0>(curr_fitness)  << "\tcurr_size=" << get<2>(curr_fitness);
+			std::cout << "\tfinal_LOSS=" << get<0>(final_fitness) << "\tfinal_size=" << get<2>(final_fitness);
+		}
+		else {
+			std::cout << "\tcurr_R2=" << (1 - get<0>(curr_fitness)) << "\tcurr_RMSE=" << get<1>(curr_fitness) << "\tcurr_size=" << get<2>(curr_fitness);
+			std::cout << "\tfinal_R2=" << (1 - get<0>(final_fitness)) << "\tfinal_RMSE=" << get<1>(final_fitness) << "\tfinal_size=" << get<2>(final_fitness);
+		}
+		cout << "\tchecks_skip=" << skipped_perts << "/" << total_perts << "\tsol=";
 		string sol_string = final_solution->to_string();
 		if (sol_string.length() < 100)
 			cout << sol_string << endl;
@@ -577,7 +588,7 @@ private:
 	}
 
 	shared_ptr<node> local_search(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
-		//vector<tuple<double, double, int>> pareto;
+		vector<tuple<double, double, int>> pareto;
 		ls_calls++;
 		bool improved = true;
 		shared_ptr<node> curr_solution = node::node_copy(*passed_solution);
@@ -594,8 +605,8 @@ private:
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 				if (verbose && fit_calls % 10000 == 0)
 					print_state(curr_fitness);
-				//bool is_dom = is_dominated(pareto, ls_pert_tuned_fitness);
-				if (/*!is_dom &&*/ compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
+				bool is_dom = is_dominated(pareto, ls_pert_tuned_fitness);
+				if (!is_dom && compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
 					improved = true;
 					int it_max = 5;
 					while (it_max > 0) {
@@ -609,7 +620,9 @@ private:
 					ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 					curr_solution = ls_pert_tuned;
 					curr_fitness = ls_pert_tuned_fitness;
-					//add_to_pareto(pareto, ls_pert_tuned_fitness);
+					add_to_pareto(pareto, ls_pert_tuned_fitness);
+					//if(verbose)
+					//	cout << "Pareto set size " << pareto.size() << endl;
 					//cout << fit_calls << " New improvement in phase 2:\t" << get<0>(curr_fitness) << "\t"<<get<1>(curr_fitness)<<"\t"<<get<2>(curr_fitness) << "\t" << curr_solution->to_string() << endl;
 				}
 			}
@@ -618,7 +631,8 @@ private:
 	}
 
 public:
-	rils_rols(int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double initial_sample_size, bool verbose, int random_state) {
+	rils_rols(bool classification, int max_fit_calls, int max_seconds, double complexity_penalty, int max_complexity, double initial_sample_size, bool verbose, int random_state) {
+		this->classification = classification;
 		this->max_fit_calls = max_fit_calls;
 		this->max_seconds = max_seconds;
 		this->complexity_penalty = complexity_penalty;
@@ -692,33 +706,64 @@ public:
 		py::array_t<double> res_np = py::array_t<double>(data_cnt);
 		py::buffer_info buf_res_np = res_np.request();
 		double* ptr_res_np = (double*)buf_res_np.ptr;
-		for (int i = 0; i < data_cnt; i++)
-			ptr_res_np[i] = res[i];
+		for (int i = 0; i < data_cnt; i++) {
+			if (classification)
+				ptr_res_np[i] = res[i] >= 0.5 ? 1 : 0;
+			else
+				ptr_res_np[i] = res[i];
+		}
 		return res_np;
 	}
 #endif
 
+	vector<int> relevant_features(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
+		int feat_cnt = X[0].size();
+		vector<int> rel_feat;
+		vector<tuple<double, int>> feat_by_r2;
+		if (feat_cnt <= max_feat) {
+			for (int i = 0; i < feat_cnt; i++)
+				rel_feat.push_back(i);
+			return rel_feat;
+		}
+		for (int i = 0; i < feat_cnt; i++) {
+			Eigen::ArrayXd xi(X.size());
+			for (int j = 0; j < X.size(); j++)
+				xi[j] = X[j][i];
+			double r2 = utils::R2(xi, y);
+			feat_by_r2.push_back(tuple<double,int>{r2,i});
+		}
+		std::sort(feat_by_r2.begin(), feat_by_r2.end(), std::greater<>());
+		for (int i = 0; i < max_feat; i++)
+			rel_feat.push_back(get<1>(feat_by_r2[i]));
+		return rel_feat;
+	}
+
 	void fit_inner(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
 		reset();
-		// take sample only assuming X_all and y_all are already shuffled
 		int sample_size = int(initial_sample_size * X_all.size());
+		vector<int> selected;
+		for (int i = 0; i < X_all.size(); i++)
+			selected.push_back(i);
+		shuffle(selected.begin(), selected.end(), default_random_engine(random_state));
 		vector<Eigen::ArrayXd> X;
 		Eigen::ArrayXd y(sample_size);
-		for (int i = 0; i < sample_size; i++) {
+		for (int ix = 0; ix < sample_size; ix++) {
+			int i = selected[ix];
 			Eigen::ArrayXd x(X_all[i].size());
 			for (int j = 0; j < x.size(); j++)
 				x[j] = X_all[i][j];
 			X.push_back(x);
 			y[i] = y_all[i];
 		}
-		setup_nodes(X[0].size());
+		// find at most max_feat relevant features and do not look the other ones
+		vector<int> rel_feat = relevant_features(X, y);
+		setup_nodes(rel_feat);
 		final_solution = node::node_constant(0);
 		final_fitness = fitness(final_solution, X, y);
 		// main loop
 		bool improved = true;
 		while (!finished()) {
 			main_it += 1;
-
 			shared_ptr < node> start_solution = final_solution;
 			if (!improved) {
 				// if there was no change in previous iteration, then the search is stuck in local optima so we make two consecutive random perturbations on the final_solution (best overall)
@@ -784,7 +829,7 @@ public:
 		return final_solution->to_string();
 	}
 
-	int get_best_time() {
+	double get_best_time() {
 		return best_time;
 	}
 
@@ -800,16 +845,17 @@ public:
 int main()
 {
 	int random_state = 23654;
-	int max_fit = 10000000;
+	int max_fit = 1000000;
 	int max_time = 300;
 	double complexity_penalty = 0.001;
 	int max_complexity = 200;
-	double sample_size = 0.01;
+	double sample_size = 1;
 	double train_share = 0.75;
-	string dir_path = "../paper_resources/random_12345_data";
+	bool classification = true;
+	string dir_path = ".";// "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry : fs::directory_iterator(dir_path)) {
-		if (entry.path().compare("../paper_resources/random_12345_data\\random_13_04_0010000_01.data") != 0)
+		if (entry.path().compare(".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
 			continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
@@ -849,17 +895,25 @@ int main()
 				X_test.push_back(x);
 			}
 		}
-		rils_rols rr(max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
+		rils_rols rr(classification, max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
 		rr.fit_inner(X_train, y_train);
 		Eigen::ArrayXd yp_train = rr.predict_inner(X_train);
-		double r2_train = utils::R2(y_train, yp_train);
 		double rmse_train = utils::RMSE(y_train, yp_train);
 		Eigen::ArrayXd yp_test = rr.predict_inner(X_test);
-		double r2 = utils::R2(y_test, yp_test);
 		double rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
-		ss << setprecision(PRECISION) << entry << "\tR2=" << r2 << "\tRMSE=" << rmse << "\tR2_tr=" << r2_train << "\tRMSE_tr=" << rmse_train << "\ttotal_time=" << rr.get_total_time() << "\tbest_time=" << rr.get_best_time() << "\tfit_calls=" << rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
+		if (classification) {
+			double acc_train = utils::classification_accuracy(y_train, yp_train);
+			double acc = utils::classification_accuracy(y_test, yp_test);
+			ss << setprecision(PRECISION) << entry << "\tACC=" << acc << "\tACC_tr="<<acc_train;
+		}
+		else {
+			double r2_train = utils::R2(y_train, yp_train);
+			double r2 = utils::R2(y_test, yp_test);
+			ss << setprecision(PRECISION) << entry << "\tR2=" << r2 << "\tR2_tr=" << r2_train;
+		}
+		ss<< "\tRMSE=" << rmse << "\tRMSE_tr=" << rmse_train << "\ttotal_time=" << rr.get_total_time() << "\tbest_time=" << rr.get_best_time() << "\tfit_calls=" << rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
 		std::cout << ss.str();
 		out_file.open("out.txt", ios_base::app);
 		out_file << ss.str();
@@ -871,7 +925,7 @@ int main()
 
 PYBIND11_MODULE(rils_rols_cpp, m) {
 	py::class_<rils_rols>(m, "rils_rols")
-		.def(py::init<int, int, double, int, double, bool, int>())
+		.def(py::init<bool, int, int, double, int, double, bool, int>())
 		.def("fit", &rils_rols::fit)
 		.def("predict", &rils_rols::predict)
 		.def("get_model_string", &rils_rols::get_model_string)

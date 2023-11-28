@@ -15,17 +15,15 @@ time = 1200
 max_fit = 1000000
 noise_level = 0
 complexity_penalty = 0.001 # 0.001 default
-max_complexity = 200
+max_complexity = 50
 parallelism = 1
-sample_size = 0.01
+sample_size = 0.1
 
 instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
 
 out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-with open(out_path, "w") as f:
-    f.write("Tests started\n")
 
-for fpath in instance_files: #['random_13_04_0010000_01.data']
+for fpath in instance_files: #['random_13_04_0010000_01.data']:
     print("Running instance "+fpath)
     with open(instances_dir+"/"+ fpath) as f:
         lines = f.readlines()

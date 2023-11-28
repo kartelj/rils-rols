@@ -3,6 +3,13 @@ from statistics import mean
 from numpy.random import RandomState
 import numpy as np
 from sklearn.metrics import r2_score
+from sympy import preorder_traversal
+
+def complexity_sympy(model):
+    c=0
+    for _ in preorder_traversal(model):
+        c += 1
+    return c
 
 # described in Apendix 4 of paper Contemporary Symbolic Regression Methods and their Relative Performance
 def noisefy(y, noise_level, random_state):
@@ -17,33 +24,6 @@ def noisefy(y, noise_level, random_state):
     for i in range(len(y)):
         y_n.append(y[i]+noise[i])
     return y_n
-
-def RMSE(yt, yp):
-    return np.sqrt(np.mean((yt-yp)**2))
-    
-def ResidualVariance(yt, yp, complexity):
-    return np.mean((yt-yp)**2)/(len(yp)-complexity)
-
-def percentile_abs_error(yt, yp, percentile):
-    if len(yp)!=len(yt):
-        raise Exception("Vectors of predicted and true y values should be of same size.")
-    try:
-        errors = []
-        for i in range(len(yp)):
-            err = yp[i]-yt[i]
-            if err<0:
-                err*=-1
-            if err == nan:
-                return nan
-            errors.append(err)
-        errors.sort()
-        idx = int(percentile*(len(yp)-1)/100)
-        return errors[idx]
-    except OverflowError:
-        return nan
-
-def R2(yt, yp):
-    return r2_score(yt, yp)
 
 def logistic(yp):
     return 1.0/(1.0+np.exp(-yp))

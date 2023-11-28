@@ -20,3 +20,36 @@ double utils::RMSE(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp) {
 		rmse += pow(y[i] - yp[i], 2);
 	return sqrt(rmse / y.size());
 }
+
+double utils::classification_accuracy(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp) {
+	double acc = 0;
+	for (int i = 0; i < y.size(); i++) {
+		// binarized value
+		double ypib = yp[i] >= 0.5 ? 1 : 0;
+		double yib = y[i] >= 0.5 ? 1 : 0;
+		if (ypib == yib)
+			acc += 1;
+	}
+	return acc / y.size();
+}
+
+double utils::average_log_loss(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp)
+{
+	double ll = 0;
+	for (int i = 0; i < y.size(); i++) {
+		double yib = y[i] >= 0.5 ? 1 : 0;
+		double lli = (1 - yib) * log(1 - yp[i]) + yib * log(yp[i]);
+		ll -= lli;
+	}
+	return ll / y.size();
+}
+
+double utils::average_loss(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp)
+{
+	double ll = 0;
+	for (int i = 0; i < y.size(); i++) {
+		double yib = y[i] >= 0.5 ? 1 : 0;
+		ll+= abs(yib - yp[i]);
+	}
+	return ll / y.size();
+}
