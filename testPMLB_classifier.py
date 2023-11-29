@@ -1,17 +1,14 @@
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
 from rils_rols.rils_rols import RILSROLSClassifier
-from rils_rols.rils_rols_ensemble import RILSROLSEnsembleClassifier
-import sys
 #from sklearn.utils.estimator_checks import check_estimator
 import numpy as np
 import pandas as pd
 from pmlb import fetch_data, classification_dataset_names
 import time
-import cProfile
+from sklearn.utils import all_estimators
+#import cProfile
 
 #check_estimator(RILSROLSRegressor())
 
@@ -30,7 +27,7 @@ RANDOM_STATE = 23654
 ITER_LIMIT = 100000
 SAMPLE_SIZE = 1
 TIME_LIMIT = 100
-CLASSIFIERS_CNT = 10
+#CLASSIFIERS_CNT = 10
 COMPLEXITY_PENALTY = 0.001
 
 DATASET_MIN_SIZE = 1000
@@ -50,39 +47,70 @@ for name in classification_dataset_names:
         print(name, df.shape, df['target'].unique(), df.isnull().values.any(), df.dtypes.apply(lambda x: np.issubdtype(x, np.number)).all())
 
 results = pd.DataFrame(columns=['dataset', 'samples', 'features', 'regressor','time','acc_score', 'll_score', 'model'])
+'''
 classificators = [
-    #['AdaBoostClassifier', AdaBoostClassifier, {'random_state':RANDOM_STATE}],
-    #['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
-    #['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
-    #['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
+    ['AdaBoostClassifier', AdaBoostClassifier, {'random_state':RANDOM_STATE}],
+    ['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
+    ['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
+    ['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
     ['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}],
-    #['RILSROLSEnsembleClassifier', RILSROLSEnsembleClassifier, {'sample_size':SAMPLE_SIZE/10,'max_fit_calls_per_estimator':ITER_LIMIT, 'max_seconds_per_estimator':TIME_LIMIT/CLASSIFIERS_CNT,'estimator_cnt': CLASSIFIERS_CNT,  'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'verbose':True}],
-  ]
+  ]'''
 
-for name, df in datasets.items():
-    _X = df.drop('target', axis=1)
-    X = _X.to_numpy()
-    y = df[['target']].to_numpy().ravel()
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.75, test_size=0.25, random_state=RANDOM_STATE)
-    
-    print(f'{name} size {_X.shape}')
-    
-    for clf_name, clf_type, clf_params in classificators:
+estimators = all_estimators(type_filter='classifier')
+
+classificators = []
+# the first two are not for numerical data, ComplementNB makes error on one of instances, while GaussianProcess, LabelPropagation and LabelSpreading seem to have memory issuess on instance adult (48842 x 14)
+discarded = ['CategoricalNB','RadiusNeighborsClassifier','ComplementNB','GaussianProcessClassifier','LabelPropagation', 'LabelSpreading']
+for name, ClassifierClass in estimators:
+    if name in discarded:
+        continue
+    print('Appending', name)
+    try:
+        clf = type(ClassifierClass())
+        classificators.append([name, clf, {'random_state':RANDOM_STATE, 'verbose': True}])
+    except Exception as e:
+        print('Unable to import', name)
+        print(e)
+#classificators.append(['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 
+#                                                                  'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}])
+#classificators = [['GaussianProcessClassifier', GaussianProcessClassifier, {'random_state':RANDOM_STATE}]]
+
+for clf_name, clf_type, clf_params in classificators:
+    print(f'Classifier {clf_name}')
+    try:
         clf = clf_type(**clf_params)
+    except:
+        # if this fails, try without parameters
+        clf = clf_type()
+    for name, df in datasets.items():
+        _X = df.drop('target', axis=1)
+        X = _X.to_numpy()
+        y = df[['target']].to_numpy().ravel()
+        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.75, test_size=0.25, random_state=RANDOM_STATE)
+        print(f'{name} size {_X.shape}')
         start = time.time()
         #cProfile.run('clf.fit(X_train, y_train)', 'restats')
-        clf.fit(X_train, y_train)
-        fit_time = time.time() - start
+        try:
+            clf.fit(X_train, y_train)
+            fit_time = time.time() - start
+            preds = np.nan_to_num(clf.predict(X_test))
+            acc = accuracy_score(y_test, preds)
+            preds_train = np.nan_to_num(clf.predict(X_train))
+            acc_train = accuracy_score(y_train, preds_train)
+        except:
+            # some problem in this phase is not acceptable, so continuing
+            print(f'Skipping classifier {clf_name}')
+            continue
+        try:
+            proba = np.nan_to_num(clf.predict_proba(X_test))
+            ll = log_loss(y_test, proba[:,1])
+        except:
+            # some method do not provide probability so we do not calculate log loss for those
+            ll = None
         try:
             eq = clf.model_string()
         except:
             eq = None
-        preds = np.nan_to_num(clf.predict(X_test))
-        preds_train = np.nan_to_num(clf.predict(X_train))
-        proba = np.nan_to_num(clf.predict_proba(X_test))
-        acc_train = accuracy_score(y_train, preds_train)
-        acc = accuracy_score(y_test, preds)
-        ll = log_loss(y_test, proba[:,1])
         log_txt = f'{name} {clf_name} {acc_train} {acc} {ll} {fit_time}s {eq}'
         print(log_txt)
         with open('log.txt', 'a') as flog:
