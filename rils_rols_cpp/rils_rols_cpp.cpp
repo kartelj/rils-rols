@@ -512,8 +512,8 @@ private:
 		tuple<double, double, int> fit;
 		
 		if (classification) {
-			double loss = utils::average_log_loss(y, yp);// 1 - utils::classification_accuracy(y, yp);
-			double rmse = 0;// utils::RMSE(y, yp);
+			double loss = 1 - utils::R2(y, yp);//  1 - utils::classification_accuracy(y, yp);
+			double rmse =  utils::RMSE(y, yp);
 			if (loss != loss || rmse!=rmse)// true only for NaN values
 				return make_tuple<double, double, int>(1000, 1000, 1000);
 			fit = tuple<double, double, int>{ loss, rmse,size };
@@ -855,7 +855,7 @@ int main()
 	string dir_path = ".";// "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry : fs::directory_iterator(dir_path)) {
-		if (entry.path().compare(".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
+		if (entry.path().compare(".\\phoneme.csv")!=0) //".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
 			continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;

@@ -38,7 +38,7 @@ class RILSROLSBase(BaseEstimator):
             return func_wrapper
         return timeout_decorator
 
-    @timeout(10.0)
+    @timeout(2.0)
     def call_model_symplify(self):
         self.model_simp = simplify(self.model, ratio=1)
 
@@ -60,7 +60,7 @@ class RILSROLSBase(BaseEstimator):
             self.call_model_symplify()
         except:
             # otherwise, just sympify it -- this does not stuck
-            print("Simplification failed withint given timeout, so just doing sympify.")
+            print("Simplification failed within given timeout, so just doing sympify.")
             self.model_simp = sympify(self.model)
         return (self.model, self.model_simp)
     

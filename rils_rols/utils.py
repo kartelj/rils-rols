@@ -1,8 +1,6 @@
 from math import nan, sqrt
-from statistics import mean
 from numpy.random import RandomState
 import numpy as np
-from sklearn.metrics import r2_score
 from sympy import preorder_traversal
 
 def complexity_sympy(model):

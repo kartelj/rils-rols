@@ -34,5 +34,5 @@ setup(
     python_requires= ">=3.6",
     py_modules=["rils-rols"],
     package_dir = {'rils-rols':'rils_rols'}, 
-    install_requires=["scikit-learn", "sympy", "statsmodels"],
+    install_requires=["scikit-learn", "sympy"],
 )

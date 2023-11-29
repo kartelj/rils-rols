@@ -27,7 +27,7 @@ ITER_LIMIT = int(sys.argv[2])
 THREADS = int(sys.argv[3])
 '''
 RANDOM_STATE = 23654
-ITER_LIMIT = 1000000
+ITER_LIMIT = 100000
 SAMPLE_SIZE = 1
 TIME_LIMIT = 100
 CLASSIFIERS_CNT = 10
@@ -51,12 +51,12 @@ for name in classification_dataset_names:
 
 results = pd.DataFrame(columns=['dataset', 'samples', 'features', 'regressor','time','acc_score', 'll_score', 'model'])
 classificators = [
-    ['AdaBoostClassifier', AdaBoostClassifier, {'random_state':RANDOM_STATE}],
-    ['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
-    ['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
-    ['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
+    #['AdaBoostClassifier', AdaBoostClassifier, {'random_state':RANDOM_STATE}],
+    #['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
+    #['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
+    #['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
     ['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}],
-    ['RILSROLSEnsembleClassifier', RILSROLSEnsembleClassifier, {'sample_size':SAMPLE_SIZE/10,'max_fit_calls_per_estimator':ITER_LIMIT, 'max_seconds_per_estimator':TIME_LIMIT/CLASSIFIERS_CNT,'estimator_cnt': CLASSIFIERS_CNT,  'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'verbose':True}],
+    #['RILSROLSEnsembleClassifier', RILSROLSEnsembleClassifier, {'sample_size':SAMPLE_SIZE/10,'max_fit_calls_per_estimator':ITER_LIMIT, 'max_seconds_per_estimator':TIME_LIMIT/CLASSIFIERS_CNT,'estimator_cnt': CLASSIFIERS_CNT,  'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'verbose':True}],
   ]
 
 for name, df in datasets.items():
