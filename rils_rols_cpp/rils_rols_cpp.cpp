@@ -87,7 +87,8 @@ private:
 			allowed_nodes.push_back(*node::node_constant(c));
 		for (int i = 0; i < rel_feat.size(); i++)
 			allowed_nodes.push_back(*node::node_variable(rel_feat[i]));
-		cout << "Finished creating allowed nodes" << endl;
+		if(verbose)
+			cout << "Finished creating allowed nodes" << endl;
 	}
 
 	/*
@@ -413,7 +414,7 @@ private:
 		vector<node> filtered_candidates;
 		for (auto& node : all_cand) {
 			string node_str = node.to_string();
-			if (filtered_cand_strings.contains(node_str)) {
+			if (filtered_cand_strings.find(node_str)!=filtered_cand_strings.end()) {
 				//cout << node_str << " already exists." << endl;
 				continue;
 			}

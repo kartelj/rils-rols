@@ -2,7 +2,7 @@ import math
 import time
 from sklearn.base import BaseEstimator
 from sympy import *
-from .rils_rols import RILSROLSClassifier, RILSROLSRegressor
+from .rils_rols import RILSROLSBinaryClassifier, RILSROLSRegressor
 #from joblib import Parallel, delayed
 from .utils import complexity_sympy
 from sklearn.model_selection import train_test_split
@@ -31,7 +31,7 @@ class RILSROLSEnsembleBase(BaseEstimator):
         self.base_estimators = []
         for i in range(estimator_cnt):
             if classification is True:
-                est = RILSROLSClassifier(max_fit_calls=max_fit_calls_per_estimator, max_seconds=max_seconds_per_estimator,
+                est = RILSROLSBinaryClassifier(max_fit_calls=max_fit_calls_per_estimator, max_seconds=max_seconds_per_estimator,
                                                   complexity_penalty=complexity_penalty, sample_size=sample_size,verbose=verbose, random_state=random_states[i])
             elif classification is False:
                 est = RILSROLSRegressor(max_fit_calls=max_fit_calls_per_estimator, max_seconds=max_seconds_per_estimator,
@@ -87,9 +87,9 @@ class RILSROLSEnsembleBase(BaseEstimator):
         return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tmaxComplexity={4}\tsampleShare={5}\ttotalTime={6:.1f}\tsimpSize={7}\texpr={8}\texprSimp={9}".format(
             self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty,self.max_complexity, self.sample_size, self.time_elapsed, complexity_sympy(self.model_simp),  self.model, self.model_simp)
 
-class RILSROLSEnsembleClassifier(RILSROLSEnsembleBase):
+class RILSROLSEnsembleBinaryClassifier(RILSROLSEnsembleBase):
     
-    def __init__(self, validation_size=0.5, max_fit_calls_per_estimator=100000, max_seconds_per_estimator=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1,estimator_cnt = 8, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls_per_estimator=100000, max_seconds_per_estimator=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1,estimator_cnt = 8, validation_size=0.5, verbose=False, random_state=0):
         super().__init__(True, validation_size=validation_size, max_fit_calls_per_estimator=max_fit_calls_per_estimator, max_seconds_per_estimator=max_seconds_per_estimator, complexity_penalty=complexity_penalty, max_complexity=max_complexity, sample_size=sample_size, estimator_cnt=estimator_cnt, verbose=verbose,  random_state=random_state)
 
     def predict_proba(self, X):
@@ -98,5 +98,5 @@ class RILSROLSEnsembleClassifier(RILSROLSEnsembleBase):
 
 class RILSROLSEnsembleRegressor(RILSROLSEnsembleBase):
     
-    def __init__(self, validation_size=0.5, max_fit_calls_per_estimator=100000, max_seconds_per_estimator=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1, estimator_cnt = 8, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls_per_estimator=100000, max_seconds_per_estimator=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1, estimator_cnt = 8, validation_size=0.5, verbose=False, random_state=0):
         super().__init__(False, validation_size=validation_size,  max_fit_calls_per_estimator=max_fit_calls_per_estimator, max_seconds_per_estimator=max_seconds_per_estimator, complexity_penalty=complexity_penalty, max_complexity=max_complexity, sample_size=sample_size, estimator_cnt=estimator_cnt, verbose=verbose,  random_state=random_state)

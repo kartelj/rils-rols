@@ -55,12 +55,14 @@ class RILSROLSBase(BaseEstimator):
         self.best_time = self.rr_cpp.get_best_time()
         self.total_time = self.rr_cpp.get_total_time()
         self.fit_calls = self.rr_cpp.get_fit_calls()
-        print('Finished otimization, doing final symplification...')
+        if self.verbose:
+            print('Finished otimization, doing final symplification...')
         try:
             self.call_model_symplify()
         except:
             # otherwise, just sympify it -- this does not stuck
-            print("Simplification failed within given timeout, so just doing sympify.")
+            if self.verbose:
+                print("Simplification failed within given timeout, so just doing sympify.")
             self.model_simp = sympify(self.model)
         return (self.model, self.model_simp)
     
@@ -95,20 +97,30 @@ class RILSROLSRegressor(RILSROLSBase):
         yp = self.predict(X)
         return r2_score(y, yp)
 
-class RILSROLSClassifier(RILSROLSBase):
+class RILSROLSBinaryClassifier(RILSROLSBase):
     
     def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1, verbose=False, random_state=0):
         super().__init__(True, max_fit_calls, max_seconds, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
 
-    def predict(self, X: np.ndarray):
+    def check_binary_targets(self, y):
+        for yi in y:
+            if yi!=0 and yi!=1:
+                raise Exception('The classifier works only for binary targets, so allowed target values are 0 or 1.')
+
+    def predict(self, X):
         preds = super().predict(X)
         return binarize(preds)
     
-    def predict_proba(self, X: np.ndarray):
+    def predict_proba(self, X):
         preds = self.predict(X)
         return proba(preds)
     
     def score(self, X, y):
+        self.check_binary_targets(y)
         yp = self.predict(X)
         return accuracy_score(y, yp)
+    
+    def fit(self, X, y):
+        self.check_binary_targets(y)
+        return super().fit(X, y)
     

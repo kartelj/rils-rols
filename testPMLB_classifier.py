@@ -1,7 +1,7 @@
 from sklearn.gaussian_process import GaussianProcessClassifier
 from sklearn.metrics import log_loss, accuracy_score
 from sklearn.model_selection import train_test_split
-from rils_rols.rils_rols import RILSROLSClassifier
+from rils_rols.rils_rols import RILSROLSBinaryClassifier
 #from sklearn.utils.estimator_checks import check_estimator
 import numpy as np
 import pandas as pd

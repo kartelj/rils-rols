@@ -1,12 +1,11 @@
 from datetime import datetime
-from multiprocessing import freeze_support
+from math import sqrt
 from random import Random
 from rils_rols.rils_rols import RILSROLSRegressor
+from sklearn.metrics import r2_score, mean_squared_error
 from rils_rols import utils
 from os import listdir
 from os.path import isfile, join
-
-from rils_rols.rils_rols_ensemble import RILSROLSEnsembleRegressor
 
 instances_dir = "paper_resources/random_12345_data" 
 random_state = 23654
@@ -50,13 +49,13 @@ for fpath in instance_files: #['random_13_04_0010000_01.data']:
     rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, sample_size=sample_size, max_complexity=max_complexity, complexity_penalty=complexity_penalty, verbose=True)
     
     rils.fit(X_train, y_train)
-    report_string = rils.fit_report_string(X_train, y_train)
+    report_string = rils.fit_report_string()
     rils_R2 = -1
     rils_RMSE = -1
     try:
         yp = rils.predict(X_test)
-        rils_R2 = utils.R2(y_test, yp)
-        rils_RMSE = utils.RMSE(y_test, yp)
+        rils_R2 = r2_score(y_test, yp)
+        rils_RMSE = sqrt(mean_squared_error(y_test, yp))
         print("R2=%.8f\tRMSE=%.8f\texpr=%s"%(rils_R2, rils_RMSE, rils.model))
     except:
         print("ERROR during test.")

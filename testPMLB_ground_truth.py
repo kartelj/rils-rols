@@ -1,8 +1,9 @@
+from math import sqrt
 from pmlb import fetch_data
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error
 from rils_rols.rils_rols import RILSROLSRegressor
-from rils_rols.utils import noisefy, R2, RMSE
-from os import listdir, stat
+from rils_rols.utils import noisefy
 import sys
 from sklearn.utils.estimator_checks import check_estimator
 import numpy as np
@@ -61,13 +62,13 @@ for i in range(len(ground_truth_regr_datasets)):
     else:
         rils = RILSROLSRegressor(max_fit_calls,max_seconds, random_state = seed, max_complexity=max_complexity, complexity_penalty=complexity_penalty, sample_size=sample_size,verbose=verbose)
     rils.fit(X_train, y_train)
-    report_string = rils.fit_report_string(X_train, y_train)
+    report_string = rils.fit_report_string()
     rils_R2 = ""
     rils_RMSE = ""
     try:
         yp = rils.predict(X_test)
-        rils_R2 = R2(y_test, yp)
-        rils_RMSE = RMSE(y_test, yp)
+        rils_R2 = r2_score(y_test, yp)
+        rils_RMSE = sqrt(mean_squared_error(y_test, yp))
         print("%s\tR2=%.8f\tRMSE=%.8f\texpr=%s"%(dataset, rils_R2, rils_RMSE, rils.model))    
         with open(out_path, "a") as f:
             f.write("{0}\t{1}\tTestR2={2:.8f}\tTestRMSE={3:.8f}\n".format(dataset, report_string, rils_R2, rils_RMSE))

@@ -3,24 +3,21 @@ from multiprocessing import freeze_support
 from random import Random
 from rils_rols.rils_rols import RILSROLSRegressor
 from rils_rols import utils
-from os import listdir
-from os.path import isfile, join
-
-from rils_rols.rils_rols_ensemble import RILSROLSEnsembleRegressor
+from sklearn.metrics import r2_score, mean_squared_error
+from math import sqrt
 
 instances_dir = "paper_resources/random_large_data" 
 random_state = 23654
 train_perc = 0.75
 time = 86400
 max_fit = 1000000
-noise_level = 0.5
+noise_level = 0
 complexity_penalty = 0.001 # 0.001 default
-parallelism = 10
-initial_sample_sizes = [0.0001, 0.001, 0.01]
-verbose = False
+sample_sizes = [0.01]
+verbose = True
 
  
-instance_files = [f for f in listdir(instances_dir) if isfile(join(instances_dir, f))]
+instance_files = ['large1.txt', 'large2.txt', 'large3.txt', 'large4.txt']
 
 out_path = "out_{0}.txt".format(datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 with open(out_path, "w") as f:
@@ -51,21 +48,16 @@ for fpath in instance_files:
         if noise_level>0:
             y_train = utils.noisefy(y_train, noise_level, random_state)
 
-    for sample_size in initial_sample_sizes:
-        if parallelism==1:
-            rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, sample_size=sample_size, verbose=verbose)
-        elif parallelism>1:
-            rils = RILSROLSEnsembleRegressor(max_fit_calls_per_regressor=max_fit, max_seconds_per_regressor=time, random_state = random_state, complexity_penalty=complexity_penalty, estimator_cnt=parallelism, sample_size=sample_size, verbose=verbose)
-        else:
-            raise Exception("Parallelism parameter must be >= 1.")
+    for sample_size in sample_sizes:
+        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, sample_size=sample_size, verbose=verbose)
         rils.fit(X_train, y_train)
-        report_string = rils.fit_report_string(X_train, y_train)
+        report_string = rils.fit_report_string()
         rils_R2 = -1
         rils_RMSE = -1
         try:
             yp = rils.predict(X_test)
-            rils_R2 = utils.R2(y_test, yp)
-            rils_RMSE = utils.RMSE(y_test, yp)
+            rils_R2 = r2_score(y_test, yp)
+            rils_RMSE = sqrt(mean_squared_error(y_test, yp))
             print("R2=%.8f\tRMSE=%.8f\texpr=%s"%(rils_R2, rils_RMSE, rils.model))
         except:
             print("ERROR during test.")

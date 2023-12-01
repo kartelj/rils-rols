@@ -3,6 +3,7 @@
 #include <vector>
 #include <ostream>
 #include <string>
+#include <memory>
 #include "eigen/Eigen/Dense"
 
 using namespace std;
@@ -147,45 +148,7 @@ public:
 
 	static shared_ptr < node> node_pow() { return node_internal(node_type::POW); }
 
-	Eigen::ArrayXd evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) {
-		switch (type) {
-		case node_type::CONST: {
-			Eigen::ArrayXd const_arr(X.size());
-			const_arr.fill(const_value);
-			return const_arr; 
-		}
-		case node_type::VAR: {
-			Eigen::ArrayXd var_arr(X.size());
-			for (int i = 0; i < X.size(); i++)
-				var_arr[i] = X[i][var_index];
-			return var_arr;
-		}
-		case node_type::PLUS:
-			return  a + b;
-		case node_type::MINUS:
-			return a - b;
-		case node_type::MULTIPLY:
-			return a * b;
-		case node_type::DIVIDE:
-			return a / b;
-		case node_type::SIN:
-			return a.sin();
-		case node_type::COS:
-			return a.cos();
-		case node_type::LN:
-			return a.log();
-		case node_type::EXP:
-			return a.exp();
-		case node_type::SQRT:
-			return a.sqrt();
-		case node_type::SQR:
-			return a * a;
-		case node_type::POW:
-			return a.pow(b);
-		default:
-			throw exception("Unrecognized operation.");
-		}
-	};
+	Eigen::ArrayXd evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) noexcept(false);
 
 	inline string to_string() const {
 		switch (type) {
@@ -220,27 +183,7 @@ public:
 		}
 	};
 
-	bool is_allowed_left(const node& node) const{
-		node_type t = node.type;
-		switch (type) {
-		case node_type::EXP:
-		case node_type::LN:
-			if (t == node_type::EXP || t == node_type::LN)
-				return false;
-			break;
-		case node_type::POW:
-			if (t == node_type::POW)
-				return false;
-			break;
-		case node_type::COS:
-		case node_type::SIN:
-			if (t == node_type::COS || t == node_type::SIN)
-				return false;
-			break;
-		default:
-			return true;
-		}
-	}
+	bool is_allowed_left(const node& node) const;
 
 	Eigen::ArrayXd evaluate_all(const vector<Eigen::ArrayXd>& X);
 

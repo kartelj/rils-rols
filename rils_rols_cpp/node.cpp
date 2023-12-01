@@ -20,6 +20,69 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 	return yp;
 }
 
+Eigen::ArrayXd node::evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) noexcept(false) {
+	switch (type) {
+	case node_type::CONST: {
+		Eigen::ArrayXd const_arr(X.size());
+		const_arr.fill(const_value);
+		return const_arr;
+	}
+	case node_type::VAR: {
+		Eigen::ArrayXd var_arr(X.size());
+		for (int i = 0; i < X.size(); i++)
+			var_arr[i] = X[i][var_index];
+		return var_arr;
+	}
+	case node_type::PLUS:
+		return  a + b;
+	case node_type::MINUS:
+		return a - b;
+	case node_type::MULTIPLY:
+		return a * b;
+	case node_type::DIVIDE:
+		return a / b;
+	case node_type::SIN:
+		return a.sin();
+	case node_type::COS:
+		return a.cos();
+	case node_type::LN:
+		return a.log();
+	case node_type::EXP:
+		return a.exp();
+	case node_type::SQRT:
+		return a.sqrt();
+	case node_type::SQR:
+		return a * a;
+	case node_type::POW:
+		return a.pow(b);
+	default:
+		cout << "ERROR: Unrecognized operation.";
+		exit(1);
+	}
+};
+
+bool node::is_allowed_left(const node& node) const {
+	node_type t = node.type;
+	switch (type) {
+	case node_type::EXP:
+	case node_type::LN:
+		if (t == node_type::EXP || t == node_type::LN)
+			return false;
+		break;
+	case node_type::POW:
+		if (t == node_type::POW)
+			return false;
+		break;
+	case node_type::COS:
+	case node_type::SIN:
+		if (t == node_type::COS || t == node_type::SIN)
+			return false;
+		break;
+	default:
+		return true;
+	}
+}
+
 vector< shared_ptr<node>> node::all_subtrees_references(shared_ptr<node> root) {
 	if (root == NULL)
 		return vector<shared_ptr<node>>();
