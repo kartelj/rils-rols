@@ -23,15 +23,12 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 Eigen::ArrayXd node::evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) noexcept(false) {
 	switch (type) {
 	case node_type::CONST: {
-		Eigen::ArrayXd const_arr(X.size());
+		Eigen::ArrayXd const_arr(X[0].size());
 		const_arr.fill(const_value);
 		return const_arr;
 	}
 	case node_type::VAR: {
-		Eigen::ArrayXd var_arr(X.size());
-		for (int i = 0; i < X.size(); i++)
-			var_arr[i] = X[i][var_index];
-		return var_arr;
+		return X[var_index];
 	}
 	case node_type::PLUS:
 		return  a + b;

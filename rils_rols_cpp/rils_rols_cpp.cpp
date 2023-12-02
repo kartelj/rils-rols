@@ -9,6 +9,7 @@
 #include <sstream>
 #include <random>
 #include <chrono>
+#include <numeric>
 #include "node.h"
 #include "utils.h"
 #include "eigen/Eigen/Dense"
@@ -454,16 +455,11 @@ private:
 		}
 		factors.push_back(node::node_constant(1)); // add free term
 
-		Eigen::MatrixXd A(X.size(), factors.size());
-		Eigen::VectorXd b(X.size());
-
-		for (int i = 0; i < X.size(); i++)
-			b(i) = y[i];
+		Eigen::MatrixXd A(y.size(), factors.size());
+		Eigen::VectorXd b = y;
 
 		for (int i = 0; i < factors.size(); i++) {
-			Eigen::ArrayXd factor_values = factors[i]->evaluate_all(X);
-			for (int j = 0; j < X.size(); j++)
-				A(j, i) = factor_values[j];
+			A.col(i) = factors[i]->evaluate_all(X);
 		}
 
 		auto coefs = A.colPivHouseholderQr().solve(b).eval();
@@ -660,56 +656,81 @@ public:
 	}
 
 #ifdef PYTHON_WRAPPER
-	void fit(py::array_t<double> X, py::array_t<double> y, int data_cnt, int feat_cnt) {
+	bool get_x(py::array_t<double> X, int data_cnt, int feat_cnt, vector<Eigen::ArrayXd>& Xe)
+	{
 		py::buffer_info buf_X = X.request();
 		double* ptr_X = (double*)buf_X.ptr;
 		if (buf_X.size != data_cnt * feat_cnt) {
 			cout << "Size of X " << buf_X.size << " is not the same as the product of data count and feature count " << data_cnt * feat_cnt << endl;
 			exit(1);
 		}
-		// now resize X
-		vector<Eigen::ArrayXd> Xe;
-		for (int i = 0; i < data_cnt; i++) {
-			Eigen::ArrayXd x(feat_cnt);
-			for (int j = 0; j < feat_cnt; j++)
-				x[j] = ptr_X[i * feat_cnt + j];
-			Xe.push_back(x);
-		}
-
 		py::buffer_info buf_y = y.request();
 		double* ptr_y = (double*)buf_y.ptr;
-		if (buf_y.size != data_cnt) {
+		if (buf_y.size != data_cnt)
+		{
 			cout << "Size of y " << buf_y.size << " is not the same as the data count " << data_cnt << endl;
-			exit(1);
+			return false;
 		}
-		Eigen::ArrayXd ye(data_cnt);
+
+		for (int i = 0; i < feat_cnt; i++)
+		{
+			Xe.resize(data_cnt);
+		}
+
 		for (int i = 0; i < data_cnt; i++)
-			ye[i] = ptr_y[i];
-		fit_inner(Xe, ye);
+		{
+			for (int j = 0; j < feat_cnt; j++)
+			{
+				Xe[j][i] = ptr_X[i * feat_cnt + j];
+		}
+		}
 	}
 
-	py::array_t<double> predict(py::array_t<double> X, int data_cnt, int feat_cnt) {
-		py::buffer_info buf_X = X.request();
-		double* ptr_X = (double*)buf_X.ptr;
-		if (buf_X.size != data_cnt * feat_cnt) {
-			cout << "Size of X " << buf_X.size << " is not the same as the product of data count and feature count " << data_cnt * feat_cnt << endl;
+	bool get_y(py::array_t<double> y, int data_cnt, Eigen::ArrayXd& ye)
+	{
+		py::buffer_info buf_y = y.request();
+		double* ptr_y = (double*)buf_y.ptr;
+		if (buf_y.size != data_cnt)
+		{
+			cout << "Size of y " << buf_y.size << " is not the same as the data count " << data_cnt << endl;
+			return false;
+		}
+		ye.resize(data_cnt);
+		for (int i = 0; i < data_cnt; i++)
+		{
+			ye[i] = ptr_y[i];
+	}
+	}
+
+	void fit(py::array_t<double> X, py::array_t<double> y, int data_cnt, int feat_cnt)
+	{
+		vector<Eigen::ArrayXd> Xe;
+		Eigen::ArrayXd ye;
+
+		if (!get_x(X, data_cnt, feat_cnt, Xe) || !get_y(y, data_cnt, ye))
+		{
 			exit(1);
 		}
-		// now resize X
-		vector<Eigen::ArrayXd> Xe;
-		for (int i = 0; i < data_cnt; i++) {
-			Eigen::ArrayXd x(feat_cnt);
-			for (int j = 0; j < feat_cnt; j++)
-				x[j] = ptr_X[i * feat_cnt + j];
-			Xe.push_back(x);
+
+		fit_inner(Xe, ye);
 		}
-		Eigen::ArrayXd res =  final_solution->evaluate_all(Xe);
+
+	py::array_t<double> predict(py::array_t<double> X, int data_cnt, int feat_cnt)
+		{
+		vector<Eigen::ArrayXd> Xe;
+		if (!get_x(X, data_cnt, feat_cnt, Xe))
+		{
+			exit(1);
+		}
+
+		Eigen::ArrayXd res = final_solution->evaluate_all(Xe);
 		py::array_t<double> res_np = py::array_t<double>(data_cnt);
 		py::buffer_info buf_res_np = res_np.request();
 		double* ptr_res_np = (double*)buf_res_np.ptr;
-		for (int i = 0; i < data_cnt; i++) {
+		for (int i = 0; i < data_cnt; i++)
+		{
 			if (classification)
-				ptr_res_np[i] = res[i] >= 0.5 ? 1 : 0;
+				ptr_res_np[i] = res[i] >= 0.5 ? 1.0 : 0.0;
 			else
 				ptr_res_np[i] = res[i];
 		}
@@ -718,7 +739,7 @@ public:
 #endif
 
 	vector<int> relevant_features(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
-		int feat_cnt = X[0].size();
+		int feat_cnt = X.size();
 		vector<int> rel_feat;
 		vector<tuple<double, int>> feat_by_r2;
 		if (feat_cnt <= max_feat) {
@@ -727,10 +748,7 @@ public:
 			return rel_feat;
 		}
 		for (int i = 0; i < feat_cnt; i++) {
-			Eigen::ArrayXd xi(X.size());
-			for (int j = 0; j < X.size(); j++)
-				xi[j] = X[j][i];
-			double r2 = utils::R2(xi, y);
+			double r2 = utils::R2(X[i], y);
 			feat_by_r2.push_back(tuple<double,int>{r2,i});
 		}
 		std::sort(feat_by_r2.begin(), feat_by_r2.end(), std::greater<>());
@@ -741,19 +759,26 @@ public:
 
 	void fit_inner(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
 		reset();
-		int sample_cnt = int(sample_size * X_all.size());
-		vector<int> selected;
-		for (int i = 0; i < X_all.size(); i++)
-			selected.push_back(i);
+		int sample_cnt = int(sample_size * y_all.size());
+		vector<int> selected(y_all.size());
+
+		std::iota(selected.begin(), selected.end(), 0);
 		shuffle(selected.begin(), selected.end(), default_random_engine(random_state));
-		vector<Eigen::ArrayXd> X;
+
+		// TODO: maybe done with eigen
+		vector<Eigen::ArrayXd> X(X_all.size());
+		for (size_t i = 0; i < X_all.size(); i++)
+		{
+			X[i].resize(sample_cnt);
+		}
 		Eigen::ArrayXd y(sample_cnt);
+
 		for (int ix = 0; ix < sample_cnt; ix++) {
 			int i = selected[ix];
-			Eigen::ArrayXd x(X_all[i].size());
-			for (int j = 0; j < x.size(); j++)
-				x[j] = X_all[i][j];
-			X.push_back(x);
+			for (int j = 0; j < X.size(); j++)
+			{
+				X[j][ix] = X_all[j][i];
+			}
 			y[ix] = y_all[i];
 		}
 		// find at most max_feat relevant features and do not look the other ones
@@ -843,6 +868,17 @@ public:
 	}
 };
 
+std::vector<double> get_row(const std::string& line)
+{
+	stringstream ss(line);
+	vector<double> tokens;
+	string tmp;
+	while (getline(ss, tmp, '\t'))
+		tokens.push_back(stod(tmp));
+
+	return tokens;
+}
+
 int main()
 {
 	int random_state = 23654;
@@ -871,30 +907,52 @@ int main()
 		srand(random_state);
 		// shuffling for later split between training and test set
 		shuffle(lines.begin(), lines.end(), default_random_engine(random_state));
-		int train_cnt = int(train_share * lines.size());
-		vector<Eigen::ArrayXd> X_train, X_test;
-		Eigen::ArrayXd y_train(train_cnt), y_test(lines.size() - train_cnt);
+		auto train_cnt = (size_t)(train_share * lines.size());
+		auto test_cnt = lines.size() - train_cnt;
+
+		const auto firstRow = get_row(lines[0]);
+		const auto X_columns = firstRow.size() - 1;
+
+		vector<Eigen::ArrayXd> X_train(X_columns), X_test(X_columns);
+		for (size_t i = 0; i < X_columns; i++)
+		{
+			X_train[i].resize(train_cnt);
+			X_test[i].resize(test_cnt);
+		}
+
+		Eigen::ArrayXd y_train(train_cnt), y_test(test_cnt);
+		bool sucess = true;
 		for (int i = 0; i < lines.size(); i++) {
 			string line = lines[i];
-			stringstream ss(line);
-			vector<string> tokens;
-			string tmp;
-			while (getline(ss, tmp, '\t'))
-				tokens.push_back(tmp);
-			Eigen::ArrayXd x(tokens.size());
-			for (int i = 0; i < tokens.size() - 1; i++) {
-				string str(tokens[i]);
-				x[i] = stod(str);
+
+			const auto row = get_row(lines[i]);
+			if (row.size() != firstRow.size())
+			{
+				std::cerr << "Invalid row size!" << std::endl;
+				break;
 			}
-			string str(tokens[tokens.size() - 1]);
-			if (i < train_cnt) {
-				y_train[X_train.size()] = stod(str);
-				X_train.push_back(x);
+
+			if (i < train_cnt)
+			{
+				y_train[i] = row.back();
+				for (size_t j = 0; j < X_columns; j++)
+				{
+					X_train[j][i] = row[j];
+				}
 			}
-			else {
-				y_test[X_test.size()] = stod(str);
-				X_test.push_back(x);
+			else
+			{
+				y_test[i - train_cnt] = row.back();
+				for (size_t j = 0; j < X_columns; j++)
+				{
+					X_test[j][i - train_cnt] = row[j];
 			}
+			}
+			}
+		if (!sucess)
+		{
+			std::cerr << "Problem with reading data" << std::endl;
+			continue;
 		}
 		rils_rols rr(classification, max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
 		rr.fit_inner(X_train, y_train);
