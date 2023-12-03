@@ -14,7 +14,7 @@
 #include "utils.h"
 #include "eigen/Eigen/Dense"
 
-#define PYTHON_WRAPPER 1 // comment this to run pure CPP
+//#define PYTHON_WRAPPER 1 // comment this to run pure CPP
 
 #ifdef PYTHON_WRAPPER
 
@@ -57,7 +57,7 @@ private:
 	double total_time;
 	double early_exit_eps = pow(10, -PRECISION);
 
-	void reset() {
+	void reset() noexcept {
 		main_it = 0;
 		last_improved_it = 0;
 		time_elapsed = 0;
@@ -73,21 +73,21 @@ private:
 	vector<node> allowed_nodes;
 
 	void setup_nodes(vector<int> rel_feat) {
-		allowed_nodes.push_back(*node::node_plus());
-		allowed_nodes.push_back(*node::node_minus());
-		allowed_nodes.push_back(*node::node_multiply());
-		allowed_nodes.push_back(*node::node_divide());
-		allowed_nodes.push_back(*node::node_sin());
-		allowed_nodes.push_back(*node::node_cos());
-		allowed_nodes.push_back(*node::node_ln());
-		allowed_nodes.push_back(*node::node_exp());
-		allowed_nodes.push_back(*node::node_sqrt());
-		allowed_nodes.push_back(*node::node_sqr());
-		double constants[] = { -1, 0, 0.5, 1, 2, M_PI, 10 };
-		for (auto c : constants)
-			allowed_nodes.push_back(*node::node_constant(c));
+		allowed_nodes.push_back(node(node_type::PLUS));
+		allowed_nodes.push_back(node(node_type::MINUS));
+		allowed_nodes.push_back(node(node_type::MULTIPLY));
+		allowed_nodes.push_back(node(node_type::DIVIDE));
+		allowed_nodes.push_back(node(node_type::SIN));
+		allowed_nodes.push_back(node(node_type::COS));
+		allowed_nodes.push_back(node(node_type::LN));
+		allowed_nodes.push_back(node(node_type::EXP));
+		allowed_nodes.push_back(node(node_type::SQRT));
+		allowed_nodes.push_back(node(node_type::SQR));
+		double constants[] = { -1., 0., 0.5, 1., 2., M_PI, 10. };
+		for (const auto c : constants)
+			allowed_nodes.push_back(node(c));
 		for (int i = 0; i < rel_feat.size(); i++)
-			allowed_nodes.push_back(*node::node_variable(rel_feat[i]));
+			allowed_nodes.push_back(node(rel_feat[i]));
 		if(verbose)
 			cout << "Finished creating allowed nodes" << endl;
 	}
@@ -106,16 +106,16 @@ private:
 	}*/
 
 	void add_const_finetune(const node& old_node, vector<node>& candidates) {
-		if (old_node.type == node_type::CONST) {
+		if (old_node.is<node_type::CONST>()) {
 			//finetune constants
-			if (old_node.const_value == 0) {
-				candidates.push_back(*node::node_constant(-1));
-				candidates.push_back(*node::node_constant(1));
+			if (old_node.get_const_value() == 0.0) {
+				candidates.push_back(node(-1.0));
+				candidates.push_back(node(1.0));
 			}
 			else {
-				double multipliers[] = { -1, 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0, 1, 1.1, 1.2, 2, M_PI, 5, 10, 20, 50, 100 };
-				for (auto mult : multipliers)
-					candidates.push_back(*node::node_constant(old_node.const_value * mult));
+				double multipliers[] = { -1., 0.01, 0.1, 0.2, 0.5, 0.8, 0.9, 0., 1, 1.1, 1.2, 2., M_PI, 5., 10., 20., 50., 100. };
+				for (const auto mult : multipliers)
+					candidates.push_back(node(old_node.get_const_value() * mult));
 				//double adders[] = { -1, -0.5, 0.5, 1 };
 				//for (auto add : adders)
 				//	candidates.push_back(*node::node_constant(old_node.const_value + add));
@@ -124,184 +124,145 @@ private:
 	}
 
 	void add_pow_exponent_increase_decrease(const node& old_node, vector<node>& candidates) {
-		if (old_node.type == node_type::POW) {
-			if (old_node.right->type != node_type::CONST) {
+		if (old_node.is<node_type::POW>()) {
+			if (old_node.get_right()->is_not<node_type::CONST>()) {
 				std::cout << "Only constants are allowed in power exponents." << endl;
 				exit(1);
 			}
-			shared_ptr <node> nc_dec = node::node_copy(old_node);
-			nc_dec->right->const_value -= 0.5;
-			if (nc_dec->right->const_value == 0) // avoid exponent 0
-				nc_dec->right->const_value -= 0.5;
-			shared_ptr <node> nc_inc = node::node_copy(old_node);
-			nc_inc->right->const_value += 0.5;
-			if (nc_inc->right->const_value == 0) // avoid exponent 0
-				nc_inc->right->const_value += 0.5;
-			candidates.push_back(*nc_dec);
-			candidates.push_back(*nc_inc);
+			auto nc_dec = node::deep_copy(old_node);
+			nc_dec.get_right()->add_const(-0.5);
+			if (nc_dec.get_right()->get_const_value() == 0.0) // avoid exponent 0
+				nc_dec.get_right()->add_const(-0.5);
+			auto nc_inc = node::deep_copy(old_node);
+			nc_inc.get_right()->add_const(0.5);
+			if (nc_inc.get_right()->get_const_value() == 0.0) // avoid exponent 0
+				nc_inc.get_right()->add_const(0.5);
+			candidates.push_back(nc_dec);
+			candidates.push_back(nc_inc);
 		}
 	}
 
 	void add_change_to_subtree(const node& old_node, vector<node>& candidates) {
-		if (old_node.arity >= 1) {
+		if (old_node.get_arity() >= 1) {
 			// change node to one of its left subtrees
-			vector< shared_ptr<node>> subtrees = node::all_subtrees_references(old_node.left);
-			for (auto n : subtrees) {
-				shared_ptr<node> n_c = node::node_copy(*n);
-				candidates.push_back(*n_c);
-			}
+			get_all_subtrees<true>(*old_node.get_left(), candidates);
 		}
-		if (old_node.arity >= 2) {
+		if (old_node.get_arity() >= 2) {
 			// change node to one of its right subtrees
-			vector< shared_ptr<node>> subtrees = node::all_subtrees_references(old_node.right);
-			for (auto n : subtrees) {
-				shared_ptr < node> n_c = node::node_copy(*n);
-				candidates.push_back(*n_c);
-			}
+			get_all_subtrees<true>(*old_node.get_right(), candidates);
 		}
 	}
 
 	void add_change_to_var_const(const node& old_node, vector<node>& candidates) {
 		// change anything to variable or constant
 		for (auto& n : allowed_nodes) {
-			if (n.arity != 0)
+			if (n.get_arity() != 0)
 				continue;
-			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
+			if (old_node.is<node_type::VAR>() && old_node.get_var_index() == n.get_var_index())
 				continue; // avoid changing to same variable
-			shared_ptr < node> n_c = node::node_copy(n);
-			candidates.push_back(*n_c);
+			candidates.push_back(node::deep_copy(n));
 		}
 	}
 
 	void add_change_to_var_or_1(const node& old_node, vector<node>& candidates) {
 		// change anything to variable or constant
 		for (auto& n : allowed_nodes) {
-			if (n.type != node_type::VAR)
+			if (n.is_not<node_type::VAR>())
 				continue;
-			if (old_node.type == node_type::VAR && old_node.var_index == n.var_index)
+			if (old_node.is<node_type::VAR>() && old_node.get_var_index() == n.get_var_index())
 				continue; // avoid changing to same variable
-			shared_ptr < node> n_c = node::node_copy(n);
-			candidates.push_back(*n_c);
+			candidates.push_back(node::deep_copy(n));
 		}
-		candidates.push_back(*node::node_constant(1));
+		candidates.push_back(node(1.0));
 	}
-
 
 	void add_change_const_to_var(const node& old_node, vector<node>& candidates) {
 		// change constant to variable
-		if (old_node.type == node_type::CONST) {
+		if (old_node.is<node_type::CONST>()) {
 			for (auto& n : allowed_nodes) {
-				if (n.type != node_type::VAR)
+				if (n.is_not<node_type::VAR>())
 					continue;
-				shared_ptr < node> n_c = node::node_copy(n);
-				candidates.push_back(*n_c);
+				candidates.push_back(node::deep_copy(n));
 			}
 		}
 	}
 
 	void add_change_unary_applied(const node& old_node, vector<node>& candidates) {
 		// change anything to unary operation applied to it
-		for (auto& n_un : allowed_nodes) {
-			if (n_un.arity != 1)
+		for (const auto& n_un : allowed_nodes) {
+			if (n_un.get_arity() != 1 || !n_un.is_allowed_left(old_node))
 				continue;
-			if (!n_un.is_allowed_left(old_node))
-				continue;
-			shared_ptr < node> n_un_c = node::node_copy(n_un);
-			shared_ptr < node> old_node_c = node::node_copy(old_node);
-			n_un_c->left = old_node_c;
-			candidates.push_back(*n_un_c);
+			candidates.push_back(create_node(n_un.get_type(), &old_node));
 		}
 	}
 	void add_change_variable_to_unary_applied(const node& old_node, vector<node>& candidates) {
-		if (old_node.type == node_type::VAR)
+		if (old_node.is<node_type::VAR>())
 			add_change_unary_applied(old_node, candidates);
 	}
 
 	void add_change_unary_to_another(const node& old_node, vector<node>& candidates) {
-		if (old_node.arity == 1) {
+		if (old_node.get_arity() == 1)
+		{
 			// change unary operation to another unary operation
-			for (auto& n_un : allowed_nodes) {
-				if (n_un.arity != 1 || n_un.type == old_node.type)
+			for (const auto& n_un : allowed_nodes) {
+				if (n_un.get_arity() != 1 || n_un.get_type() == old_node.get_type())
 					continue;
-				if (!n_un.is_allowed_left(*old_node.left))
+				if (!n_un.is_allowed_left(*old_node.get_left()))
 					continue;
-				shared_ptr < node> n_un_c = node::node_copy(n_un);
-				shared_ptr < node> old_left_c = node::node_copy(*old_node.left);
-				n_un_c->left = old_left_c;
-				candidates.push_back(*n_un_c);
+				candidates.push_back(create_node(n_un.get_type(), old_node.get_left()));
 			}
 		}
 	}
 
 	void add_change_binary_applied(const node& old_node, vector<node>& candidates) {
 		// change anything to binary operation with some variable or constant  -- increases the model size
-		vector<shared_ptr<node>> subtrees = node::all_subtrees_references(make_shared<node>(old_node));
 		vector<node> args;
-		for (auto subtree : subtrees)
-			args.push_back(*subtree);
+		args.reserve(old_node.size()+ allowed_nodes.size());
+		// not neead a full copy, create_node do it.
+		get_all_subtrees<false>(old_node, args);
+
 		for (auto& n_var_const : allowed_nodes) {
-			if (n_var_const.type != node_type::VAR && n_var_const.type != node_type::CONST)
+			if (n_var_const.is_not<node_type::VAR>() && n_var_const.is_not<node_type::CONST>())
 				continue;
 			args.push_back(n_var_const);
 		}
 
 		for (auto& n_bin : allowed_nodes) {
-			if (n_bin.arity != 2)
+			if (n_bin.get_arity() != 2)
 				continue;
-			for (auto& n_arg: args){
-				if (n_bin.is_allowed_left(old_node)) {
-					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
-					shared_ptr < node> old_node_c = node::node_copy(old_node);
-					shared_ptr < node> n_arg_c = node::node_copy(n_arg);
-					n_bin_c->left = old_node_c;
-					n_bin_c->right = n_arg_c;
-					candidates.push_back(*n_bin_c);
-				}
-				if (!n_bin.symmetric && n_bin.is_allowed_left(n_arg)) {
-					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
-					shared_ptr < node> old_node_c = node::node_copy(old_node);
-					shared_ptr < node> n_arg_c = node::node_copy(n_arg);
-					n_bin_c->right = old_node_c;
-					n_bin_c->left = n_arg_c;
-					candidates.push_back(*n_bin_c);
-				}
+			for (auto& n_arg: args)
+			{
+				if (n_bin.is_allowed_left(old_node))
+					candidates.push_back(create_node(n_bin.get_type(), &old_node, &n_arg));
+				if (!n_bin.is_symmetric() && n_bin.is_allowed_left(n_arg))
+					candidates.push_back(create_node(n_bin.get_type(), &n_arg, &old_node));
 			}
 		}
 	}
 
 	void add_change_variable_constant_to_binary_applied(const node& old_node, vector<node>& candidates) {
-		if (old_node.type == node_type::VAR || old_node.type == node_type::CONST)
+		if (old_node.is<node_type::VAR>() || old_node.is<node_type::CONST>())
 			add_change_binary_applied(old_node, candidates);
 	}
 
 	void add_change_binary_to_another(const node& old_node, vector<node>& candidates) {
-		if (old_node.arity == 2) {
+		if (old_node.get_arity() == 2) {
 			// change one binary operation to another
-			for (auto& n_bin : allowed_nodes) {
-				if (n_bin.arity != 2 || n_bin.type == old_node.type)
+			for (auto& n_bin : allowed_nodes)
+			{
+				if (n_bin.get_arity() != 2 || n_bin.get_type() == old_node.get_type())
 					continue;
-				if (n_bin.is_allowed_left(*old_node.left)) {
-					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
-					shared_ptr < node> old_left_c = node::node_copy(*old_node.left);
-					shared_ptr < node> old_right_c = node::node_copy(*old_node.right);
-					n_bin_c->left = old_left_c;
-					n_bin_c->right = old_right_c;
-					candidates.push_back(*n_bin_c);
-				}
-				if (!n_bin.symmetric && n_bin.is_allowed_left(*old_node.right)) {
-					shared_ptr < node> n_bin_c = node::node_copy(n_bin);
-					shared_ptr < node> old_left_c = node::node_copy(*old_node.left);
-					shared_ptr < node> old_right_c = node::node_copy(*old_node.right);
-					n_bin_c->right = old_left_c;
-					n_bin_c->left = old_right_c;
-					candidates.push_back(*n_bin_c);
-				}
+				if (n_bin.is_allowed_left(*old_node.get_left()))
+					candidates.push_back(create_node(n_bin.get_type(), old_node.get_left(), old_node.get_right()));
+				if (!n_bin.is_symmetric() && n_bin.is_allowed_left(*old_node.get_right()))
+					candidates.push_back(create_node(n_bin.get_type(), old_node.get_right(), old_node.get_left()));
 			}
 		}
 	}
 
 	vector<node> perturb_candidates(const node& old_node) {
 		vector<node> candidates;
+		candidates.reserve(1000);
 		//add_pow_exponent_increase_decrease(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
 		//add_change_const_to_var(old_node, candidates); // in Python version this was just change of const to var, but maybe it is ok to change anything to var
@@ -315,6 +276,7 @@ private:
 
 	vector<node> change_candidates(const node& old_node) {
 		vector<node> candidates;
+		candidates.reserve(1000);
 		add_const_finetune(old_node, candidates);
 		add_change_to_subtree(old_node, candidates);
 		//add_change_to_var_const(old_node, candidates);
@@ -331,69 +293,61 @@ private:
 	vector<node> all_candidates(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y, bool local_search) {
 		shared_ptr < node> solution = node::node_copy(*passed_solution);
 		vector<node> all_cand;
+		all_cand.reserve(3000);
 		unordered_set<string> all_cand_str;
-		vector<shared_ptr<node>> all_subtrees;
-		all_subtrees.push_back(solution);
+		all_cand_str.reserve(3000);
+		vector<node *> all_subtrees;
+		all_subtrees.reserve(100);
+		all_subtrees.push_back(solution.get());
 		int i = 0;
-		//cout << "Subtrees of " << passed_solution->to_string() << "\n--------------------------------" << endl;
-		while (i < all_subtrees.size()) {
-			//cout << all_subtrees[i]->to_string() << endl;
-			if (all_subtrees[i]->size() == solution->size()) {
-				// the whole tree is being changed
-				vector<node> candidates;
-				if (local_search)
-					candidates = change_candidates(*all_subtrees[i]);
-				else
-					candidates = perturb_candidates(*all_subtrees[i]);
-				for (auto& cand : candidates) {
-					string cand_str = cand.to_string();
-					if (all_cand_str.find(cand_str) != all_cand_str.end())
-						continue;
+		auto get_candidates = [this, local_search](const node& tree) {
+			return local_search ? change_candidates(tree) : perturb_candidates(tree);
+			};
+		auto push_unique_candidate = [&all_cand, &all_cand_str](const node& cand) {
+				const auto cand_str = cand.to_string();
+				if (all_cand_str.find(cand_str) == all_cand_str.end())
+				{
 					all_cand.push_back(cand);
 					all_cand_str.insert(cand_str);
 				}
+			};
+		//cout << "Subtrees of " << passed_solution->to_string() << "\n--------------------------------" << endl;
+		while (i < all_subtrees.size()) {
+			//cout << all_subtrees[i]->to_string() << endl;
+			auto& sub_tree = *all_subtrees[i];
+			if (sub_tree.size() == solution->size())
+			{
+				// the whole tree is being changed
+				const auto candidates = get_candidates(sub_tree);
+				for (auto& cand : candidates)
+				{
+					push_unique_candidate(cand);
+				}
 			}
-			if (all_subtrees[i]->arity >= 1) {
+			if (sub_tree.get_arity() >= 1)
+			{
 				// the left subtree is being changed
-				vector<node> candidates;
-				if (local_search)
-					candidates = change_candidates(*all_subtrees[i]->left);
-				else
-					candidates = perturb_candidates(*all_subtrees[i]->left);
-				shared_ptr < node> old_left = node::node_copy(*all_subtrees[i]->left);
+				const auto candidates = get_candidates(*sub_tree.get_left());
+				const auto old_left = *sub_tree.get_left();
 				for (auto& cand : candidates) {
-					shared_ptr < node> cand_c = node::node_copy(cand);
-					all_subtrees[i]->left = cand_c;
-					shared_ptr < node> solution_copy = node::node_copy(*solution);
-					string cand_str = solution_copy->to_string();
-					if (all_cand_str.find(cand_str) != all_cand_str.end())
-						continue;
-					all_cand.push_back(*solution_copy);
-					all_cand_str.insert(cand_str);
+					sub_tree.set_left(cand);
+					push_unique_candidate(node::deep_copy(*solution));
 				}
-				all_subtrees[i]->left = old_left;
-				all_subtrees.push_back(all_subtrees[i]->left);
+				sub_tree.set_left(old_left);
+				all_subtrees.push_back(sub_tree.get_left());
 			}
-			if (all_subtrees[i]->arity >= 2) {
+			if (sub_tree.get_arity() >= 2)
+			{
 				// the right subtree is being changed
-				vector<node> candidates;
-				if (local_search)
-					candidates = change_candidates(*all_subtrees[i]->right);
-				else
-					candidates = perturb_candidates(*all_subtrees[i]->right);
-				shared_ptr < node> old_right = node::node_copy(*all_subtrees[i]->right);
-				for (auto& cand : candidates) {
-					shared_ptr < node> cand_c = node::node_copy(cand);
-					all_subtrees[i]->right = cand_c;
-					shared_ptr < node> solution_copy = node::node_copy(*solution);
-					string cand_str = solution_copy->to_string();
-					if (all_cand_str.find(cand_str) != all_cand_str.end())
-						continue;
-					all_cand.push_back(*solution_copy);
-					all_cand_str.insert(cand_str);
+				const auto candidates = get_candidates(*sub_tree.get_right());
+				const auto old_right = *sub_tree.get_right();
+				for (auto& cand : candidates)
+				{
+					sub_tree.set_right(cand);
+					push_unique_candidate(node::deep_copy(*solution));
 				}
-				all_subtrees[i]->right = old_right;
-				all_subtrees.push_back(all_subtrees[i]->right);
+				sub_tree.set_right(old_right);
+				all_subtrees.push_back(sub_tree.get_right());
 			}
 			i++;
 		}
@@ -401,7 +355,7 @@ private:
 			//cout << "Before: " << node.to_string() << endl;
 			int it_max = 5;
 			while (it_max > 0) {
-				int size = node.size();
+				const auto size = node.size();
 				node.expand();
 				node.normalize_factor_constants(node_type::NONE, false);
 				node.simplify();
@@ -412,7 +366,9 @@ private:
 		}
 
 		unordered_set<string> filtered_cand_strings;
+		filtered_cand_strings.reserve(all_cand.size());
 		vector<node> filtered_candidates;
+		filtered_candidates.reserve(all_cand.size());
 		for (auto& node : all_cand) {
 			string node_str = node.to_string();
 			if (filtered_cand_strings.find(node_str)!=filtered_cand_strings.end()) {
@@ -430,30 +386,32 @@ private:
 		// TODO: extract non constant factors followed by expression normalization and avoiding tuning already tuned expressions should be done earlier in the all_perturbations phase
 		solution->expand();
 		solution->simplify();
-		vector<shared_ptr<node>> all_factors = solution->extract_non_constant_factors();
-		vector<shared_ptr<node>> factors;
+		vector<node*> all_factors;
+		solution->extract_non_constant_factors(all_factors);
+		vector<node *> factors;
 		for (auto f : all_factors) {
-			if (f->type == node_type::CONST)
+			if (f->is<node_type::CONST>())
 				continue;
-			if (f->arity == 2 && f->left->type == node_type::CONST && f->right->type == node_type::CONST)
+			if (f->get_arity() == 2 && f->get_left()->is<node_type::CONST>() && f->get_right()->is<node_type::CONST>())
 				continue; // this is also constant so ignore it
-			if (f->type == node_type::MULTIPLY || f->type == node_type::PLUS || f->type == node_type::MINUS) { // exactly one of the terms is constant so just take another one into account because the constant will go to free term
-				if (f->left->type == node_type::CONST) {
-					factors.push_back(f->right);
+			if (f->is<node_type::MULTIPLY>() || f->is<node_type::PLUS>() || f->is<node_type::MINUS>()) { // exactly one of the terms is constant so just take another one into account because the constant will go to free term
+				if (f->get_left()->is<node_type::CONST>()) {
+					factors.push_back(f->get_right());
 					continue;
 				}
-				else if (f->right->type == node_type::CONST) {
-					factors.push_back(f->left);
+				else if (f->get_right()->is<node_type::CONST>()) {
+					factors.push_back(f->get_left());
 					continue;
 				}
 			}
-			if (f->type == node_type::DIVIDE && f->right->type == node_type::CONST) { // divider is constant so just ignore it
-				factors.push_back(f->left);
+			if (f->is<node_type::DIVIDE>() && f->get_right()->is<node_type::CONST>()) { // divider is constant so just ignore it
+				factors.push_back(f->get_left());
 				continue;
 			}
 			factors.push_back(f);
 		}
-		factors.push_back(node::node_constant(1)); // add free term
+		node free_term = node(1.0);
+		factors.push_back(&free_term); // add free term
 
 		Eigen::MatrixXd A(y.size(), factors.size());
 		Eigen::VectorXd b = y;
@@ -474,30 +432,26 @@ private:
 				i++;
 				continue;
 			}
-			shared_ptr < node> new_fact = NULL;
-			if (factors[i]->type == node_type::CONST)
-				new_fact = node::node_constant(coef * factors[i]->const_value);
+			shared_ptr<node> new_fact{};
+			if (factors[i]->is<node_type::CONST>())
+				new_fact = make_shared<node>(coef * factors[i]->get_const_value());
 			else {
 				if (value_one(coef))
 					new_fact = node::node_copy(*factors[i]);
 				else {
-					new_fact = node::node_multiply();
-					new_fact->left = node::node_constant(coef);
-					new_fact->right = node::node_copy(*factors[i]);
+					const node tmp(coef);
+					new_fact = create_node_ptr(node_type::MULTIPLY, &tmp, factors[i]);
 				}
 			}
-			if (ols_solution == NULL)
+			if (!ols_solution)
 				ols_solution = new_fact;
 			else {
-				shared_ptr < node> tmp = ols_solution;
-				ols_solution = node::node_plus();
-				ols_solution->left = tmp;
-				ols_solution->right = new_fact;
+				ols_solution = create_node_ptr(node_type::PLUS, ols_solution.get(), new_fact.get());
 			}
 			i++;
 		}
-		if (ols_solution == NULL)
-			ols_solution = node::node_constant(0);
+		if (!ols_solution)
+			ols_solution = make_shared<node>(0.0);
 		//ols_solution->simplify();
 		return ols_solution;
 	}
@@ -507,7 +461,7 @@ private:
 		Eigen::ArrayXd yp = solution->evaluate_all(X);
 		int size = solution->size();
 		tuple<double, double, int> fit;
-		
+
 		if (classification) {
 			double loss = 1 - utils::R2(y, yp);//  1 - utils::classification_accuracy(y, yp);
 			double rmse =  utils::RMSE(y, yp);
@@ -516,8 +470,8 @@ private:
 			fit = tuple<double, double, int>{ loss, rmse,size };
 		}
 		else {
-			double r2 = utils::R2(y, yp);
-			double rmse = utils::RMSE(y, yp);
+			const auto r2 = utils::R2(y, yp);
+			const auto rmse = utils::RMSE(y, yp);
 			if (r2 != r2 || rmse != rmse) // true only for NaN values
 				return make_tuple<double, double, int>(1000, 1000, 1000);
 			fit = tuple<double, double, int>{ 1 - r2, rmse, size };
@@ -525,20 +479,19 @@ private:
 		return fit;
 	}
 
-	double fitness_value(tuple<double, double, int> fit) {
+	double fitness_value(tuple<double, double, int> fit) const noexcept {
 		return (1 + get<0>(fit)) * (1 + get<1>(fit)) * (1 + get<2>(fit) * this->complexity_penalty);
 	}
 
-	int compare_fitness(tuple<double, double, int> fit1, tuple<double, double, int> fit2) {
+	int compare_fitness(tuple<double, double, int> fit1, tuple<double, double, int> fit2) const noexcept {
 		// if one of the models is too large, do not accept it
-		int size1 = get<2>(fit1);
-		int size2 = get<2>(fit2);
+		const auto size1 = get<2>(fit1);
+		const auto size2 = get<2>(fit2);
 		// if at least one of the complexities is to high and they are different, this is a clear criterion
 		if ((size1 > max_complexity || size2 > max_complexity) && size1 != size2)
 			return size1 - size2;
-		double fit1_tot, fit2_tot;
-		fit1_tot = fitness_value(fit1);
-		fit2_tot = fitness_value(fit2);
+		const auto fit1_tot = fitness_value(fit1);
+		const auto fit2_tot = fitness_value(fit2);
 		if (fit1_tot < fit2_tot)
 			return -1;
 		if (fit1_tot > fit2_tot)
@@ -564,11 +517,11 @@ private:
 			cout << sol_string.substr(0, 100) << "..." << endl;
 	}
 
-	bool dominates(const tuple<double, double, int>& p_fit, const tuple<double, double, int>& fit) {
+	bool dominates(const tuple<double, double, int>& p_fit, const tuple<double, double, int>& fit) const noexcept {
 		return get<0>(p_fit) <= get<0>(fit) && get<1>(p_fit) <= get<1>(fit) && get<2>(p_fit) <= get<2>(fit);
 	}
 
-	bool is_dominated(const vector<tuple<double, double, int>>& pareto, const tuple<double, double, int>& fit) {
+	bool is_dominated(const vector<tuple<double, double, int>>& pareto, const tuple<double, double, int>& fit) const noexcept {
 		for (const auto &p_fit : pareto)
 			if (dominates(p_fit, fit))
 				return true;
@@ -578,7 +531,7 @@ private:
 	void add_to_pareto(vector<tuple<double, double, int>> &pareto, const tuple<double, double, int>& fit) {
 		if (is_dominated(pareto, fit))
 			return;
-		for (int i = pareto.size() - 1; i >= 0; i--) 
+		for (int i = pareto.size() - 1; i >= 0; i--)
 			if (dominates(fit, pareto[i]))
 				pareto.erase(pareto.begin() + i);
 		pareto.push_back(fit);
@@ -602,12 +555,12 @@ private:
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
 				if (verbose && fit_calls % 10000 == 0)
 					print_state(curr_fitness);
-				bool is_dom = is_dominated(pareto, ls_pert_tuned_fitness);
+				const auto is_dom = is_dominated(pareto, ls_pert_tuned_fitness);
 				if (!is_dom && compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
 					improved = true;
 					int it_max = 5;
 					while (it_max > 0) {
-						int size = ls_pert_tuned->size();
+						const auto size = ls_pert_tuned->size();
 						ls_pert_tuned->expand();
 						ls_pert_tuned->simplify();
 						if (size == ls_pert_tuned->size())
@@ -640,7 +593,7 @@ public:
 		reset();
 	}
 
-	bool finished() {
+	bool finished() const noexcept {
 		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness) < early_exit_eps) || duration_cast<seconds>(high_resolution_clock::now() - start_time).count() > max_seconds;
 	}
 
@@ -682,7 +635,7 @@ public:
 			for (int j = 0; j < feat_cnt; j++)
 			{
 				Xe[j][i] = ptr_X[i * feat_cnt + j];
-		}
+			}
 		}
 	}
 
@@ -699,7 +652,7 @@ public:
 		for (int i = 0; i < data_cnt; i++)
 		{
 			ye[i] = ptr_y[i];
-	}
+		}
 	}
 
 	void fit(py::array_t<double> X, py::array_t<double> y, int data_cnt, int feat_cnt)
@@ -713,10 +666,10 @@ public:
 		}
 
 		fit_inner(Xe, ye);
-		}
+	}
 
 	py::array_t<double> predict(py::array_t<double> X, int data_cnt, int feat_cnt)
-		{
+	{
 		vector<Eigen::ArrayXd> Xe;
 		if (!get_x(X, data_cnt, feat_cnt, Xe))
 		{
@@ -739,12 +692,12 @@ public:
 #endif
 
 	vector<int> relevant_features(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y) {
-		int feat_cnt = X.size();
+		const auto feat_cnt = X.size();
 		vector<int> rel_feat;
 		vector<tuple<double, int>> feat_by_r2;
 		if (feat_cnt <= max_feat) {
-			for (int i = 0; i < feat_cnt; i++)
-				rel_feat.push_back(i);
+			rel_feat.resize(feat_cnt);
+			std::iota(rel_feat.begin(), rel_feat.end(), 0);
 			return rel_feat;
 		}
 		for (int i = 0; i < feat_cnt; i++) {
@@ -759,7 +712,7 @@ public:
 
 	void fit_inner(vector<Eigen::ArrayXd> X_all, Eigen::ArrayXd y_all) {
 		reset();
-		int sample_cnt = int(sample_size * y_all.size());
+		const auto sample_cnt = int(sample_size * y_all.size());
 		vector<int> selected(y_all.size());
 
 		std::iota(selected.begin(), selected.end(), 0);
@@ -774,7 +727,7 @@ public:
 		Eigen::ArrayXd y(sample_cnt);
 
 		for (int ix = 0; ix < sample_cnt; ix++) {
-			int i = selected[ix];
+			const auto i = selected[ix];
 			for (int j = 0; j < X.size(); j++)
 			{
 				X[j][ix] = X_all[j][i];
@@ -784,7 +737,7 @@ public:
 		// find at most max_feat relevant features and do not look the other ones
 		vector<int> rel_feat = relevant_features(X, y);
 		setup_nodes(rel_feat);
-		final_solution = node::node_constant(0);
+		final_solution = make_shared<node>(0.0);
 		final_fitness = fitness(final_solution, X, y);
 		// main loop
 		bool improved = true;
@@ -822,13 +775,13 @@ public:
 				if (finished())
 					break;
 				shared_ptr<node> ls_pert = get<1>(r2_by_perts[i]);
-				double ls_pert_r2 = get<0>(r2_by_perts[i]);
+				const auto ls_pert_r2 = get<0>(r2_by_perts[i]);
 				string pert_str = ls_pert->to_string();
 				//cout << pert_str << endl;
 				checked_perts.insert(pert_str);
 				ls_pert = local_search(ls_pert, X, y);
-				tuple<double, double, int> ls_pert_fitness = fitness(ls_pert, X, y);
-				int cmp = compare_fitness(ls_pert_fitness, final_fitness);
+				const auto ls_pert_fitness = fitness(ls_pert, X, y);
+				const auto cmp = compare_fitness(ls_pert_fitness, final_fitness);
 				if (cmp < 0) {
 					improved = true;
 					//call_and_verify_simplify(ls_pert, X, y);
@@ -836,13 +789,13 @@ public:
 					final_fitness = ls_pert_fitness;
 					if (verbose)
 						print_state(final_fitness);
-					auto stop = high_resolution_clock::now();
+					const auto stop = high_resolution_clock::now();
 					best_time = duration_cast<milliseconds>(stop - start_time).count() / 1000.0;
 					//break;
 				}
 			}
 		}
-		auto stop = high_resolution_clock::now();
+		const auto stop = high_resolution_clock::now();
 		total_time = duration_cast<milliseconds>(stop - start_time).count() / 1000.0;
 	}
 
@@ -855,15 +808,15 @@ public:
 		return final_solution->to_string();
 	}
 
-	double get_best_time() {
+	double get_best_time() const noexcept {
 		return best_time;
 	}
 
-	double get_total_time() {
+	double get_total_time() const noexcept {
 		return total_time;
 	}
 
-	int get_fit_calls() {
+	int get_fit_calls() const noexcept {
 		return fit_calls;
 	}
 };
@@ -889,15 +842,15 @@ int main()
 	double sample_size = 0.5;
 	double train_share = 0.75;
 	bool classification = true;
-	string dir_path = ".";// "../paper_resources/random_12345_data";
+	string dir_path = "../paper_resources/random_12345_data";
 	bool started = false;
 	for (const auto& entry : fs::directory_iterator(dir_path)) {
-		if (entry.path().compare(".\\phoneme.csv")!=0) //".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
-			continue;
-		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
-		//	started = true;
-		//else
+		//if (entry.path().compare(".\\phoneme.csv")!=0) //".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
 		//	continue;
+		if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
+			started = true;
+		else
+			continue;
 		std::cout << entry.path() << std::endl;
 		ifstream infile(entry.path());
 		string line;
@@ -907,8 +860,8 @@ int main()
 		srand(random_state);
 		// shuffling for later split between training and test set
 		shuffle(lines.begin(), lines.end(), default_random_engine(random_state));
-		auto train_cnt = (size_t)(train_share * lines.size());
-		auto test_cnt = lines.size() - train_cnt;
+		const auto train_cnt = (size_t)(train_share * lines.size());
+		const auto test_cnt = lines.size() - train_cnt;
 
 		const auto firstRow = get_row(lines[0]);
 		const auto X_columns = firstRow.size() - 1;
@@ -929,6 +882,7 @@ int main()
 			if (row.size() != firstRow.size())
 			{
 				std::cerr << "Invalid row size!" << std::endl;
+				sucess = false;
 				break;
 			}
 
@@ -946,9 +900,9 @@ int main()
 				for (size_t j = 0; j < X_columns; j++)
 				{
 					X_test[j][i - train_cnt] = row[j];
+				}
 			}
-			}
-			}
+		}
 		if (!sucess)
 		{
 			std::cerr << "Problem with reading data" << std::endl;
@@ -956,20 +910,20 @@ int main()
 		}
 		rils_rols rr(classification, max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
 		rr.fit_inner(X_train, y_train);
-		Eigen::ArrayXd yp_train = rr.predict_inner(X_train);
-		double rmse_train = utils::RMSE(y_train, yp_train);
-		Eigen::ArrayXd yp_test = rr.predict_inner(X_test);
-		double rmse = utils::RMSE(y_test, yp_test);
+		const auto yp_train = rr.predict_inner(X_train);
+		const auto rmse_train = utils::RMSE(y_train, yp_train);
+		const auto yp_test = rr.predict_inner(X_test);
+		const auto rmse = utils::RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
 		if (classification) {
-			double acc_train = utils::classification_accuracy(y_train, yp_train);
-			double acc = utils::classification_accuracy(y_test, yp_test);
+			const auto acc_train = utils::classification_accuracy(y_train, yp_train);
+			const auto acc = utils::classification_accuracy(y_test, yp_test);
 			ss << setprecision(PRECISION) << entry << "\tACC=" << acc << "\tACC_tr="<<acc_train;
 		}
 		else {
-			double r2_train = utils::R2(y_train, yp_train);
-			double r2 = utils::R2(y_test, yp_test);
+			const auto r2_train = utils::R2(y_train, yp_train);
+			const auto r2 = utils::R2(y_test, yp_test);
 			ss << setprecision(PRECISION) << entry << "\tR2=" << r2 << "\tR2_tr=" << r2_train;
 		}
 		ss<< "\tRMSE=" << rmse << "\tRMSE_tr=" << rmse_train << "\ttotal_time=" << rr.get_total_time() << "\tbest_time=" << rr.get_best_time() << "\tfit_calls=" << rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
