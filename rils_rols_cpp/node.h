@@ -30,29 +30,98 @@ enum class node_type{
 	POW
 };
 
+constexpr int get_arity(node_type type) noexcept
+{
+	switch (type)
+	{
+	case node_type::CONST:
+	case node_type::VAR:
+		return 0;
+	case node_type::SIN:
+	case node_type::COS:
+	case node_type::LN:
+	case node_type::EXP:
+	case node_type::SQRT:
+	case node_type::SQR:
+		return 1;
+	}
+	return 2;
+}
+
+constexpr bool get_symmetric(node_type type) noexcept
+{
+	switch (type)
+	{
+	case node_type::MINUS:
+	case node_type::DIVIDE:
+	case node_type::POW: // pow is set to be unary because the unary changes will take care of base, and the specific method is needed to take care for exponents -- add_pow_finetune
+		return false;
+	}
+	return true;
+}
+
 class node : public std::enable_shared_from_this<node>
 {
+	shared_ptr<node> left{ nullptr };
+	shared_ptr<node> right{ nullptr };
+	int arity{ 0 };
+	bool symmetric{ false };
+	node_type type{ node_type::NONE };
+	int var_index{ -1 };
+	double const_value{ 0.0 };
 
 public:
-	shared_ptr<node> left = NULL;
-	shared_ptr<node> right = NULL;
-	int arity;
-	bool symmetric;
-	node_type type;
-	int var_index;
-	double const_value;
+	node() noexcept = default;
 
-	node() {
-		left = NULL;
-		right = NULL;
-		arity = 0;
-		const_value = 0;
-		var_index = -1;
-		symmetric = false;
-		type = node_type::NONE;
+	explicit node(node_type type) noexcept
+		: left(nullptr)
+		, right(nullptr)
+		, arity(::get_arity(type))
+		, symmetric(::get_symmetric(type))
+		, type(type)
+		, var_index(-1)
+		, const_value(0.0)
+	{
 	}
 
-	void update_with(shared_ptr<node> src) {
+	// !shallow copy left and right, to deep copy use create_node/create_node_ptr
+	explicit node(node_type type, shared_ptr<node> left, shared_ptr<node> right) noexcept
+		: left(left)
+		, right(right)
+		, arity(::get_arity(type))
+		, symmetric(::get_symmetric(type))
+		, type(type)
+		, var_index(-1)
+		, const_value(0.0)
+	{
+	}
+
+	// constant
+	explicit node(double const_value) noexcept
+		: left(nullptr)
+		, right(nullptr)
+		, arity(::get_arity(node_type::CONST))
+		, symmetric(::get_symmetric(node_type::CONST))
+		, type(node_type::CONST)
+		, var_index(-1)
+		, const_value(const_value)
+	{
+	}
+
+	// variable
+	explicit node(int var_index) noexcept
+		: left(nullptr)
+		, right(nullptr)
+		, arity(::get_arity(node_type::VAR))
+		, symmetric(::get_symmetric(node_type::VAR))
+		, type(node_type::VAR)
+		, var_index(var_index)
+		, const_value(0.0)
+	{
+	}
+
+	void update_with(shared_ptr<node> src) noexcept
+	{
 		left = src->left;
 		right = src->right;
 		arity = src->arity;
@@ -62,91 +131,117 @@ public:
 		type = src->type;
 	}
 
-	node(node_type type) {
-		this->type = type;
-		switch (this->type) {
-		case node_type::CONST:
-		case node_type::VAR:
-			this->arity = 0;
-			break;
-		case node_type::SIN:
-		case node_type::COS:
-		case node_type::LN:
-		case node_type::EXP:
-			case node_type::SQRT:
-			case node_type::SQR:
-			this->arity = 1;
-			break;
-		default:
-			this->arity = 2;
-		}
-		switch (this->type) {
-		case node_type::MINUS:
-		case node_type::DIVIDE:
-		case node_type::POW: // pow is set to be unary because the unary changes will take care of base, and the specific method is needed to take care for exponents -- add_pow_finetune
-			this->symmetric = false;
-			break;
-		default:
-			this->symmetric = true;
-		}
-		this->left = NULL;
-		this->right = NULL;
-		this->var_index = -1;
-		this->const_value = 0;
-	}
-
 	static shared_ptr<node> node_copy(const node &n) {
-		shared_ptr<node> nc = make_shared<node>(n.type);
-		nc->type = n.type;
-		nc->arity = n.arity;
-		nc->symmetric = n.symmetric;
-		nc->const_value = n.const_value;
-		nc->var_index = n.var_index;
-		if(n.left != NULL)
+		shared_ptr<node> nc = make_shared<node>(n);
+		if(n.left)
 			nc->left = node_copy(*n.left);
-		if(n.right!=NULL)
+		if(n.right)
 			nc->right = node_copy(*n.right);
 		return nc;
 	}
 
-	static shared_ptr < node> node_internal(node_type type) {
-		shared_ptr < node> n = make_shared< node>(type);
-		return n;
+	static node deep_copy(const node& n) {
+		node nc = n;
+		if (n.left)
+			nc.left = node_copy(*n.left);
+		if (n.right)
+			nc.right = node_copy(*n.right);
+		return nc;
 	}
 
-	static shared_ptr < node> node_constant(double const_value) {
-		shared_ptr < node> n = make_shared< node>(node_type::CONST);
-		n->const_value = const_value;
-		return n;
+	inline auto get_left() const noexcept
+	{
+		return left.get();
 	}
 
-	static shared_ptr < node> node_variable(int var_index) {
-		shared_ptr < node> n = make_shared< node>(node_type::VAR);
-		n->var_index = var_index;
-		return n;
+	inline auto get_right() const noexcept
+	{
+		return right.get();
 	}
 
-	static shared_ptr < node> node_minus() { return node_internal(node_type::MINUS); }
+	// !shallow copy
+	inline void set_left(shared_ptr<node> new_left) noexcept
+	{
+		left = new_left;
+	}
 
-	static shared_ptr < node> node_plus() { return node_internal(node_type::PLUS); }
+	// !shallow copy
+	inline void set_left(const node& new_left)
+	{
+		left = make_shared<node>(new_left);
+	}
 
-	static shared_ptr < node> node_multiply() { return node_internal(node_type::MULTIPLY); }
+	// !shallow copy
+	inline void set_right(shared_ptr<node> new_right) noexcept
+	{
+		right = new_right;
+	}
 
-	static shared_ptr < node> node_divide() { return node_internal(node_type::DIVIDE); }
+	// !shallow copy
+	inline void set_right(const node& new_right)
+	{
+		right = make_shared<node>(new_right);
+	}
 
-	static shared_ptr < node> node_sin() { return node_internal(node_type::SIN); }
+	inline auto get_type() const noexcept
+	{
+		return type;
+	}
 
-	static shared_ptr < node> node_cos() { return node_internal(node_type::COS); }
+	inline void set_type(node_type t) noexcept
+	{
+		type = t;
+		arity = ::get_arity(t);
+		symmetric = ::get_symmetric(t);
+	}
 
-	static shared_ptr < node> node_ln() { return node_internal(node_type::LN); }
+	inline auto get_arity() const noexcept
+	{
+		return arity;
+	}
 
-	static shared_ptr < node> node_exp() { return node_internal(node_type::EXP); }
+	inline auto get_var_index() const noexcept
+	{
+		assert(is<node_type::VAR>());
+		return var_index;
+	}
 
-	static shared_ptr < node> node_sqrt() { return node_internal(node_type::SQRT); }
+	inline auto get_const_value() const noexcept
+	{
+		assert(is<node_type::CONST>());
+		return const_value;
+	}
 
-	static shared_ptr < node> node_sqr() { return node_internal(node_type::SQR); }
+	inline void set_const_value(double val) noexcept
+	{
+		set_type(node_type::CONST);
+		const_value = val;
+		left = nullptr;
+		right = nullptr;
+	}
 
-	static shared_ptr < node> node_pow() { return node_internal(node_type::POW); }
+	inline void add_const(double delta) noexcept
+	{
+		assert(is<node_type::CONST>());
+		const_value += delta;
+	}
+
+	inline auto is_symmetric() const noexcept
+	{
+		return symmetric;
+	}
+
+	template<node_type T>
+	inline bool is() const noexcept
+	{
+		return type == T;
+	}
+
+	template<node_type T>
+	inline bool is_not() const noexcept
+	{
+		return type != T;
+	}
 
 	Eigen::ArrayXd evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) noexcept(false);
 
@@ -183,17 +278,15 @@ public:
 		}
 	};
 
-	bool is_allowed_left(const node& node) const;
+	bool is_allowed_left(const node& node) const noexcept;
 
 	Eigen::ArrayXd evaluate_all(const vector<Eigen::ArrayXd>& X);
 
-	static vector< shared_ptr<node>> all_subtrees_references(shared_ptr < node> root);
-
 	vector< shared_ptr<node>> extract_constants_references();
 
-	vector< shared_ptr<node>> extract_non_constant_factors();
+	void extract_non_constant_factors(vector<node*>& all_factors);
 
-	int size();
+	int size() const noexcept;
 
 	void simplify();
 
@@ -204,11 +297,48 @@ public:
 	void expand();
 };
 
-// TODO: define these two as macros to speed up
-inline bool value_zero(double val) {
+inline bool value_zero(double val) noexcept {
 	return abs(val) < EPS;
 }
 
-inline bool value_one(double val) {
+inline bool value_one(double val) noexcept {
 	return abs(val - 1) < EPS;
+}
+
+inline auto create_node_ptr(node_type type, const node* left, const node* right = nullptr)
+{
+	return make_shared<node>(type, node::node_copy(*left), right ? node::node_copy(*right) : nullptr);
+}
+
+inline auto create_node(node_type type, const node* left, const node* right = nullptr)
+{
+	return node(type, node::node_copy(*left), right ? node::node_copy(*right) : nullptr);
+}
+
+template<bool MAKE_COPY>
+void get_all_subtrees(const node& root, vector<node>& sub_trees)
+{
+	auto pos = sub_trees.size();
+	[[maybe_unused]] const auto prev_size = pos;
+	sub_trees.push_back(root);
+	while (pos < sub_trees.size()) {
+		// adding children of current element
+		const auto& curr = sub_trees[pos];
+		if (curr.get_left())
+		{
+			if constexpr (MAKE_COPY)
+				sub_trees.push_back(node::deep_copy(*curr.get_left()));
+			else
+				sub_trees.push_back(*curr.get_left());
+		}
+		if (curr.get_right())
+		{
+			if constexpr (MAKE_COPY)
+				sub_trees.push_back(node::deep_copy(*curr.get_right()));
+			else
+				sub_trees.push_back(*curr.get_right());
+		}
+		pos++;
+	}
+	assert(sub_trees.size() - prev_size == root.size());
 }

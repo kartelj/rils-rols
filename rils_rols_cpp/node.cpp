@@ -7,7 +7,7 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 		cout << "Arity > 2 or <0 is not allowed." << endl;
 		exit(1);
 	}
-	int n = X.size();
+	const auto n = X.size();
 	Eigen::ArrayXd yp(n), left_vals, right_vals;
 
 	if (this->arity >= 1) 
@@ -23,15 +23,12 @@ Eigen::ArrayXd node::evaluate_all(const vector<Eigen::ArrayXd>& X) {
 Eigen::ArrayXd node::evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& a, const Eigen::ArrayXd& b) noexcept(false) {
 	switch (type) {
 	case node_type::CONST: {
-		Eigen::ArrayXd const_arr(X.size());
+		Eigen::ArrayXd const_arr(X[0].size());
 		const_arr.fill(const_value);
 		return const_arr;
 	}
 	case node_type::VAR: {
-		Eigen::ArrayXd var_arr(X.size());
-		for (int i = 0; i < X.size(); i++)
-			var_arr[i] = X[i][var_index];
-		return var_arr;
+		return X[var_index];
 	}
 	case node_type::PLUS:
 		return  a + b;
@@ -61,8 +58,8 @@ Eigen::ArrayXd node::evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen
 	}
 };
 
-bool node::is_allowed_left(const node& node) const {
-	node_type t = node.type;
+bool node::is_allowed_left(const node& node) const noexcept {
+	const auto t = node.type;
 	switch (type) {
 	case node_type::EXP:
 	case node_type::LN:
@@ -81,30 +78,10 @@ bool node::is_allowed_left(const node& node) const {
 	default:
 		return true;
 	}
-}
-
-vector< shared_ptr<node>> node::all_subtrees_references(shared_ptr<node> root) {
-	if (root == NULL)
-		return vector<shared_ptr<node>>();
-	vector<shared_ptr<node>> queue;
-	queue.push_back(root);
-	int pos = 0;
-	while (pos < queue.size()) {
-		// adding children of current element
-		shared_ptr<node> curr = queue[pos];
-		if (curr->left != NULL)
-			queue.push_back(curr->left);
-		if (curr->right != NULL)
-			queue.push_back(curr->right);
-		pos++;
-	}
-	assert(queue.size() == root->size());
-	return queue;
+	return true;
 }
 
 vector<shared_ptr<node>> node::extract_constants_references() {
-	if (this == NULL)
-		return vector<shared_ptr<node>>();
 	vector<shared_ptr<node>> all_cons;
 	if (this->type == node_type::CONST) {
 		all_cons.push_back(shared_from_this());
@@ -124,24 +101,17 @@ vector<shared_ptr<node>> node::extract_constants_references() {
 
 
 
-vector<shared_ptr<node>> node::extract_non_constant_factors() {
-	vector<shared_ptr<node>> all_factors;
+void node::extract_non_constant_factors(vector<node*>& all_factors) {
 	if (type == node_type::PLUS || type == node_type::MINUS) {
-		vector<shared_ptr<node>> left_factors = left->extract_non_constant_factors();
-		vector<shared_ptr<node>> right_factors = right->extract_non_constant_factors();
-		for (int i = 0; i < left_factors.size(); i++)
-			all_factors.push_back(left_factors[i]);
-		for (int i=0; i<right_factors.size(); i++)
-			all_factors.push_back(right_factors[i]);
+		left->extract_non_constant_factors(all_factors);
+		right->extract_non_constant_factors(all_factors);
 	}
 	else if (type != node_type::CONST)
-		all_factors.push_back(shared_from_this());
-	return all_factors;
+		all_factors.push_back(this);
 }
 
-int node::size() {
-	if (this == NULL)
-		return 0;
+int node::size() const noexcept
+{
 	int size = 1;
 	if (this->arity >= 1)
 		size += this->left->size();
@@ -183,13 +153,13 @@ void node::simplify()
 			}
 			arity = 0;
 			type = node_type::CONST;
-			left = NULL;
-			right = NULL;
+			left = nullptr;
+			right = nullptr;
 		}
 		else if (left->type == node_type::CONST)
 		{
-			if (type == node_type::PLUS || type==node_type::MINUS) {
-				if(value_zero(left->const_value))
+			if (type == node_type::PLUS || type == node_type::MINUS) {
+				if (value_zero(left->const_value))
 					this->update_with(right); // 0+t = t || 0-t = -t
 				else if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
 					if (right->left->type == node_type::CONST) {
@@ -220,10 +190,10 @@ void node::simplify()
 			}
 			else if (type == node_type::MULTIPLY) {
 				if (value_zero(left->const_value))
-					*this = *node::node_constant(0);
+					set_const_value(0.0);
 				else if (value_one(left->const_value))
 					this->update_with(right);
-				else if(right->type == node_type::MULTIPLY) {
+				else if (right->type == node_type::MULTIPLY) {
 					if (right->left->type == node_type::CONST) {
 						// c1*c2*expr = c3*expr [c3 = c1*c2]
 						left->const_value *= right->left->const_value;
@@ -237,7 +207,7 @@ void node::simplify()
 				}
 			}
 			else if (type == node_type::DIVIDE && value_zero(left->const_value))
-				this->update_with(node::node_constant(0));
+				set_const_value(0.0);
 		}
 		else if (right->type == node_type::CONST)
 		{
@@ -263,10 +233,10 @@ void node::simplify()
 					}
 				}
 			}else if (type == node_type::MULTIPLY) {
-				if(value_one(right->const_value))
+				if (value_one(right->const_value))
 					this->update_with(left);
 				else if (value_zero(right->const_value))
-					this->update_with(node::node_constant(0));
+					set_const_value(0.0);
 				else {
 					// some more exotic variants  
 					if (left->type == node_type::MULTIPLY) {
@@ -318,42 +288,15 @@ void node::normalize_factor_constants(node_type parent_type, bool inside_factor)
 	}
 }
 
-shared_ptr<node> binomial_mult(shared_ptr<node> left, shared_ptr<node> right) {
+static auto binomial_mult(const node* left, const node* right) {
 	// (t1+-t2)*(t3+-t4) = t1*t3+-t1*t4+-t2*t3+-t2*t4
-	shared_ptr<node> f1 = node::node_multiply();
-	f1->left = node::node_copy(*left->left);
-	f1->right = node::node_copy(*right->left);
-	shared_ptr<node> f2 = node::node_multiply();
-	f2->left = node::node_copy(*left->left);
-	f2->right = node::node_copy(*right->right);
-	shared_ptr<node> f3 = node::node_multiply();
-	f3->left = node::node_copy(*left->right);
-	f3->right = node::node_copy(*right->left);
-	shared_ptr<node> f4 = node::node_multiply();
-	f4->left = node::node_copy(*left->right);
-	f4->right = node::node_copy(*right->right);
-	shared_ptr<node> new_left = NULL;
-	shared_ptr<node> new_right = NULL;
-	shared_ptr<node> result = NULL;
-	if (left->type == node_type::PLUS)
-		result = node::node_plus();
-	else
-		result = node::node_minus();
-	if (right->type == node_type::PLUS) {
-		new_left = node::node_plus();
-		new_right = node::node_plus();
-	}
-	else {
-		new_left = node::node_minus();
-		new_right = node::node_minus();
-	}
-	new_left->left = f1;
-	new_left->right = f2;
-	new_right->left = f3;
-	new_right->right = f4;
-	result->left = new_left;
-	result->right = new_right;
-	return result;
+	const auto f1 = create_node_ptr(node_type::MULTIPLY, left->get_left(), right->get_left());
+	const auto f2 = create_node_ptr(node_type::MULTIPLY, left->get_left(), right->get_right());
+	const auto f3 = create_node_ptr(node_type::MULTIPLY, left->get_right(), right->get_left());
+	const auto f4 = create_node_ptr(node_type::MULTIPLY, left->get_right(), right->get_right());
+	const auto new_left = make_shared<node>(right->get_type(), f1, f2);
+	const auto new_right = make_shared<node>(right->get_type(), f3, f4);
+	return make_shared<node>(left->get_type(), new_left, new_right);
 }
 
 void node::expand() {
@@ -364,7 +307,7 @@ void node::expand() {
 	else if (arity == 1) {
 		left->expand();
 		if (type == node_type::SQR && left->arity==2){
-			*this = *binomial_mult(left, left);
+			update_with(binomial_mult(get_left(), get_left()));
 		}
 	}
 	else {
@@ -373,38 +316,20 @@ void node::expand() {
 		if (this->type == node_type::MULTIPLY) {
 			if (left->type == node_type::PLUS || left->type == node_type::MINUS) {
 				if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
-					*this = *binomial_mult(left, right);
+					update_with(binomial_mult(get_left(), get_right()));
 				}
 				else {
 					// (t1+-t2)*t3 = t1*t3+-t2*t3
-					shared_ptr<node> new_left = node::node_multiply();
-					new_left->left = node::node_copy(*left->left);
-					new_left->right = node::node_copy(*right);
-					shared_ptr<node> new_right = node::node_multiply();
-					new_right->left = node::node_copy(*left->right);
-					new_right->right = node::node_copy(*right);
-					if (left->type == node_type::PLUS)
-						*this = *node::node_plus();
-					else
-						*this = *node::node_minus();
-					left = new_left;
-					right = new_right;
+					left = create_node_ptr(node_type::MULTIPLY, left->get_left(), right.get());
+					right = create_node_ptr(node_type::MULTIPLY, left->get_right(), right.get());
+					set_type(left->type);
 				}
 			}
 			else if (right->type == node_type::PLUS || right->type == node_type::MINUS) {
 				// t1*(t2+-t3) to t1*t2+-t1*t3
-				shared_ptr<node> new_left = node::node_multiply();
-				new_left->left = node::node_copy(*left);
-				new_left->right = node::node_copy(*right->left);
-				shared_ptr<node> new_right = node::node_multiply();
-				new_right->left = node::node_copy(*left);
-				new_right->right = node::node_copy(*right->right);
-				if (right->type == node_type::PLUS)
-					*this = *node::node_plus();
-				else
-					*this = *node::node_minus();
-				left = new_left;
-				right = new_right;
+				left = create_node_ptr(node_type::MULTIPLY, left.get(), right->get_left());
+				right = create_node_ptr(node_type::MULTIPLY, left.get(), right->get_right());
+				set_type(right->type);
 			}
 		}
 	}

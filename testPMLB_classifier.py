@@ -24,9 +24,9 @@ ITER_LIMIT = int(sys.argv[2])
 THREADS = int(sys.argv[3])
 '''
 RANDOM_STATE = 23654
-ITER_LIMIT = 100000
+ITER_LIMIT = 1000000
 SAMPLE_SIZE = 1
-TIME_LIMIT = 100
+TIME_LIMIT = 1000
 #CLASSIFIERS_CNT = 10
 COMPLEXITY_PENALTY = 0.001
 
@@ -34,10 +34,9 @@ DATASET_MIN_SIZE = 1000
 MAX_FEATURES = 10000
 datasets={}
 for name in classification_dataset_names:
-    df = fetch_data(dataset_name=name, local_cache_dir="../pmlb/datasets")
+    df = fetch_data(dataset_name=name, local_cache_dir="../../pmlb/datasets")
     if len(df) < DATASET_MIN_SIZE or len(df.columns)>MAX_FEATURES:
         continue
-    df.to_csv(f"class_datasets/{name}.csv")
     # binary classification problem
     if df['target'].nunique() == 2:
         # some datasetts have classes [1 2] or [0 2]
@@ -61,7 +60,7 @@ estimators = all_estimators(type_filter='classifier')
 classificators = []
 # the first two are not for numerical data, ComplementNB makes error on one of instances, while GaussianProcess, LabelPropagation and LabelSpreading seem to have memory issuess on instance adult (48842 x 14)
 discarded = ['CategoricalNB','RadiusNeighborsClassifier','ComplementNB','GaussianProcessClassifier','LabelPropagation', 'LabelSpreading']
-for name, ClassifierClass in estimators:
+for name, ClassifierClass in []:# estimators:
     if name in discarded:
         continue
     print('Appending', name)
@@ -71,8 +70,8 @@ for name, ClassifierClass in estimators:
     except Exception as e:
         print('Unable to import', name)
         print(e)
-#classificators.append(['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 
-#                                                                  'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}])
+classificators.append(['RILSROLSClassifier', RILSROLSBinaryClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 
+                                                                  'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}])
 #classificators = [['GaussianProcessClassifier', GaussianProcessClassifier, {'random_state':RANDOM_STATE}]]
 
 for clf_name, clf_type, clf_params in classificators:
