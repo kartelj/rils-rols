@@ -4,7 +4,7 @@ RILS-ROLS is metaheuristic-based framework to deal with problems of symbolic reg
 
 All of its aspects (method description, empirical results, etc.) are explained in the paper named:
 "RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares" by **Aleksandar Kartelj** and **Marko Đukanović** in the Journal of Big Data, Springer. 
-The third author, who came later, is **Ján Pigoš** (https://github.com/janoPig). He was instrumental in improving the efficiency by almost two orders of magnitude (the module was rewritten in C++) and he also helped develop the symbolic classifier based on the symbolic regression algorithm as a backbone.
+The third author, who came later, is **Ján Pigoš** (https://github.com/janoPig). He was instrumental in improving the efficiency by almost three orders of magnitude (the module was rewritten in C++) and he also helped develop the symbolic classifier based on the symbolic regression algorithm as a backbone.
 
 All RILS-ROLS resources can be found at https://github.com/kartelj/rils-rols
 
