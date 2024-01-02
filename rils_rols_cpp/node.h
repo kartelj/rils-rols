@@ -256,9 +256,9 @@ public:
 		case node_type::MINUS:
 			return  "(" + left->to_string() + "-" + right->to_string() + ")";
 		case node_type::MULTIPLY:
-			return  left->to_string() + "*" + right->to_string();
+			return  "("+left->to_string() + "*" + right->to_string()+")";
 		case node_type::DIVIDE:
-			return  left->to_string() + "/" + right->to_string();
+			return  "("+left->to_string() + "/" + right->to_string()+")";
 		case node_type::SIN:
 			return "sin(" + left->to_string() + ")";
 		case node_type::COS:
@@ -270,7 +270,7 @@ public:
 		case node_type::SQRT:
 			return "sqrt(" + left->to_string() + ")";
 		case node_type::SQR:
-			return left->to_string() + "*" + left->to_string();
+			return "("+left->to_string() + "*" + left->to_string()+")";
 		case node_type::POW:
 			return "pow("+left->to_string() + "," + right->to_string()+")";
 		default:

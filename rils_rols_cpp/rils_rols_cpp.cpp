@@ -590,12 +590,12 @@ public:
 		this->sample_size = sample_size;
 		this->verbose = verbose;
 		this->random_state = random_state;
-		cout << "JANO version" << endl;
+		cout << "JANO version without early exit" << endl;
 		reset();
 	}
 
 	bool finished() const noexcept {
-		return fit_calls >= max_fit_calls || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness) < early_exit_eps) || duration_cast<seconds>(high_resolution_clock::now() - start_time).count() > max_seconds;
+		return fit_calls >= max_fit_calls || duration_cast<seconds>(high_resolution_clock::now() - start_time).count() > max_seconds;// || (get<0>(final_fitness) < early_exit_eps && get<1>(final_fitness) < early_exit_eps);
 	}
 
 	bool check_skip(const string& pert_str) {
