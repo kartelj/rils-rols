@@ -8,7 +8,10 @@ The third author, who came later, is **Ján Pigoš** (https://github.com/janoPig
 
 All RILS-ROLS resources can be found at https://github.com/kartelj/rils-rols
 
-RILS-ROLS distribution is available as a pip package at https://pypi.org/project/rils-rols
+For the quickest start you can check the working colab notebook, with minimal working example here:
+https://colab.research.google.com/drive/1U8I92VTQao9UA9ErBK3VX9AbpIX1LLIv?usp=sharing
+
+If you wish to run it locally, RILS-ROLS distribution is available as a pip package at https://pypi.org/project/rils-rols,
 so it can be easily installed with the following pip command:
 
 ```bat
