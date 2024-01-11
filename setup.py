@@ -2,13 +2,15 @@ from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 import os
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-#long_description = "You can find minimal working example and other information here: https://github.com/kartelj/rils-rols/tree/binary-classifier-new"
+#with open("readme.md", "r") as fh:
+#    long_description = fh.read()
+long_description = "You can find minimal working example and other information here: https://github.com/kartelj/rils-rols"
 
 if os.name=='nt':
     compile_args = ["/std:c++17", "/I rils_rols_cpp", "/O2"]
 else:
+    os.environ['CCX'] = 'g++'
+    os.environ['CC'] = 'g++'
     compile_args = ["-std=c++17", "-march=native", "-O3"]
 
 ext_modules=[Pybind11Extension(
@@ -29,7 +31,7 @@ def copy_dir():
 
 setup(
     name='rils-rols',
-    version='1.5.8',
+    version='1.5.10',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",
@@ -47,9 +49,5 @@ setup(
         "Operating System :: OS Independent"
     ],
     python_requires= ">=3.8",
-    py_modules=["rils-rols"],
-    package_dir = {'rils-rols':'rils_rols'}, 
-    package_data = {'' : [f for f in copy_dir()]},
-    include_package_data=True,
-    install_requires=["scikit-learn", "sympy", "pybind11"],
+    install_requires=["scikit-learn", "sympy", "pybind11", "pandas"],
 )

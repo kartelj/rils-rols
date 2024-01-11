@@ -590,7 +590,7 @@ public:
 		this->sample_size = sample_size;
 		this->verbose = verbose;
 		this->random_state = random_state;
-		cout << "JANO version without early exit" << endl;
+		//cout << "JANO version without early exit" << endl;
 		reset();
 	}
 

@@ -7,11 +7,13 @@ from .utils import binarize, proba, complexity_sympy
 import warnings
 import multiprocessing.pool
 import functools
+import pandas as pd
 warnings.filterwarnings("ignore")
 
 class RILSROLSBase(BaseEstimator):
 
     def __init__(self, classification=None, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
+        print(f'Calling with max_fit_calls={max_fit_calls} max_seconds={max_seconds} complexity_penalty={complexity_penalty} max_complexity={max_complexity} sample_size={sample_size} verbose={verbose} random_state={random_state}')
         self.classification = classification
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
@@ -43,6 +45,14 @@ class RILSROLSBase(BaseEstimator):
         self.model_simp = simplify(self.model, ratio=1)
 
     def fit(self, X, y):
+        if isinstance(X, pd.DataFrame):
+            if self.verbose:
+                print('Converting X dataframe to just list of lists.')
+            X = X.values.tolist()
+        if isinstance(y, pd.DataFrame):
+            if self.verbose:
+                print('Converting y dataframe to list of lists.')
+            y = y.values.tolist()
         self.rr_cpp = rils_rols_cpp.rils_rols(self.classification,int(self.max_fit_calls),int(self.max_seconds),self.complexity_penalty,self.max_complexity,self.sample_size,self.verbose,int(self.random_state))
         X = np.array(X)
         data_cnt = X.shape[0]
@@ -71,6 +81,10 @@ class RILSROLSBase(BaseEstimator):
             raise Exception("Cannot predict because model is not build yet. First call fit().")
         
     def predict(self, X):
+        if isinstance(X, pd.DataFrame):
+            if self.verbose:
+                print('Converting X dataframe to just list of lists.')
+            X = X.values.tolist()
         self.check_model()
         X = np.array(X)
         data_cnt = X.shape[0]

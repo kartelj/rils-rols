@@ -1,3 +1,3 @@
-include readme.md
-include rils_rols_cpp/Python.h
+include README.md
+recursive-include rils_rols *
 recursive-include rils_rols_cpp/eigen *
