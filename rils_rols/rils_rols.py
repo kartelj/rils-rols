@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 class RILSROLSBase(BaseEstimator):
 
-    def __init__(self, classification=None, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1, verbose=False, random_state=0):
+    def __init__(self, classification=None, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
         self.classification = classification
         self.max_seconds = max_seconds
         self.max_fit_calls = max_fit_calls
@@ -90,7 +90,7 @@ class RILSROLSBase(BaseEstimator):
 
 class RILSROLSRegressor(RILSROLSBase):
         
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
         super().__init__(False, max_fit_calls, max_seconds, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
 
     def score(self, X, y):
@@ -99,7 +99,7 @@ class RILSROLSRegressor(RILSROLSBase):
 
 class RILSROLSBinaryClassifier(RILSROLSBase):
     
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=200, sample_size=0.1, verbose=False, random_state=0):
+    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
         super().__init__(True, max_fit_calls, max_seconds, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
 
     def check_binary_targets(self, y):
