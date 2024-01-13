@@ -32,7 +32,7 @@ from math import sin, log
     2. max_seconds=100                  -- maximal running time in seconds
     3. complexity_penalty=0.001         -- expression size penalty (used for FitnessType.PENALTY) -- larger value means size is more important
     4. max_complexity = 50              -- the maximal size of internal expression (without symplification)
-    5. sample_size=1                    -- the size of the sample taken from the training part
+    5. sample_size=1                    -- the size of the sample taken from the training part, takes value from [0, 1], where 0 activates automatic sample size selection
     6. verbose=False                    -- if True, the output during the program execution contains more details
     7. random_state=0                   -- random seed -- when 0 (default), the algorithm might produce different results in different runs
 '''

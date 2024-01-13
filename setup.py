@@ -21,13 +21,14 @@ ext_modules=[Pybind11Extension(
         extra_compile_args = compile_args
     )]
 
-def copy_dir():
-    dir_path = 'rils_rols_cpp/eigen'
-    base_dir = os.path.join('.', dir_path)
-    for (dirpath, _, files) in os.walk(base_dir):
-        for f in files:
-            print(f)
-            yield os.path.join(dirpath.split('/', 1)[1], f)
+# not needed anymore because distributing only whl packages, without source code
+#def copy_dir():
+#    dir_path = 'rils_rols_cpp/eigen'
+#    base_dir = os.path.join('.', dir_path)
+#    for (dirpath, _, files) in os.walk(base_dir):
+#        for f in files:
+#            print(f)
+#            yield os.path.join(dirpath.split('/', 1)[1], f)
 
 setup(
     name='rils-rols',
@@ -35,7 +36,7 @@ setup(
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",
-    author='Aleksandar Kartelj, Marko Đukanović, Ján Pigoš',
+    author='Aleksandar Kartelj, Marko Djukanovic, Jan Pigos',
     author_email='aleksandar.kartelj@gmail.com',
     url='https://github.com/kartelj/rils-rols',
     packages = find_packages(),

@@ -47,36 +47,48 @@ class RILSROLSBase(BaseEstimator):
         self.model_simp = simplify(self.model, ratio=1)
 
     def fit(self, X, y):
-        if self.sample_size>0 and self.sample_size<=1:
-            self.fit_inner(X, y)
-        elif self.sample_size==0:
+        if self.sample_size==0:
             print('Automatically tuning sample size:')
-            start = time.time()
-            total_max_fit_calls = self.max_fit_calls
-            max_fit_calls_tuning = int(0.033*self.max_fit_calls) # in total 10% of the time budget because we check for three alternatives: 1% and 10%
-            tuning_fit_calls = 0
-            self.max_fit_calls = max_fit_calls_tuning
-            sample_sizes = [1, 0.1, 0.01]
-            best_r2 = -inf
-            best_ss = sample_sizes[0]
-            for ss in sample_sizes:
-                print(f'Trying sample size {ss}...')
-                self.sample_size = ss
-                tuning_fit_calls+=self.max_fit_calls
-                self.fit_inner(X, y)
-                yp = self.predict(X) # check performance on the whole training set
-                r2 = r2_score(y, yp)
-                print(f'Obtained R2={r2}.')
-                if r2>=best_r2: # >= because later samples are smaller so we prefer smaller if they give the same result
-                    best_r2 = r2
-                    best_ss = ss
-            print(f'Selecting sample_size={best_ss} with R2={best_r2}')
-            tuning_time = time.time() - start
-            self.max_seconds-=tuning_time
-            self.max_fit_calls = total_max_fit_calls - tuning_fit_calls
-            print(f'Calling the fit with sample_size={self.sample_size} max_seconds={self.max_seconds} max_fit_calls={self.max_fit_calls}.')
-        else:
+            if len(X)<=10000:
+                print('Training size is smaller than 10000 so setting it to full sample 1 (100%).')
+                self.sample_size = 1
+            else:
+                start = time.time()
+                total_max_fit_calls = self.max_fit_calls
+                max_fit_calls_tuning = self.max_fit_calls/100 # in total 3% of the time budget because we check for three alternatives: 1%, 10% and 100%
+                tuning_fit_calls = 0
+                self.max_fit_calls = max_fit_calls_tuning
+                max_cnt = 100000 # this is maximal number of rows to consider
+                if len(X)>max_cnt:
+                    max_sample_size = max_cnt/len(X)
+                else:
+                    max_sample_size = 1
+                sample_sizes = [max_sample_size, max_sample_size/10, max_sample_size/100]
+                best_r2 = -inf
+                best_ss = sample_sizes[0]
+                for ss in sample_sizes:
+                    print(f'Trying sample size {ss}...')
+                    self.sample_size = ss
+                    tuning_fit_calls+=self.max_fit_calls
+                    self.fit_inner(X, y)
+                    yp = self.predict(X) # check performance on the whole training set
+                    try:
+                        r2 = r2_score(y, yp)
+                    except Exception:
+                        print('Error while calculating R2, so setting it to -infinity.')
+                        r2 = -inf
+                    print(f'Obtained R2={r2}.')
+                    if r2>=best_r2: # >= because later samples are smaller so we prefer smaller if they give the same result
+                        best_r2 = r2
+                        best_ss = ss
+                tuning_time = time.time() - start
+                print(f'Setting sample_size={best_ss} with R2={best_r2}')
+                self.sample_size = best_ss
+                self.max_seconds-=tuning_time
+                self.max_fit_calls = total_max_fit_calls - tuning_fit_calls
+        elif self.sample_size<0 or self.sample_size>1:
             raise Exception(f'Sample size parameter must belong to interval (0, 1], while value 0 means it is automatically tuned.')
+        self.fit_inner(X, y)
 
 
     def fit_inner(self, X, y):
