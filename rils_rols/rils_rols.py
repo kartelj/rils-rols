@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-=======
-from cmath import inf
-import copy
+from math import inf
 import time
-import math
-from random import Random, shuffle
->>>>>>> 82cad11050aafd84fcaecf99d165201271afdcc8
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.metrics import r2_score, accuracy_score
@@ -53,6 +47,39 @@ class RILSROLSBase(BaseEstimator):
         self.model_simp = simplify(self.model, ratio=1)
 
     def fit(self, X, y):
+        if self.sample_size>0 and self.sample_size<=1:
+            self.fit_inner(X, y)
+        elif self.sample_size==0:
+            print('Automatically tuning sample size:')
+            start = time.time()
+            total_max_fit_calls = self.max_fit_calls
+            max_fit_calls_tuning = int(0.033*self.max_fit_calls) # in total 10% of the time budget because we check for three alternatives: 1% and 10%
+            tuning_fit_calls = 0
+            self.max_fit_calls = max_fit_calls_tuning
+            sample_sizes = [1, 0.1, 0.01]
+            best_r2 = -inf
+            best_ss = sample_sizes[0]
+            for ss in sample_sizes:
+                print(f'Trying sample size {ss}...')
+                self.sample_size = ss
+                tuning_fit_calls+=self.max_fit_calls
+                self.fit_inner(X, y)
+                yp = self.predict(X) # check performance on the whole training set
+                r2 = r2_score(y, yp)
+                print(f'Obtained R2={r2}.')
+                if r2>=best_r2: # >= because later samples are smaller so we prefer smaller if they give the same result
+                    best_r2 = r2
+                    best_ss = ss
+            print(f'Selecting sample_size={best_ss} with R2={best_r2}')
+            tuning_time = time.time() - start
+            self.max_seconds-=tuning_time
+            self.max_fit_calls = total_max_fit_calls - tuning_fit_calls
+            print(f'Calling the fit with sample_size={self.sample_size} max_seconds={self.max_seconds} max_fit_calls={self.max_fit_calls}.')
+        else:
+            raise Exception(f'Sample size parameter must belong to interval (0, 1], while value 0 means it is automatically tuned.')
+
+
+    def fit_inner(self, X, y):
         if isinstance(X, pd.DataFrame):
             if self.verbose:
                 print('Converting X dataframe to just list of lists.')
