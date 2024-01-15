@@ -3,6 +3,7 @@ import time
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.metrics import r2_score, accuracy_score
+from sklearn.model_selection import train_test_split
 from sympy import sympify, simplify
 import rils_rols_cpp
 from .utils import binarize, proba, complexity_sympy
@@ -55,36 +56,32 @@ class RILSROLSBase(BaseEstimator):
             else:
                 start = time.time()
                 total_max_fit_calls = self.max_fit_calls
-                max_fit_calls_tuning = self.max_fit_calls/100 # in total 3% of the time budget because we check for three alternatives: 1%, 10% and 100%
+                max_fit_calls_tuning = self.max_fit_calls/100 # in total 2% of the time budget because we check for two alternatives: 1%, 10%
                 tuning_fit_calls = 0
                 self.max_fit_calls = max_fit_calls_tuning
-                max_cnt = 100000 # this is maximal number of rows to consider
-                if len(X)>max_cnt:
-                    max_sample_size = max_cnt/len(X)
-                else:
-                    max_sample_size = 1
-                sample_sizes = [max_sample_size, max_sample_size/10, max_sample_size/100]
-                best_r2 = -inf
-                best_ss = sample_sizes[0]
-                for ss in sample_sizes:
-                    print(f'Trying sample size {ss}...')
-                    self.sample_size = ss
+                best_ss = 1 # this is a default option
+                for ss in [0.01, 0.1]:
+                    X_sample,_, y_sample,_ = train_test_split(X, y, train_size=ss, random_state=self.random_state)
+                    self.sample_size = 1 # use the whole sample, because we already took the sample with command above
+                    self.fit_inner(X_sample, y_sample)
                     tuning_fit_calls+=self.max_fit_calls
-                    self.fit_inner(X, y)
+                    yp_sample = self.predict(X_sample)
                     yp = self.predict(X) # check performance on the whole training set
                     try:
+                        r2_sample = r2_score(y_sample, yp_sample)
                         r2 = r2_score(y, yp)
+                        print(f'Sample size {ss} --> R2={r2} R2_sample={r2_sample}')
+                        if abs(r2-r2_sample)<0.01:
+                            # this means that sample is representative enough on the whole training data
+                            best_ss = ss
+                            break
                     except Exception:
-                        print('Error while calculating R2, so setting it to -infinity.')
+                        print('Error while calculating R2.')
                         r2 = -inf
-                    print(f'Obtained R2={r2}.')
-                    if r2>=best_r2: # >= because later samples are smaller so we prefer smaller if they give the same result
-                        best_r2 = r2
-                        best_ss = ss
-                tuning_time = time.time() - start
-                print(f'Setting sample_size={best_ss} with R2={best_r2}')
+                print(f'Setting sample_size={best_ss}')
                 self.sample_size = best_ss
-                self.max_seconds-=tuning_time
+                tuning_seconds = time.time() - start
+                self.max_seconds-=tuning_seconds
                 self.max_fit_calls = total_max_fit_calls - tuning_fit_calls
         elif self.sample_size<0 or self.sample_size>1:
             raise Exception(f'Sample size parameter must belong to interval (0, 1], while value 0 means it is automatically tuned.')
