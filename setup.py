@@ -16,27 +16,25 @@ else:
 ext_modules=[Pybind11Extension(
         'rils_rols_cpp', 
         sources=['rils_rols_cpp/rils_rols_cpp.cpp', 
-                'rils_rols_cpp/node.cpp',
-                'rils_rols_cpp/utils.cpp'], 
+                'rils_rols_cpp/node.cpp'], 
         extra_compile_args = compile_args
     )]
 
-# not needed anymore because distributing only whl packages, without source code
-#def copy_dir():
-#    dir_path = 'rils_rols_cpp/eigen'
-#    base_dir = os.path.join('.', dir_path)
-#    for (dirpath, _, files) in os.walk(base_dir):
-#        for f in files:
-#            print(f)
-#            yield os.path.join(dirpath.split('/', 1)[1], f)
+def copy_dir():
+    dir_path = 'rils_rols_cpp'
+    base_dir = os.path.join('.', dir_path)
+    for (dirpath, _, files) in os.walk(base_dir):
+        for f in files:
+            print(f)
+            yield os.path.join(dirpath.split('/', 1)[1], f)
 
 setup(
     name='rils-rols',
-    version='1.5.11',
+    version='1.5.12',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",
-    author='Aleksandar Kartelj, Marko Djukanovic, Jan Pigos',
+    author='Aleksandar Kartelj, Marko Đukanović, Ján Pigoš',
     author_email='aleksandar.kartelj@gmail.com',
     url='https://github.com/kartelj/rils-rols',
     packages = find_packages(),

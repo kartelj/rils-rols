@@ -151,11 +151,9 @@
   <ItemGroup>
     <ClCompile Include="node.cpp" />
     <ClCompile Include="rils_rols_cpp.cpp" />
-    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="node.h" />
-    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="eigen\Eigen\Dense" />

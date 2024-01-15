@@ -11,7 +11,6 @@
 #include <chrono>
 #include <numeric>
 #include "node.h"
-#include "utils.h"
 #include "eigen/Eigen/Dense"
 
 #define PYTHON_WRAPPER 1 // comment this to run pure CPP
@@ -38,6 +37,53 @@ struct TupleCompare
 	}
 };
 
+double R2(const Eigen::ArrayXd &y, const Eigen::ArrayXd &yp) {
+	const auto y_avg = y.mean();
+	const auto ssr = ((y - yp) * (y - yp)).sum();
+	const auto sst = ((y - y_avg) * (y - y_avg)).sum();
+	return 1 - ssr / sst;
+}
+
+double RMSE(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp) {
+	return sqrt(((y - yp) * (y - yp)).mean());
+}
+
+double classification_accuracy(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp) {
+	double acc = 0;
+	for (int i = 0; i < y.size(); i++) {
+		// binarized value
+		const auto ypib = yp[i] >= 0.5 ? 1.0 : 0.0;
+		const auto yib = y[i] >= 0.5 ? 1.0 : 0.0;
+		if (ypib == yib)
+			acc += 1.0;
+	}
+	return acc / y.size();
+}
+
+double average_log_loss(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp)
+{
+	double ll = 0;
+	for (int i = 0; i < y.size(); i++) {
+		const auto yib = y[i] >= 0.5 ? 1.0 : 0.0;
+		//double ypi = yp[i];
+		//if (ypi != 0)
+		//	ypi = ypi;
+		const auto prob = 1.0 / (1.0 + exp(-2.0 * (yp[i] - 0.5))); // logistic function for mean at 0.5
+		const auto lli = (1.0 - yib) * log(1.0 - prob) + yib * log(prob);
+		ll -= lli;
+	}
+	return ll / y.size();
+}
+
+double average_loss(const Eigen::ArrayXd& y, const Eigen::ArrayXd& yp)
+{
+	double ll = 0;
+	for (int i = 0; i < y.size(); i++) {
+		const auto yib = y[i] >= 0.5 ? 1.0 : 0.0;
+		ll+= abs(yib - yp[i]);
+	}
+	return ll / y.size();
+}
 
 class rils_rols {
 
@@ -463,15 +509,15 @@ private:
 		tuple<double, double, int> fit;
 
 		if (classification) {
-			double loss = 1 - utils::R2(y, yp);//  1 - utils::classification_accuracy(y, yp);
-			double rmse =  utils::RMSE(y, yp);
+			double loss = 1 - R2(y, yp);//  1 - utils::classification_accuracy(y, yp);
+			double rmse =  RMSE(y, yp);
 			if (loss != loss || rmse!=rmse)// true only for NaN values
 				return make_tuple<double, double, int>(1000, 1000, 1000);
 			fit = tuple<double, double, int>{ loss, rmse,size };
 		}
 		else {
-			const auto r2 = utils::R2(y, yp);
-			const auto rmse = utils::RMSE(y, yp);
+			const auto r2 = R2(y, yp);
+			const auto rmse = RMSE(y, yp);
 			if (r2 != r2 || rmse != rmse) // true only for NaN values
 				return make_tuple<double, double, int>(1000, 1000, 1000);
 			fit = tuple<double, double, int>{ 1 - r2, rmse, size };
@@ -698,7 +744,7 @@ public:
 			return rel_feat;
 		}
 		for (int i = 0; i < feat_cnt; i++) {
-			double r2 = utils::R2(X[i], y);
+			double r2 = R2(X[i], y);
 			feat_by_r2.push_back(tuple<double,int>{r2,i});
 		}
 		std::sort(feat_by_r2.begin(), feat_by_r2.end(), std::greater<>());
@@ -908,19 +954,19 @@ int main()
 		rils_rols rr(classification, max_fit, max_time, complexity_penalty, max_complexity, sample_size, true, random_state);
 		rr.fit_inner(X_train, y_train);
 		const auto yp_train = rr.predict_inner(X_train);
-		const auto rmse_train = utils::RMSE(y_train, yp_train);
+		const auto rmse_train = RMSE(y_train, yp_train);
 		const auto yp_test = rr.predict_inner(X_test);
-		const auto rmse = utils::RMSE(y_test, yp_test);
+		const auto rmse = RMSE(y_test, yp_test);
 		ofstream out_file;
 		stringstream ss;
 		if (classification) {
-			const auto acc_train = utils::classification_accuracy(y_train, yp_train);
-			const auto acc = utils::classification_accuracy(y_test, yp_test);
+			const auto acc_train = classification_accuracy(y_train, yp_train);
+			const auto acc = classification_accuracy(y_test, yp_test);
 			ss << setprecision(PRECISION) << entry << "\tACC=" << acc << "\tACC_tr="<<acc_train;
 		}
 		else {
-			const auto r2_train = utils::R2(y_train, yp_train);
-			const auto r2 = utils::R2(y_test, yp_test);
+			const auto r2_train = R2(y_train, yp_train);
+			const auto r2 = R2(y_test, yp_test);
 			ss << setprecision(PRECISION) << entry << "\tR2=" << r2 << "\tR2_tr=" << r2_train;
 		}
 		ss<< "\tRMSE=" << rmse << "\tRMSE_tr=" << rmse_train << "\ttotal_time=" << rr.get_total_time() << "\tbest_time=" << rr.get_best_time() << "\tfit_calls=" << rr.get_fit_calls() << "\tmodel = " << rr.get_model_string() << endl;
