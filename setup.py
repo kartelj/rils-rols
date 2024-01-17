@@ -30,7 +30,7 @@ def copy_dir():
 
 setup(
     name='rils-rols',
-    version='1.5.13',
+    version='1.5.14',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",

@@ -49,7 +49,7 @@ Eigen::ArrayXd node::evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen
 	case node_type::SQRT:
 		return a.sqrt();
 	case node_type::SQR:
-		return a * a;
+		return a*a;
 	case node_type::POW:
 		return a.pow(b);
 	default:
@@ -108,16 +108,6 @@ void node::extract_non_constant_factors(vector<node*>& all_factors) {
 	}
 	else if (type != node_type::CONST)
 		all_factors.push_back(this);
-}
-
-int node::size() const noexcept
-{
-	int size = 1;
-	if (this->arity >= 1)
-		size += this->left->size();
-	if (this->arity >= 2)
-		size += this->right->size();
-	return size;
 }
 
 // Perform trivial simplifications: 0*a => 0, 1*a => a, a/1 => a,
@@ -306,9 +296,9 @@ void node::expand() {
 	}
 	else if (arity == 1) {
 		left->expand();
-		if (type == node_type::SQR && left->arity==2){
-			update_with(binomial_mult(get_left(), get_left()));
-		}
+		//if (type == node_type::SQR){
+		//	update_with(binomial_mult(get_left(), get_left()));
+		//}
 	}
 	else {
 		left->expand();

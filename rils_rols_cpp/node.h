@@ -42,7 +42,7 @@ constexpr int get_arity(node_type type) noexcept
 	case node_type::LN:
 	case node_type::EXP:
 	case node_type::SQRT:
-	case node_type::SQR:
+	case node_type::SQR: 
 		return 1;
 	}
 	return 2;
@@ -248,7 +248,10 @@ public:
 	inline string to_string() const {
 		switch (type) {
 		case node_type::CONST:
-			return std::to_string(const_value);
+			if (abs(std::round(const_value) - const_value) < EPS) 
+				return std::to_string((int)(std::round(const_value)));
+			else
+				return std::to_string(const_value);
 		case node_type::VAR:
 			return "x" + std::to_string(var_index);
 		case node_type::PLUS:
@@ -270,7 +273,7 @@ public:
 		case node_type::SQRT:
 			return "sqrt(" + left->to_string() + ")";
 		case node_type::SQR:
-			return "("+left->to_string() + "*" + left->to_string()+")";
+			return "(("+left->to_string()+")**2)";
 		case node_type::POW:
 			return "pow("+left->to_string() + "," + right->to_string()+")";
 		default:
@@ -286,7 +289,18 @@ public:
 
 	void extract_non_constant_factors(vector<node*>& all_factors);
 
-	int size() const noexcept;
+	int size() const noexcept {
+		if (arity == 0)
+			return 1;
+		else if (arity == 1)
+			return 1 + left->size();
+		else if (arity == 2)
+			return 1 + left->size() + right->size();
+		else {
+			cout << "**WARNING**: using arity different than {0, 1, 2}!";
+			return 0;
+		}
+	};
 
 	void simplify();
 

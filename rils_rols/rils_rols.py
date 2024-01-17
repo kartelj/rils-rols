@@ -60,7 +60,7 @@ class RILSROLSBase(BaseEstimator):
                 tuning_fit_calls = 0
                 self.max_fit_calls = max_fit_calls_tuning
                 best_ss = 1 # this is a default option
-                for ss in [0.01, 0.1]:
+                for ss in [0.1]: #[0.01, 0.1]:
                     X_sample,_, y_sample,_ = train_test_split(X, y, train_size=ss, random_state=self.random_state)
                     self.sample_size = 1 # use the whole sample, because we already took the sample with command above
                     self.fit_inner(X_sample, y_sample)

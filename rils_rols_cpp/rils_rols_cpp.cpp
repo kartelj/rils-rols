@@ -337,6 +337,8 @@ private:
 	}
 
 	vector<node> all_candidates(shared_ptr<node> passed_solution, const vector<Eigen::ArrayXd>& X, const Eigen::ArrayXd& y, bool local_search) {
+		//if(this->verbose)
+		//	cout << "Getting candidates for solution of size " << passed_solution->size() << ": " << passed_solution->to_string() << endl;
 		shared_ptr < node> solution = node::node_copy(*passed_solution);
 		vector<node> all_cand;
 		all_cand.reserve(3000);
@@ -397,8 +399,10 @@ private:
 			}
 			i++;
 		}
+		//if(this->verbose)
+		//	cout << "Simplifying obtained " << all_cand.size() << " candidates." << endl;
 		for (auto& node : all_cand) {
-			//cout << "Before: " << node.to_string() << endl;
+			//cout << "Before: size: "<<node.size()<<" expr: " << node.to_string() << endl;
 			int it_max = 5;
 			while (it_max > 0) {
 				const auto size = node.size();
@@ -424,6 +428,8 @@ private:
 			filtered_cand_strings.insert(node_str);
 			filtered_candidates.push_back(node);
 		}
+		//if (this->verbose)
+		//	cout << "After filtering " << filtered_candidates.size() + " candidates remained." << endl;
 		return filtered_candidates;
 	}
 
@@ -557,10 +563,10 @@ private:
 		}
 		cout << "\tchecks_skip=" << skipped_perts << "/" << total_perts << "\tsol=";
 		string sol_string = final_solution->to_string();
-		if (sol_string.length() < 100)
-			cout << sol_string << endl;
-		else
-			cout << sol_string.substr(0, 100) << "..." << endl;
+		//if (sol_string.length() < 100)
+		cout << sol_string << endl << endl;
+		//else
+		//	cout << sol_string.substr(0, 100) << "..." << endl;
 	}
 
 	bool dominates(const tuple<double, double, int>& p_fit, const tuple<double, double, int>& fit) const noexcept {
@@ -599,7 +605,7 @@ private:
 					break;
 				shared_ptr < node> ls_pert_tuned = tune_constants(ls_pert, X, y);
 				tuple<double, double, int> ls_pert_tuned_fitness = fitness(ls_pert_tuned, X, y);
-				if (verbose && fit_calls % 10000 == 0)
+				if (verbose && fit_calls % 10000 == 0) 
 					print_state(curr_fitness);
 				const auto is_dom = is_dominated(pareto, ls_pert_tuned_fitness);
 				if (!is_dom && compare_fitness(ls_pert_tuned_fitness, curr_fitness) < 0) {
@@ -623,6 +629,7 @@ private:
 				}
 			}
 		}
+		//cout << "Returning solution"<<endl;
 		return curr_solution;
 	}
 
