@@ -12,9 +12,16 @@ For the quickest start you can check the working colab notebook, with minimal wo
 https://colab.research.google.com/drive/1U8I92VTQao9UA9ErBK3VX9AbpIX1LLIv?usp=sharing
 
 If you wish to run it locally, RILS-ROLS distribution is available as a pip package at https://pypi.org/project/rils-rols,
-so it can be easily installed with the following pip command:
+so it can be easily installed with the following pip command on Windows (binaries available):
 
 ```bat
+pip install rils-rols
+```
+
+On the Linux, the source must be build as a Pybind11 C++ module, so there are two commands in that case:
+
+```bat
+pip install pybind11
 pip install rils-rols
 ```
 
