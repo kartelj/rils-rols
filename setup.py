@@ -9,8 +9,8 @@ long_description = "You can find minimal working example and other information h
 if os.name=='nt':
     compile_args = ["/std:c++17", "/I rils_rols_cpp", "/O2"]
 else:
-    os.environ['CCX'] = 'g++'
-    os.environ['CC'] = 'g++'
+    #os.environ['CCX'] = 'g++'
+    #os.environ['CC'] = 'g++'
     compile_args = ["-std=c++17", "-march=native", "-O3"]
 
 ext_modules=[Pybind11Extension(
@@ -30,7 +30,7 @@ def copy_dir():
 
 setup(
     name='rils-rols',
-    version='1.5.14',
+    version='1.5.15',
     description='RILS-ROLS: Robust Symbolic Regression via Iterated Local Search and Ordinary Least Squares',
     long_description= long_description,
     long_description_content_type  = "text/markdown",
