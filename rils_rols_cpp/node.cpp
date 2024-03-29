@@ -52,6 +52,42 @@ Eigen::ArrayXd node::evaluate_inner(const vector<Eigen::ArrayXd>& X, const Eigen
 		return a*a;
 	case node_type::POW:
 		return a.pow(b);
+	case node_type::LESS_THAN: {
+		Eigen::ArrayXd res(X[0].size());
+		for (int i = 0; i < X[0].size(); i++)
+			res[i] = a[i] < b[i] ? 1 : 0;
+		return res;
+	}
+	case node_type::GREATER_THAN: {
+		Eigen::ArrayXd res(X[0].size());
+		for (int i = 0; i < X[0].size(); i++)
+			res[i] = a[i] > b[i] ? 1 : 0;
+		return res;
+	}
+	case node_type::EQUAL: {
+		Eigen::ArrayXd res(X[0].size());
+		for (int i = 0; i < X[0].size(); i++)
+			res[i] = a[i] == b[i] ? 1 : 0; // TODO: maybe this should be check with EPS
+		return res;
+	}
+	case node_type::NOT_EQUAL: {
+		Eigen::ArrayXd res(X[0].size());
+		for (int i = 0; i < X[0].size(); i++)
+			res[i] = a[i] != b[i] ? 1 : 0; // TODO: maybe this should be check with EPS
+		return res;
+	}
+	case node_type::MIN: {
+		Eigen::ArrayXd res(X[0].size());
+		for (int i = 0; i < X[0].size(); i++)
+			res[i] = a[i] < b[i] ? a[i] : b[i];
+		return res;
+	}
+	case node_type::MAX: {
+		Eigen::ArrayXd res(X[0].size());
+		for (int i = 0; i < X[0].size(); i++)
+			res[i] = a[i] > b[i] ? a[i] : b[i];
+		return res;
+	}
 	default:
 		cout << "ERROR: Unrecognized operation.";
 		exit(1);
@@ -137,6 +173,18 @@ void node::simplify()
 				const_value = left->const_value / right->const_value;
 			else if (type == node_type::POW)
 				const_value = pow(left->const_value, right->const_value);
+			else if (type == node_type::LESS_THAN)
+				const_value = left->const_value < right->const_value ? 1 : 0;
+			else if (type == node_type::GREATER_THAN)
+				const_value = left->const_value > right->const_value ? 1 : 0;
+			else if (type == node_type::EQUAL)
+				const_value = left->const_value == right->const_value ? 1 : 0; // TODO: maybe check with EPS
+			else if (type == node_type::NOT_EQUAL)
+				const_value = left->const_value != right->const_value ? 1 : 0; // TODO: maybe check with EPS
+			else if (type == node_type::MIN)
+				const_value = left->const_value < right->const_value ? left->const_value : right->const_value; 
+			else if (type == node_type::MAX)
+				const_value = left->const_value > right->const_value ? left->const_value : right->const_value;
 			else {
 				cout << "Simplification is not supported for this binary operator!" << endl;
 				exit(1);

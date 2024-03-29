@@ -109,15 +109,20 @@ class RILSROLSBase(BaseEstimator):
         self.best_time = self.rr_cpp.get_best_time()
         self.total_time = self.rr_cpp.get_total_time()
         self.fit_calls = self.rr_cpp.get_fit_calls()
-        if self.verbose:
-            print('Finished otimization, doing final symplification...')
-        try:
-            self.call_model_symplify()
-        except:
-            # otherwise, just sympify it -- this does not stuck
+        if self.classification is True:
             if self.verbose:
-                print("Simplification failed within given timeout, so just doing sympify.")
-            self.model_simp = sympify(self.model)
+                print('Finished optimization, not doing symplification for the classification scenario.')
+            self.model_simp = self.model
+        else:
+            if self.verbose:
+                print('Finished otimization, doing final symplification...')
+            try:
+                self.call_model_symplify()
+            except:
+                # otherwise, just sympify it -- this does not stuck
+                if self.verbose:
+                    print("Simplification failed within given timeout, so just doing sympify.")
+                self.model_simp = sympify(self.model)
         return (self.model, self.model_simp)
     
     def check_model(self):

@@ -27,7 +27,14 @@ enum class node_type{
 	EXP, 
 	SQRT, 
 	SQR, 
-	POW
+	POW, 
+	// non-continuous operators used in classification
+	LESS_THAN, 
+	GREATER_THAN, 
+	EQUAL, 
+	NOT_EQUAL, 
+	MIN, 
+	MAX
 };
 
 constexpr int get_arity(node_type type) noexcept
@@ -276,6 +283,18 @@ public:
 			return "(("+left->to_string()+")**2)";
 		case node_type::POW:
 			return "pow("+left->to_string() + "," + right->to_string()+")";
+		case node_type::LESS_THAN:
+			return "(" + left->to_string() + "<" + right->to_string() + ")";
+		case node_type::GREATER_THAN:
+			return "(" + left->to_string() + "<" + right->to_string() + ")";
+		case node_type::EQUAL:
+			return "(" + left->to_string() + "<" + right->to_string() + ")";
+		case node_type::NOT_EQUAL:
+			return "(" + left->to_string() + "<" + right->to_string() + ")";
+		case node_type::MIN:
+			return "MIN(" + left->to_string() + ", " + right->to_string() + ")";
+		case node_type::MAX:
+			return "MAX(" + left->to_string() + ", " + right->to_string() + ")";
 		default:
 			return "*****UNKNOWN*****";
 		}

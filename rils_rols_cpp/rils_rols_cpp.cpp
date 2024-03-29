@@ -134,6 +134,15 @@ private:
 			allowed_nodes.push_back(node(c));
 		for (int i = 0; i < rel_feat.size(); i++)
 			allowed_nodes.push_back(node(rel_feat[i]));
+		if (classification) {
+			// use additional (non-continuous) operators for classification
+			allowed_nodes.push_back(node(node_type::LESS_THAN));
+			allowed_nodes.push_back(node(node_type::GREATER_THAN));
+			allowed_nodes.push_back(node(node_type::EQUAL));
+			allowed_nodes.push_back(node(node_type::NOT_EQUAL));
+			allowed_nodes.push_back(node(node_type::MIN));
+			allowed_nodes.push_back(node(node_type::MAX));
+		}
 		if(verbose)
 			cout << "Finished creating allowed nodes" << endl;
 	}
@@ -888,15 +897,15 @@ int main()
 	int max_fit = 1000000;
 	int max_time = 1200;
 	double complexity_penalty = 0.001;
-	int max_complexity = 200;
+	int max_complexity = 50;
 	double sample_size = 1;
 	double train_share = 0.75;
-	bool classification = false;
-	string dir_path = "../paper_resources/random_12345_data";
+	bool classification = true;
+	string dir_path = ".";
 	bool started = false;
 	for (const auto& entry : fs::directory_iterator(dir_path)) {
-		//if (entry.path().compare(".\\phoneme.csv")!=0) //".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
-		//	continue;
+		if (entry.path().compare(".\\digen33_769.csv")!=0) //".\\GAMETES_Epistasis_2_Way_1000atts_0.4H_EDM_1_EDM_1_1.csv") != 0)
+			continue;
 		//if (started || entry.path().compare("../paper_resources/random_12345_data\\random_06_01_0010000_00.data") == 0)
 		//	started = true;
 		//else
