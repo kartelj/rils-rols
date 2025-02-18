@@ -49,7 +49,7 @@ for fpath in instance_files:
             y_train = utils.noisefy(y_train, noise_level, random_state)
 
     for sample_size in sample_sizes:
-        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_seconds=time, random_state = random_state, complexity_penalty=complexity_penalty, sample_size=sample_size, verbose=verbose)
+        rils = RILSROLSRegressor(max_fit_calls=max_fit, max_time=time, random_state = random_state, complexity_penalty=complexity_penalty, sample_size=sample_size, verbose=verbose)
         rils.fit(X_train, y_train)
         report_string = rils.fit_report_string()
         rils_R2 = -1

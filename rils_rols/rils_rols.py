@@ -15,10 +15,10 @@ warnings.filterwarnings("ignore")
 
 class RILSROLSBase(BaseEstimator):
 
-    def __init__(self, classification=None, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
-        print(f'Calling with max_fit_calls={max_fit_calls} max_seconds={max_seconds} complexity_penalty={complexity_penalty} max_complexity={max_complexity} sample_size={sample_size} verbose={verbose} random_state={random_state}')
+    def __init__(self, classification=None, max_fit_calls=100000, max_time=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
+        print(f'Calling with max_fit_calls={max_fit_calls} max_time={max_time} complexity_penalty={complexity_penalty} max_complexity={max_complexity} sample_size={sample_size} verbose={verbose} random_state={random_state}')
         self.classification = classification
-        self.max_seconds = max_seconds
+        self.max_time = max_time
         self.max_fit_calls = max_fit_calls
         self.max_complexity = max_complexity
         self.complexity_penalty = complexity_penalty
@@ -81,7 +81,7 @@ class RILSROLSBase(BaseEstimator):
                 print(f'Setting sample_size={best_ss}')
                 self.sample_size = best_ss
                 tuning_seconds = time.time() - start
-                self.max_seconds-=tuning_seconds
+                self.max_time-=tuning_seconds
                 self.max_fit_calls = total_max_fit_calls - tuning_fit_calls
         elif self.sample_size<0 or self.sample_size>1:
             raise Exception(f'Sample size parameter must belong to interval (0, 1], while value 0 means it is automatically tuned.')
@@ -97,7 +97,7 @@ class RILSROLSBase(BaseEstimator):
             if self.verbose:
                 print('Converting y dataframe to list of lists.')
             y = y.values.tolist()
-        self.rr_cpp = rils_rols_cpp.rils_rols(self.classification,int(self.max_fit_calls),int(self.max_seconds),self.complexity_penalty,self.max_complexity,self.sample_size,self.verbose,int(self.random_state))
+        self.rr_cpp = rils_rols_cpp.rils_rols(self.classification,int(self.max_fit_calls),int(self.max_time),self.complexity_penalty,self.max_complexity,self.sample_size,self.verbose,int(self.random_state))
         X = np.array(X)
         data_cnt = X.shape[0]
         feat_cnt = X.shape[1]
@@ -149,12 +149,12 @@ class RILSROLSBase(BaseEstimator):
     def fit_report_string(self):
         self.check_model()
         return "maxTime={0}\tmaxFitCalls={1}\tseed={2}\tsizePenalty={3}\tmaxComplexity={4}\tsampleShare={5}\ttotalTime={6:.1f}\tbestTime={7}\tfitCalls={8}\tsimpSize={9}\texpr={10}\texprSimp={11}".format(
-            self.max_seconds,self.max_fit_calls,self.random_state,self.complexity_penalty,self.max_complexity, self.sample_size, self.total_time,self.best_time, self.fit_calls, complexity_sympy(self.model_simp),  self.model, self.model_simp)
+            self.max_time,self.max_fit_calls,self.random_state,self.complexity_penalty,self.max_complexity, self.sample_size, self.total_time,self.best_time, self.fit_calls, complexity_sympy(self.model_simp),  self.model, self.model_simp)
 
 class RILSROLSRegressor(RILSROLSBase):
         
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
-        super().__init__(False, max_fit_calls, max_seconds, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
+    def __init__(self, max_fit_calls=100000, max_time=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
+        super().__init__(False, max_fit_calls, max_time, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
 
     def score(self, X, y):
         yp = self.predict(X)
@@ -162,8 +162,8 @@ class RILSROLSRegressor(RILSROLSBase):
 
 class RILSROLSBinaryClassifier(RILSROLSBase):
     
-    def __init__(self, max_fit_calls=100000, max_seconds=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
-        super().__init__(True, max_fit_calls, max_seconds, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
+    def __init__(self, max_fit_calls=100000, max_time=100, complexity_penalty=0.001, max_complexity=50, sample_size=1, verbose=False, random_state=0):
+        super().__init__(True, max_fit_calls, max_time, complexity_penalty, max_complexity, sample_size, verbose,  random_state)
 
     def check_binary_targets(self, y):
         for yi in y:
