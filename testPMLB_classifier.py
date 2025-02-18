@@ -52,7 +52,7 @@ classificators = [
     ['LogisticRegression', LogisticRegression, {'random_state':RANDOM_STATE}],
     ['DecisionTreeClassifier', DecisionTreeClassifier, {'random_state':RANDOM_STATE}],
     ['RandomForestClassifier', RandomForestClassifier, {'random_state':RANDOM_STATE}],
-    ['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}],
+    ['RILSROLSClassifier', RILSROLSClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_time':TIME_LIMIT, 'verbose':True}],
   ]'''
 
 estimators = all_estimators(type_filter='classifier')
@@ -71,7 +71,7 @@ for name, ClassifierClass in []:# estimators:
         print('Unable to import', name)
         print(e)
 classificators.append(['RILSROLSClassifier', RILSROLSBinaryClassifier, {'sample_size':SAMPLE_SIZE, 'complexity_penalty':COMPLEXITY_PENALTY, 
-                                                                  'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_seconds':TIME_LIMIT, 'verbose':True}])
+                                                                  'random_state':RANDOM_STATE, 'max_fit_calls':ITER_LIMIT, 'max_time':TIME_LIMIT, 'verbose':True}])
 #classificators = [['GaussianProcessClassifier', GaussianProcessClassifier, {'random_state':RANDOM_STATE}]]
 
 for clf_name, clf_type, clf_params in classificators:
