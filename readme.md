@@ -79,12 +79,12 @@ print('-------------------------------------------------------------------------
 # finally, binary classification on the sklearn toy dataset -- breast_cancer
 X, y = load_breast_cancer(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, test_size=1-train_size, random_state=random_state)
-regressor = RILSROLSBinaryClassifier(sample_size=1, max_complexity=20, random_state=random_state)
-regressor.fit(X_train, y_train)
-print(f'Final model is:\t{regressor.model_string()}')
-print(f'Training accuracy score:\t{regressor.score(X_train, y_train)}')
-print(f'Testing accuracy score:\t{regressor.score(X_test, y_test)}')
-#print(f'Other info:\t{regressor.fit_report_string()}')
+classifier = RILSROLSBinaryClassifier(sample_size=1, max_complexity=20, random_state=random_state)
+classifier.fit(X_train, y_train)
+print(f'Final model is:\t{classifier.model_string()}')
+print(f'Training accuracy score:\t{classifier.score(X_train, y_train)}')
+print(f'Testing accuracy score:\t{classifier.score(X_test, y_test)}')
+#print(f'Other info:\t{classifier.fit_report_string()}')
 print('--------------------------------------------------------------------------------------------------------------')
 
 ```
