@@ -12,7 +12,7 @@ For the quickest start you can check the working colab notebook, with minimal wo
 https://colab.research.google.com/drive/1U8I92VTQao9UA9ErBK3VX9AbpIX1LLIv?usp=sharing
 
 If you wish to run it locally, RILS-ROLS distribution is available as a pip package at https://pypi.org/project/rils-rols,
-so it can be easily installed with the following pip command on Windows (binaries available):
+so it can be easily installed with the following pip command on Windows (binaries available for Python 3.11 and 3.12, otherwise you will also need C++ compiler):
 
 ```bat
 pip install rils-rols
